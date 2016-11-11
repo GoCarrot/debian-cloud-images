@@ -1,14 +1,5 @@
-PACKAGES install I386
-linux-image-686-pae initramfs-tools
-memtest86+
-
-PACKAGES install CHROOT
-linux-image-686-pae-
-linux-image-amd64-
-
 PACKAGES install AMD64
 linux-image-amd64 initramfs-tools
-memtest86+
 
 PACKAGES install DHCPC
 isc-dhcp-client

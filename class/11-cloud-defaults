@@ -1,4 +1,0 @@
-#!/bin/sh -e
-echo echo DEBIAN
-echo CLOUD
-echo AMD64

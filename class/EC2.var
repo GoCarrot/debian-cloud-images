@@ -1,0 +1,3 @@
+apt_cdn=http://cloudfront.debian.net
+TIMEZONE=UTC
+echo DHCPC
