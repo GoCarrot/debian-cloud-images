@@ -8,7 +8,7 @@ AMI_VOLTYPE=gp2
 AMI_VOLSIZE=8
 AMI_ON_TERM=true
 AMI_ROOTDEV=xvda
-DRY_RUN=0
+DRY_RUN=$(false)
 
 command -v 'jq' > /dev/null || {
     echo 'jq is not available. exiting' >&2
@@ -62,7 +62,7 @@ while true ; do
             AMI_ROOTDEV="$2" ; shift 2
             ;;
         -D|--dry-run)
-            DRY_RUN=1 ; shift
+            DRY_RUN=$(true) ; shift
             ;;
         -h|--help)
             usage; shift
@@ -89,8 +89,8 @@ snapshot_state() {
         | jq -r '.Snapshots[].State'
 }
 
-cmd="aws --output json ec2 create-snapshot --volume-id \"$vol_id\""
-if [[ "$DRY_RUN" ]]; then
+cmd="aws --output json ec2 create-snapshot --volume-id $vol_id"
+if [ $DRY_RUN ]; then
     echo "Dry run: $cmd"
     snap_state="completed"
 else
@@ -147,8 +147,8 @@ EOF
 
 echo "Wrote API request body to $json_body"
 
-cmd="aws ec2 register-image --cli-input-json \"file://$json_body\""
-if [ "$DRY_RUN" ]; then
+cmd="aws ec2 register-image --cli-input-json file://$json_body"
+if [ $DRY_RUN ]; then
     echo "Dry run: $cmd"
     echo "Input data:"
     cat "$json_body"
