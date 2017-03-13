@@ -24,6 +24,9 @@ cloud-utils/$release-backports
 cloud-guest-utils/$release-backports
 
 PACKAGES remove
+# The following are installed as a Recommends of packages we explicitly
+# install, but are not generally needed on a cloud image.
 exim4-base
 exim4-config
 exim4-daemon-light
+busybox
