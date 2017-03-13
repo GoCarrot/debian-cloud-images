@@ -1,4 +1,5 @@
-apt_cdn=http://cloudfront.debian.net
+apt_cdn=http://cdn-aws.deb.debian.org
+apt_security_cdn="$apt_cdn"
 FAI_DEBOOTSTRAP="$release $apt_cdn/debian/"
 TIMEZONE=UTC
 echo DHCPC

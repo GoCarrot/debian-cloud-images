@@ -3,6 +3,8 @@
 # template expansion for sources.list:
 # replace {release} with the value of $release
 # replace {cdn} with the value of $apt_cdn
+# replace {security_cdn} with the value of $apt_security_cdn or 
+#    "http://security.debian.org" if unset.
 
 # $1 is the class name used
 # $2 is the path to the file copied
@@ -21,3 +23,8 @@ if [ -z "$apt_cdn" ]; then
 else
     sed -i -e "s#{cdn}#$apt_cdn#g" $2
 fi
+
+security_cdn=${apt_security_cdn:-"http://security.debian.org"}
+
+sed -i -e "s#{security_cdn}#$security_cdn#g" $2
+
