@@ -9,7 +9,9 @@ ainsl -a /etc/modprobe.d/blacklist.conf 'blacklist floppy'
 rm -f $target/etc/resolv.conf \
       $target/etc/udev/rules.d/70-persistent-net.rules \
       $target/lib/udev/write_net_rules \
-      $target/etc/mailname
+      $target/etc/mailname \
+      $target/etc/machine-id \
+      $target/var/lib/dbus/machine-id
 
 shred --remove $target/etc/ssh/ssh_host_*
 
