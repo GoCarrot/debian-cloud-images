@@ -13,6 +13,8 @@ rm -f $target/etc/resolv.conf \
       $target/etc/machine-id \
       $target/var/lib/dbus/machine-id
 
+touch $target/etc/machine-id
+
 shred --remove $target/etc/ssh/ssh_host_*
 
 # FIXME: DHCP RFC3442 is used incorrect in Azure
