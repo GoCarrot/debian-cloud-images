@@ -8,6 +8,7 @@ AMI_VOLTYPE=gp2
 AMI_VOLSIZE=8
 AMI_ON_TERM=true
 AMI_ROOTDEV=xvda
+PROFILE=default
 DRY_RUN=
 
 command -v 'jq' > /dev/null || {
@@ -26,13 +27,14 @@ OPTIONS:
   -z, --volume-size   Root volume size in GB (default=8)
   -o, --on-terminate  Instance termination behavior (default=delete)
   -d, --root-device   Root device name (default=xvda)
+  -p, --profile       Use the given profile for AWS API commands
   -D, --dry-run       Dry run mode, no snapshots or AMIs created
   -h, --help          Print usage
 EOF
 }
 
-TEMP=$(getopt -o v:a:r:t:z:o:r:d:Dh \
-              --long virt-type:,arch:,release:,volume-type:,volume-size:,on-terminate:,root-device:,dry-run,help \
+TEMP=$(getopt -o v:a:r:t:z:o:r:d:p:Dh \
+              --long virt-type:,arch:,release:,volume-type:,volume-size:,on-terminate:,root-device:,profile:,dry-run,help \
               -n "$0" -- "$@")
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
@@ -61,6 +63,9 @@ while true ; do
         -d|--root-device)
             AMI_ROOTDEV="$2" ; shift 2
             ;;
+        -p|--profile)
+            PROFILE="$2" ; shift 2
+            ;;
         -D|--dry-run)
             DRY_RUN=true ; shift
             ;;
@@ -81,15 +86,17 @@ if [ "${vol_id%%-*}" != "vol" ]; then
     exit 1
 fi
 
+awscmd="aws --profile $PROFILE"
+
 snapshot_state() {
     local snapid="$1"
-    aws ec2 describe-snapshots \
+    $awscmd ec2 describe-snapshots \
         --output json \
         --snapshot-id "$snapid" \
         | jq -r '.Snapshots[].State'
 }
 
-cmd="aws --output json ec2 create-snapshot --volume-id $vol_id"
+cmd="$awscmd --output json ec2 create-snapshot --volume-id $vol_id"
 if [ -n "$DRY_RUN" ]; then
     echo "Dry run: $cmd"
     snap_state="completed"
@@ -147,7 +154,7 @@ EOF
 
 echo "Wrote API request body to $json_body"
 
-cmd="aws ec2 register-image --cli-input-json file://$json_body"
+cmd="$awscmd ec2 register-image --cli-input-json file://$json_body"
 if [ -n "$DRY_RUN" ]; then
     echo "Dry run: $cmd"
     echo "Input data:"
