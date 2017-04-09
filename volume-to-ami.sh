@@ -96,7 +96,14 @@ snapshot_state() {
         | jq -r '.Snapshots[].State'
 }
 
-cmd="$awscmd --output json ec2 create-snapshot --volume-id $vol_id"
+# Encode the date in the AMI in a form like 2016-11-05-78872. The
+# intent is to generate a human-friendly sortable image name while
+# also taking reasonable steps to avoid name collisions.
+img_stamp=$(date -u +%Y-%m-%d-)$(($(date +%s)%86400))
+
+image_name="debian-${AMI_RELEASE}-${AMI_VIRT_TYPE}-${AMI_ARCH}-${AMI_VOLTYPE}-$img_stamp"
+
+cmd="$awscmd --output json ec2 create-snapshot --description \"$image_name\" --volume-id $vol_id"
 if [ -n "$DRY_RUN" ]; then
     echo "Dry run: $cmd"
     snap_state="completed"
@@ -124,16 +131,11 @@ if [ "$snap_state" != "completed" ]; then
     exit 1
 fi
 
-# Encode the date in the AMI in a form like 2016-11-05-78872. The
-# intent is to generate a human-friendly sortable image name while
-# also taking reasonable steps to avoid name collisions.
-img_stamp=$(date -u +%Y-%m-%d-)$(($(date +%s)%86400))
-
 json_body=$(mktemp) || exit 1
 cat > "$json_body" <<EOF 
 {
-    "DryRun": false, 
-    "Name": "debian-${AMI_RELEASE}-${AMI_VIRT_TYPE}-${AMI_ARCH}-${AMI_VOLTYPE}-$img_stamp",
+    "DryRun": false,
+    "Name": "$image_name",
     "Description": "FAI Debian image", 
     "Architecture": "$AMI_ARCH",
     "RootDeviceName": "$AMI_ROOTDEV",
