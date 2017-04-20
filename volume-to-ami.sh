@@ -86,6 +86,14 @@ if [ "${vol_id%%-*}" != "vol" ]; then
     exit 1
 fi
 
+if [ "${VIRT_TYPE}" == "paravirtual" ] ; then
+    sriov=""
+    ena_support="false"
+else
+    sriov="simple"
+    ena_support="true"
+fi
+
 awscmd="aws --profile $PROFILE"
 
 snapshot_state() {
@@ -150,7 +158,9 @@ cat > "$json_body" <<EOF
             }
         }
     ], 
-    "VirtualizationType": "$AMI_VIRT_TYPE"
+    "VirtualizationType": "$AMI_VIRT_TYPE",
+    "SriovNetSupport": "$sriov",
+    "EnaSupport": $ena_support
 }
 EOF
 
