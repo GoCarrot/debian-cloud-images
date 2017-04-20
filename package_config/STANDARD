@@ -1,0 +1,18 @@
+PACKAGES install
+apt-listchanges
+bash-completion
+bind9-host
+less
+man-db
+manpages
+netcat-traditional
+pciutils
+reportbug
+traceroute
+vim
+bsd-mailx
+gnupg2
+psmisc
+strace
+lsof
+tcpdump
