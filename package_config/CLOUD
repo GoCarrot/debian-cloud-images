@@ -11,6 +11,8 @@ mdadm
 
 dbus
 
+unattended-upgrades
+
 PACKAGES install JESSIE
 cloud-init/$release-backports
 cloud-utils/$release-backports
