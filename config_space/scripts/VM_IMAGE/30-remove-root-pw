@@ -1,0 +1,4 @@
+#!/bin/sh
+# PASSWD=$(echo root | openssl passwd -1 -stdin)
+#$ROOTCMD usermod --password $PASSWD root
+$ROOTCMD passwd --delete root
