@@ -1,7 +1,11 @@
 Quick Start building a Debian image using this repo:
 
-* install the fai-server package
-* calls (p)make -s help and follow the instruction
+* install the necessary fai packages without the recommends, avoid turning your host into
+a dhcp server
+
+  sudo apt-get install fai-server fai-setup-storage --no-install-recommends
+
+* calls (p)make help and follow the instruction
 
 About the created disk images:
 
