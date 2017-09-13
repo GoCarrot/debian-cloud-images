@@ -118,24 +118,13 @@ if [ -n "$DRY_RUN" ]; then
 else
     snap_id=$($cmd | jq -r .SnapshotId)
     echo "Snapshot $snap_id creating. Waiting for it to become available"
-    deadline=$(date -d "now+1 hour" +%s)
-    snap_start=$(date +%s)
-    while [ $(date +%s) -lt $deadline ]; do
-        snap_state=$(snapshot_state $snap_id)
-        if [ "$snap_state" == "completed" ]; then
-            snap_done=$(date +%s)
-            echo "Snapshot ready after $(($snap_done-$snap_start))s"
-            echo
-            break
-        else
-            echo -n .
-            sleep 30
-        fi
-    done
+    echo EXEC $awscmd ec2 wait snapshot-completed --snapshot-ids "$snap_id"
+    $awscmd ec2 wait snapshot-completed --snapshot-ids "$snap_id" || exit 1
+    snap_state=$(snapshot_state $snap_id)
 fi
 
 if [ "$snap_state" != "completed" ]; then
-    echo -n "ERROR: After ${deadline}s, $snap_id is not ready. State is $snap_state"
+    echo -n "ERROR: $snap_id is not ready. State is $snap_state"
     exit 1
 fi
 
