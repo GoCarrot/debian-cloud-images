@@ -18,6 +18,11 @@ gce-stretch-image.raw:
 	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,EC2 \
 	--cspace $(PWD)/config_space $@ || rm $@
 
+vagrant-stretch-image.raw:
+	sudo fai-diskimage --hostname debian-stretch --size 8G \
+	--class DEBIAN,STRETCH,AMD64,GRUB_PC,DHCPC,VM_IMAGE,VAGRANT \
+	--cspace $(PWD)/config_space $@ || rm $@
+
 help:
 	@echo "available targets:"
 	@echo "make generic-vm-image-stretch-image.raw"
