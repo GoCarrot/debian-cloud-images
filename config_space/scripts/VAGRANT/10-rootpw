@@ -1,3 +1,2 @@
 #!/bin/sh
-PASSWD=$(echo vagrant | openssl passwd -1 -stdin)
-$ROOTCMD usermod --password $PASSWD root
+echo root:vagrant | $ROOTCMD chpasswd
