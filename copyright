@@ -1,4 +1,9 @@
-This configuration space takes files from the FAI 5.2 release, distributed under the following copyright
+Files: *
+License: GPL-2+
+Copyright: Members of the Debian Cloud Team including:
+Emmanuel Kasper manu at d.o
+
+Files: config_space/*
 Copyright: 1999-2014 Thomas Lange <lange@informatik.uni-koeln.de>
 License: GPL-2+
 Comment:
@@ -17,3 +22,4 @@ Comment:
 Members of the Debian Cloud Team contributing under the same license include:
 
 Sam Hartman <hartmans@debian.org>
+Emmanuel Kasper manu at d.o
