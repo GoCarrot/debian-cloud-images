@@ -45,9 +45,7 @@ chroot $fs apt-get purge -qy dctrl-tools
 # setup vagrant user
 #######################################################################
 chroot $fs id ubuntu >/dev/null 2>&1 && chroot $fs deluser ubuntu
-chroot $fs id vagrant >/dev/null 2>&1 || chroot $fs useradd --uid 1000 --shell /bin/bash vagrant
-mkdir -p $fs/home/vagrant
-chroot $fs chown vagrant:vagrant /home/vagrant
+chroot $fs id vagrant >/dev/null 2>&1 || chroot $fs useradd --create-home --uid 1000 --shell /bin/bash vagrant
 mkdir -p $fs/home/vagrant/.ssh
 chmod 700 $fs/home/vagrant/.ssh
 cat > $fs/home/vagrant/.ssh/authorized_keys << EOF
