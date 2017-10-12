@@ -3,7 +3,7 @@ Quick Start building a Debian image using this repo:
 * install the necessary fai packages without the recommends, avoid turning your host into
 a dhcp server
 
-  sudo apt-get install fai-server fai-setup-storage --no-install-recommends
+  sudo apt-get install fai-server fai-setup-storage qemu-utils --no-install-recommends
 
 * calls (p)make help and follow the instruction
 
