@@ -1,7 +1,6 @@
 PACKAGES install
 locales
 openssh-server
-cloud-init
 cloud-utils
 cloud-guest-utils
 sudo
