@@ -12,10 +12,14 @@ ec2-stretch-image.raw:
 	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,EC2 \
 	--cspace $(PWD)/config_space $@ || rm $@
 
-#TODO ask kula to check if this really works
 gce-stretch-image.raw:
 	sudo fai-diskimage --hostname debian-stretch --size 8G \
-	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,EC2 \
+	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,GCE \
+	--cspace $(PWD)/config_space $@ || rm $@
+
+openstack-stretch-image.raw:
+	sudo fai-diskimage --hostname debian-stretch --size 8G \
+	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,OPENSTACK \
 	--cspace $(PWD)/config_space $@ || rm $@
 
 vagrant-stretch-image.raw:
