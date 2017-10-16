@@ -1,4 +1,3 @@
 apt_cdn=http://cdn-aws.deb.debian.org
 FAI_DEBOOTSTRAP="$release $apt_cdn/debian/"
 TIMEZONE=UTC
-echo DHCPC
