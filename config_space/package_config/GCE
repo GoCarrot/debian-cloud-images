@@ -3,10 +3,9 @@ google-cloud-packages-archive-keyring
 cloud-initramfs-growroot
 cloud-utils
 google-cloud-sdk
-google-compute-engine-$release
-google-compute-engine-init-$release
-google-config-$release
+google-compute-engine
 python-crcmod
+python-google-compute-engine
 screen
 vim
 
