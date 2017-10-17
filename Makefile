@@ -17,6 +17,11 @@ gce-stretch-image.raw:
 	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,GCE \
 	--cspace $(PWD)/config_space $@ || rm $@
 
+gce-buster-image.raw:
+	sudo fai-diskimage -v --hostname debian-buster --size 10G \
+	--class DEBIAN,BUSTER,AMD64,GRUB_PC,CLOUD,GCE \
+	--cspace $(PWD)/config_space $@ || rm $@
+
 openstack-stretch-image.raw:
 	sudo fai-diskimage -v--hostname debian-stretch --size 8G \
 	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,OPENSTACK \
@@ -38,6 +43,7 @@ help:
 	@echo "make generic-vm-image-stretch-image.raw"
 	@echo "make ec2-stretch-image.raw"
 	@echo "make gce-stretch-image.raw"
+	@echo "make gce-buster-image.raw"
 	@echo "make azure-stretch-image.raw"
 
 cleanall:
