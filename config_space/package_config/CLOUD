@@ -6,7 +6,6 @@ cloud-guest-utils
 sudo
 
 xz-utils
-mdadm
 
 dbus
 
