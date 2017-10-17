@@ -13,7 +13,7 @@ ec2-stretch-image.raw:
 	--cspace $(PWD)/config_space $@ || rm $@
 
 gce-stretch-image.raw:
-	sudo fai-diskimage -v --hostname debian-stretch --size 8G \
+	sudo fai-diskimage -v --hostname debian-stretch --size 10G \
 	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,GCE \
 	--cspace $(PWD)/config_space $@ || rm $@
 
