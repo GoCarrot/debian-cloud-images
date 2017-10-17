@@ -17,3 +17,5 @@ shred --remove $target/etc/ssh/ssh_host_*
 
 rm -f $target/var/lib/apt/lists/*
 rm -f $target/etc/resolv.conf
+
+fcopy -M /etc/udev/rules.d/98-azure-disable-timesync.rules
