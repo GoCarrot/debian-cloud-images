@@ -23,7 +23,7 @@ shred --remove $target/etc/ssh/ssh_host_*
 # generate.
 
 for cipher in ed25519 ecdsa rsa dsa; do
-  touch "/etc/ssh/ssh_host_${cipher}_key"
+  touch "$target/etc/ssh/ssh_host_${cipher}_key"
 done
 
 rm -f $target/var/lib/apt/lists/*
