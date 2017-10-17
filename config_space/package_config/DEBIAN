@@ -1,5 +1,7 @@
 PACKAGES install AMD64
-linux-image-amd64 initramfs-tools
+# irqbalance is normally pulled in as a recommendation by the kernel package.
+# On KVM-based systems, this can cause performance problems, so we remove it.
+linux-image-amd64 initramfs-tools irqbalance-
 
 PACKAGES install DHCPC
 isc-dhcp-client
