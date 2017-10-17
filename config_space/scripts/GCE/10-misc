@@ -22,7 +22,7 @@ shred --remove $target/etc/ssh/ssh_host_*
 # recreating the host key files as empty files so that GCE knows which keys to
 # generate.
 
-for cipher in ed25519 ecdsa rsa dsa; do
+for cipher in ed25519 ecdsa rsa; do
   touch "$target/etc/ssh/ssh_host_${cipher}_key"
 done
 
