@@ -7,7 +7,7 @@ sudo
 
 xz-utils
 
-dbus
+dbus # needed for acpi shutdown to work
 
 unattended-upgrades
 
