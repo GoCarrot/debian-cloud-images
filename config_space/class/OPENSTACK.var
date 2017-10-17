@@ -1,0 +1,3 @@
+release=stretch
+TIMEZONE=UTC
+KEYMAP=utf-8
