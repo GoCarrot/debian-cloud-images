@@ -1,2 +1,5 @@
 PACKAGES install
-waagent python2.7-minimal cloud-init-
+# Azure images require waagent 
+waagent
+# Some waagent extensions still need python2.7, and break when it is not present
+python
