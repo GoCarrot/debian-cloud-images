@@ -1,50 +1,38 @@
 # path to the config space shoud be absolute, see fai.conf(5)
-PWD != pwd
+UPPER_CLOUD = $(shell echo $(CLOUD) | tr '[:lower:]' '[:upper:]')
+UPPER_DIST = $(shell echo $(DIST) | tr '[:lower:]' '[:upper:]')
+PWD := $(shell readlink -f ${PWD})
+SPACE = 8
 
-generic-vm-image-stretch-image.raw:
-	sudo fai-diskimage -v--hostname debian-stretch --size 8G \
-	--class DEBIAN,STRETCH,AMD64,GRUB_PC,DHCPC,VM_IMAGE \
-	--cspace $(PWD)/config_space $@ || rm $@
-
-# based on https://noah.meyerhans.us/blog/2017/02/10/using-fai-to-customize-and-build-your-own-cloud-images/
-ec2-stretch-image.raw:
-	sudo fai-diskimage -v--hostname debian-stretch --size 8G \
-	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,EC2 \
-	--cspace $(PWD)/config_space $@ || rm $@
-
-gce-stretch-image.raw:
-	sudo fai-diskimage -v --hostname debian-stretch --size 10G \
-	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,GCE \
-	--cspace $(PWD)/config_space $@ || rm $@
-
-gce-buster-image.raw:
-	sudo fai-diskimage -v --hostname debian-buster --size 10G \
-	--class DEBIAN,BUSTER,AMD64,GRUB_PC,CLOUD,GCE \
-	--cspace $(PWD)/config_space $@ || rm $@
-
-openstack-stretch-image.raw:
-	sudo fai-diskimage -v--hostname debian-stretch --size 8G \
-	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,OPENSTACK \
-	--cspace $(PWD)/config_space $@ || rm $@
-
-azure-stretch-image.raw:
-	sudo fai-diskimage -v --hostname debian-stretch --size 2G \
-	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,AZURE \
-	--cspace $(PWD)/config_space $@ || rm $@
-# qemu-img convert -f raw -o subformat=fixed,force_size -O vpc $@ azure-stretch-image.vhd	
-
-vagrant-stretch-image.raw:
-	sudo fai-diskimage -v--hostname debian-stretch --size 8G \
-	--class DEBIAN,STRETCH,AMD64,GRUB_PC,DHCPC,VM_IMAGE,VAGRANT \
-	--cspace $(PWD)/config_space $@ || rm $@
+ifeq ($(CLOUD),openstack)
+  SPACE = 2
+else ifeq ($(CLOUD),azure)
+  FORMAT_NEEDED = vhd
+else ifeq ($(CLOUD),gce)
+  SPACE = 10
+endif
 
 help:
-	@echo "available targets:"
-	@echo "make generic-vm-image-stretch-image.raw"
-	@echo "make ec2-stretch-image.raw"
-	@echo "make gce-stretch-image.raw"
-	@echo "make gce-buster-image.raw"
-	@echo "make azure-stretch-image.raw"
+	@echo "To run this makefile, run:"
+	@echo "   make <DIST>-image_<CLOUD>"
+	@echo "  WHERE <DIST> is buster or stretch"
+	@echo "    And <CLOUD> is azure, ec2, gce, openstack, vagrant"
+
+_image.raw:
+	sudo fai-diskimage -v \
+		--hostname debian-$(DIST) \
+		--size $(SPACE)G \
+		--class DEBIAN,$(UPPER_DIST),AMD64,GRUB_PC,CLOUD,$(UPPER_CLOUD) \
+		--cspace $(PWD)/config_space $(CLOUD)-$(DIST)-image.raw
+	[ $(FORMAT_NEEDED) = "vhd" ] && \
+		qemu-img convert -f raw -o subformat=fixed,force_size -O vpc \
+		$(CLOUD)-$(DIST)-image.raw $(CLOUD)-$(DIST)-image.vhd
+buster-image-%:
+	${MAKE} _image.raw CLOUD=$* DIST=buster
+
+stretch-image-%:
+	${MAKE} _image.raw CLOUD=$* DIST=stretch
+
 
 cleanall:
-	rm *.raw
+	rm -rf *.raw *vhd
