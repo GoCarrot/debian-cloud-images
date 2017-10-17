@@ -18,6 +18,12 @@ gce-stretch-image.raw:
 	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,EC2 \
 	--cspace $(PWD)/config_space $@ || rm $@
 
+azure-stretch-image.raw:
+	sudo fai-diskimage -v --hostname debian-stretch --size 2G \
+	--class DEBIAN,STRETCH,AMD64,GRUB_PC,CLOUD,AZURE \
+	--cspace $(PWD)/config_space $@ || rm $@
+# qemu-img convert -f raw -o subformat=fixed,force_size -O vpc $@ azure-stretch-image.vhd	
+
 vagrant-stretch-image.raw:
 	sudo fai-diskimage --hostname debian-stretch --size 8G \
 	--class DEBIAN,STRETCH,AMD64,GRUB_PC,DHCPC,VM_IMAGE,VAGRANT \
@@ -28,6 +34,7 @@ help:
 	@echo "make generic-vm-image-stretch-image.raw"
 	@echo "make ec2-stretch-image.raw"
 	@echo "make gce-stretch-image.raw"
+	@echo "make azure-stretch-image.raw"
 
 cleanall:
 	rm *.raw
