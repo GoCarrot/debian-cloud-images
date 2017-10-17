@@ -5,5 +5,5 @@
 # $1 is the class name used
 # $2 is the path to the file copied over
 
-envsubust < $2 > $2.tmp
+envsubst < $2 > $2.tmp
 mv $2.tmp $2
