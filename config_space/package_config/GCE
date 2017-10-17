@@ -23,7 +23,6 @@ parted
 python
 openssh-client
 openssh-server
-sudo
 uuid-runtime
 
 PACKAGES install JESSIE
