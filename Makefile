@@ -14,7 +14,7 @@ endif
 
 help:
 	@echo "To run this makefile, run:"
-	@echo "   make <DIST>-image_<CLOUD>"
+	@echo "   make <DIST>-image-<CLOUD>"
 	@echo "  WHERE <DIST> is buster or stretch"
 	@echo "    And <CLOUD> is azure, ec2, gce, openstack, vagrant"
 
