@@ -25,7 +25,6 @@ if [ $FAI_ACTION != "install" ]; then
     exit $error
 fi
 
-$ROOTCMD grub-mkdevicemap --no-floppy
 GROOT=$($ROOTCMD grub-probe -tdrive -d $BOOT_DEVICE)
 
 
