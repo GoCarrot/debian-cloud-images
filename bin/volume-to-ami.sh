@@ -1,4 +1,8 @@
 #!/bin/bash
+# This script require the following EC2 APIs:
+# DescribeSnapshots
+# CreateSnapshot
+# RegisterImage
 
 # runtime overridable defaults:
 AMI_VIRT_TYPE=hvm
@@ -29,6 +33,7 @@ OPTIONS:
   -d, --root-device   Root device name (default=xvda)
   -p, --profile       Use the given profile for AWS API commands
   -D, --dry-run       Dry run mode, no snapshots or AMIs created
+  -F, --final         This AMI build is intended to be public (affects AMI name)
   -h, --help          Print usage
 EOF
 }
@@ -68,6 +73,9 @@ while true ; do
             ;;
         -D|--dry-run)
             DRY_RUN=true ; shift
+            ;;
+        -F|--final)
+            FINAL=true ; shift
             ;;
         -h|--help)
             usage; shift
@@ -109,7 +117,11 @@ snapshot_state() {
 # also taking reasonable steps to avoid name collisions.
 img_stamp=$(date -u +%Y-%m-%d-)$(($(date +%s)%86400))
 
-image_name="debian-${AMI_RELEASE}-${AMI_VIRT_TYPE}-${AMI_ARCH}-${AMI_VOLTYPE}-$img_stamp"
+if [ "${FINAL}" == "true" ]; then
+    image_name="debian-${AMI_RELEASE}-${AMI_VIRT_TYPE}-${AMI_ARCH}-${AMI_VOLTYPE}-$img_stamp"
+else
+    image_name="scratch-${USER}-${AMI_RELEASE}-${AMI_VIRT_TYPE}-${AMI_ARCH}-${AMI_VOLTYPE}-$img_stamp"
+fi
 
 cmd="$awscmd --output json ec2 create-snapshot --description \"$image_name\" --volume-id $vol_id"
 if [ -n "$DRY_RUN" ]; then
