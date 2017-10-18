@@ -1,0 +1,34 @@
+# The "EXTRAS" class defines an (admittedly opinionated) list of
+# packages that are commonly useful on a full-featured remote virtual
+# machine or cloud instance.
+
+PACKAGES install
+locales
+apt-listchanges
+bash-completion
+bind9-host
+less
+man-db
+manpages
+netcat-traditional
+pciutils
+reportbug
+traceroute
+vim
+gnupg2
+psmisc
+strace
+lsof
+tcpdump
+ca-certificates
+curl
+ethtool
+gdisk
+kpartx
+parted
+python
+openssh-client
+openssh-server
+uuid-runtime
+screen
+xz-utils
