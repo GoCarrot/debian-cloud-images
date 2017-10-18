@@ -4,7 +4,7 @@ This repository aims to build Debian images for all cloud providers
 
 ## Getting started
 
-You will need a checkout of this repository on your disk and a recent fai-server package installed.
+You will need a checkout of this repository on your disk and a recent fai-server package (at least 5.3.6) installed.
 Install the necessary fai packages without the recommends, avoid turning your host into
 a dhcp server!
 
@@ -17,12 +17,55 @@ a dhcp server!
 
 ## New cloud vendor howto
 
-First of all, we are pretty confident, that our generic-vm-image should boot mostly everywhere. If you really need adjustments for your image, here is what our directory structure looks like:
+First of all, we are pretty confident, that our generic-vm-image should boot mostly everywhere. If you really need adjustments for your image, start looking at the directory structure and only drop in adjustments where really required. Our CLOUD (base) class should alreday take care of the most of what is needed for a cloud image. 
 
-```
 
-```
+    .
+    \-- config_space
+        +-- class
+        +-- debconf
+        +-- disk_config
+        +-- files
+                +-- etc
+                        +-- apt
+                                +-- sources.list
+                                \-- sources.list.d
+                                    +-- backports.list
+                                    \-- gce.list
+                        +-- cloud
+                                \-- cloud.cfg.d
+                                    +-- 01_debian_cloud.cfg
+                                    \-- 99-disable-network-config.cfg
+                        +-- default
+                                \-- grub.d
+                                    +-- 10_cloud_disable_net.ifnames.cfg
+                                    \-- 20_add_extra_serial_console.cfg
+                        \-- udev
+                            \-- rules.d
+                                \-- 98-azure-disable-timesync.rules
+                \-- usr
+                    \-- local
+                        \-- sbin
+                            \-- inet6-ifup-helper
+        +-- package_config
+        +-- scripts
+                +-- AZURE
+                +-- BACKPORTS
+                +-- CLOUD
+                +-- DEBIAN
+                +-- EC2
+                +-- GCE
+                +-- GRUB_PC
+                +-- OPENSTACK
+                +-- VAGRANT
+                \-- VM_IMAGE
+        \-- tests
 
+
+## Documentation
+
+ * https://fai-project.org/fai-guide/
+ * https://noah.meyerhans.us/blog/2017/02/10/using-fai-to-customize-and-build-your-own-cloud-images/
 
 
 About the created disk images:
