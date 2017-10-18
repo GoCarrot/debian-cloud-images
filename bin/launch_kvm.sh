@@ -249,9 +249,6 @@ unset TAIL_PID
     debug "Extracting raw tarball" &&
     { tar xvvf "${raw_disk}" || /bin/true; }
 
-[ ! -e success ] &&
-    fail "Tarball contents reported failure"
-
 cp "${work_d}/console.log" .
 
 # Wait for Cloud-Init to finish any work
