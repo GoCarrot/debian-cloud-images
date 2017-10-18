@@ -1,15 +1,16 @@
 PACKAGES install
-locales
 openssh-server
 cloud-utils
 cloud-guest-utils
 sudo
 
-xz-utils
-
 dbus # needed for acpi shutdown to work
 
 unattended-upgrades
+
+# We're going with chrony as our default ntp client in light of
+# https://lwn.net/Articles/735211/
+chrony
 
 PACKAGES install JESSIE
 cloud-utils/$release-backports

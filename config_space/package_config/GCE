@@ -1,29 +1,10 @@
 PACKAGES install
 google-cloud-packages-archive-keyring
 cloud-initramfs-growroot
-cloud-utils
 google-cloud-sdk
 google-compute-engine
 python-crcmod
 python-google-compute-engine
-screen
-vim
-
-acpi-support-base
-busybox
-ca-certificates
-curl
-ethtool
-gdisk
-kpartx
-isc-dhcp-client
-lsb-release
-ntp
-parted
-python
-openssh-client
-openssh-server
-uuid-runtime
 
 PACKAGES install JESSIE
 cloud-utils/$release-backports
