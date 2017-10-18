@@ -251,6 +251,8 @@ unset TAIL_PID
 
 cp "${work_d}/console.log" .
 
+trap -
+
 # Wait for Cloud-Init to finish any work
 debug "Cleaning up..."
 cleanup
