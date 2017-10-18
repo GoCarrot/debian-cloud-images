@@ -99,8 +99,9 @@ EOM
 
 mount /dev/vdc /mnt
 mkdir /tmp/build
-cp -au /mnt/* /tmp/build
-cd /tmp/build
+find /mnt
+cp -au /mnt/fai /tmp/build
+cd /tmp/build/fai
 
 **************************************************
 BUILDING ${target} in KVM environment
@@ -170,8 +171,7 @@ debug "Creating Seed for Cloud-Init..."
 "${0%/*}/make-seed.sh" \
     "${work_d}/seed.img" \
     "${work_d}/user-data.txt" \
-    "${work_d}/meta-data" \
-    --include_dir ${PWD} ||
+    "${work_d}/meta-data" ||
     fail "Failed to create Configruation ISO"
 
 # Place the image in place

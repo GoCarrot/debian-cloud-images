@@ -23,6 +23,10 @@ VERBOSITY=0
 TEMP_D=""
 DEF_DISK_FORMAT="raw"
 
+my_f=$(readlink -f ${0})
+my_d=$(dirname ${my_f})
+pdir=$(dirname ${my_d})
+
 error() { echo "$@" 1>&2; }
 errorp() { printf "$@" 1>&2; }
 fail() { [ $# -eq 0 ] || error "$@"; exit 1; }
@@ -64,8 +68,8 @@ debug() {
     error "${@}"
 }
 
-short_opts="hi:d:m:o:v:I"
-long_opts="disk-format:,dsmode:,include_dir:,help,interfaces:,output:,verbose"
+short_opts="hi:d:m:o:v"
+long_opts="disk-format:,dsmode:,help,interfaces:,output:,verbose"
 getopt_out=$(getopt --name "${0##*/}" \
     --options "${short_opts}" --long "${long_opts}" -- "$@") &&
     eval set -- "${getopt_out}" ||
@@ -75,7 +79,6 @@ getopt_out=$(getopt --name "${0##*/}" \
 output=""
 userdata=""
 metadata=""
-include_d=""
 diskformat=$DEF_DISK_FORMAT
 interfaces=_unset
 dsmode=""
@@ -89,7 +92,6 @@ while [ $# -ne 0 ]; do
         -d|--disk-format) diskformat=$next; shift;;
         -m|--dsmode)      dsmode=$next; shift;;
         -i|--interfaces)  interfaces=$next; shift;;
-        -I|--include_dir) include_d=$next; shift;;
         --) shift; break;;
     esac
     shift;
@@ -132,6 +134,11 @@ else
     cp "$userdata" "$TEMP_D/user-data" || fail "$userdata: failed to copy"
 fi
 
+mkdir -p $TEMP_D/fai/fai
+find ${pdir} -maxdepth 1 -mindepth 1 \
+	| egrep -v "(*raw|*log|*qcow2|*git|var)" \
+	| xargs -I IN -n1 cp -a IN $TEMP_D/fai/fai/
+
 img="$TEMP_D/seed.img"
 truncate --size 100K "$img" || fail "failed truncate image"
 
@@ -141,7 +148,7 @@ genisoimage \
 	-joliet \
 	-rock \
 	-m '**/*.qcow2' -m '.git' \
-	"$TEMP_D/meta-data" "$TEMP_D/user-data" "$include_d" \
+	"$TEMP_D/meta-data" "$TEMP_D/user-data" "$TEMP_D/fai" \
 		> "$TEMP_D/err" 2>&1 ||
 	   { cat "$TEMP_D/err" 1>&2; fail "failed to genisoimage"; }
 
