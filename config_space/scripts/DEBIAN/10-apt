@@ -1,4 +1,5 @@
 #!/bin/bash
 
-fcopy -SM /etc/apt/sources.list
+# check all subdirectories in /etc/apt if there's something to copy
+fcopy -r -iSM /etc/apt
 

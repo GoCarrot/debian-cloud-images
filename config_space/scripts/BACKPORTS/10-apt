@@ -1,3 +1,0 @@
-#!/bin/bash
-
-fcopy -MS /etc/apt/sources.list.d/backports.list

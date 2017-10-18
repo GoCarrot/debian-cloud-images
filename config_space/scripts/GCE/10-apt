@@ -1,3 +1,0 @@
-#!/bin/sh
-
-fcopy -SM /etc/apt/sources.list.d/gce.list
