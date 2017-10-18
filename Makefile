@@ -6,6 +6,9 @@ UPPER_DIST = $(shell echo $(DIST) | tr '[:lower:]' '[:upper:]')
 PWD := $(shell readlink -f .)
 SPACE = 8
 
+VALID_CLOUDS = (azure|ec2|gce|opentack|vm|vagrant)
+VALID_DISTS = (stretch|buster)
+
 ifeq ($(CLOUD),openstack)
   SPACE = 2
 else ifeq ($(CLOUD),azure)
@@ -21,6 +24,10 @@ help:
 	@echo "    And <CLOUD> is azure, ec2, gce, openstack, vagrant"
 
 _image.raw:
+	@echo $(CLOUD) | egrep -q "$(VALID_CLOUDS)" || { \
+		 echo "$(CLOUD) is an invalid. Valid clouds are $(VALID_CLOUDS)"; exit 1; }
+	@echo $(DIST) | egrep -q "$(VALID_DISTS)" || { \
+		echo "$(DIST) is an invalid. Valid clouds are $(VALID_DISTS)"; exit 1; }
 	sudo fai-diskimage -v \
 		--hostname debian-$(DIST) \
 		--size $(SPACE)G \
@@ -35,6 +42,7 @@ buster-image-%:
 stretch-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=stretch
 
+
 kvm-%:
 	bin/launch_kvm.sh --id $*-$(shell date +%s) \
 		--target $* \
@@ -42,3 +50,4 @@ kvm-%:
 
 cleanall:
 	rm -rf *.raw *vhd
+
