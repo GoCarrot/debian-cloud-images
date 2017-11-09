@@ -6,7 +6,7 @@ UPPER_DIST = $(shell echo $(DIST) | tr '[:lower:]' '[:upper:]')
 PWD := $(shell readlink -f .)
 SPACE = 8
 
-VALID_CLOUDS = (azure|ec2|gce|opentack|vm|vagrant)
+VALID_CLOUDS = (azure|ec2|gce|openstack|vm|vagrant)
 VALID_DISTS = (stretch|buster)
 
 ifeq ($(CLOUD),openstack)
@@ -48,6 +48,7 @@ kvm-%:
 		--target $* \
 		--img-url $(BUILDER_IMG)
 
+clean: cleanall
+
 cleanall:
 	rm -rf *.raw *vhd
-
