@@ -3,7 +3,7 @@
 # machine or cloud instance.
 
 PACKAGES install
-locales
+locales-all
 apt-listchanges
 bash-completion
 bind9-host
