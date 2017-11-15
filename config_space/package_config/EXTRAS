@@ -10,7 +10,7 @@ bind9-host
 less
 man-db
 manpages
-netcat-traditional
+netcat-openbsd
 pciutils
 reportbug
 traceroute
