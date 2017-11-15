@@ -28,6 +28,7 @@ _image.raw:
 		 echo "$(CLOUD) is an invalid. Valid clouds are $(VALID_CLOUDS)"; exit 1; }
 	@echo $(DIST) | egrep -q "$(VALID_DISTS)" || { \
 		echo "$(DIST) is an invalid. Valid clouds are $(VALID_DISTS)"; exit 1; }
+	umask 022; \
 	sudo fai-diskimage -v \
 		--hostname debian-$(DIST) \
 		--size $(SPACE)G \
