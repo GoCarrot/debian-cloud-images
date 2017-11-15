@@ -15,7 +15,6 @@ pciutils
 reportbug
 traceroute
 vim
-gnupg2
 psmisc
 strace
 lsof
