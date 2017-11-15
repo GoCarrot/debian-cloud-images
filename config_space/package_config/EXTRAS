@@ -20,8 +20,6 @@ tcpdump
 ca-certificates
 curl
 ethtool
-openssh-client
-openssh-server
 uuid-runtime
 screen
 xz-utils
