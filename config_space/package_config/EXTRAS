@@ -23,7 +23,6 @@ tcpdump
 ca-certificates
 curl
 ethtool
-python
 openssh-client
 openssh-server
 uuid-runtime
