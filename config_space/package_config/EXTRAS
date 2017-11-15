@@ -16,8 +16,6 @@ reportbug
 traceroute
 vim
 psmisc
-strace
-lsof
 tcpdump
 ca-certificates
 curl
