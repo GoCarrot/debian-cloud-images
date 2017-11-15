@@ -23,9 +23,6 @@ tcpdump
 ca-certificates
 curl
 ethtool
-gdisk
-kpartx
-parted
 python
 openssh-client
 openssh-server
