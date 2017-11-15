@@ -6,5 +6,5 @@ linux-image-amd64 initramfs-tools irqbalance-
 PACKAGES install DHCPC
 isc-dhcp-client
 
-PACKAGES install GRUB_PC
+PACKAGES install-norec GRUB_PC
 grub-pc
