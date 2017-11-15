@@ -34,9 +34,11 @@ _image.raw:
 		--size $(SPACE)G \
 		--class DEBIAN,$(UPPER_DIST),AMD64,GRUB_PC,CLOUD,$(UPPER_CLOUD) \
 		--cspace $(PWD)/config_space $(CLOUD)-$(DIST)-image.raw
-	if [ "$(FORMAT_NEEDED)" = "vhd" ]; then \
-		qemu-img convert -f raw -o subformat=fixed,force_size -O vpc \
-		$(CLOUD)-$(DIST)-image.raw $(CLOUD)-$(DIST)-image.vhd; fi
+ifeq ($(FORMAT_NEEDED), vhd)
+	qemu-img convert -f raw -o subformat=fixed,force_size -O vpc \
+		$(CLOUD)-$(DIST)-image.raw $(CLOUD)-$(DIST)-image.vhd
+endif
+
 buster-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=buster
 
