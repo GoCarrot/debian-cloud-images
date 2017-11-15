@@ -1,6 +1,5 @@
 PACKAGES install
 openssh-server
-cloud-utils
 cloud-guest-utils
 sudo
 
@@ -13,7 +12,6 @@ unattended-upgrades
 chrony
 
 PACKAGES install JESSIE
-cloud-utils/$release-backports
 cloud-guest-utils/$release-backports
 
 PACKAGES remove
