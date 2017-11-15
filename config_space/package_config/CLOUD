@@ -3,7 +3,8 @@ openssh-server
 cloud-guest-utils
 sudo
 
-dbus # needed for acpi shutdown to work
+# needed for any useful login session
+libpam-systemd
 
 unattended-upgrades
 
