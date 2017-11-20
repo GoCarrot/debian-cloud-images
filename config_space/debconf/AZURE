@@ -1,2 +1,2 @@
 # Linux command line:
-grub-pc grub2/linux_cmdline string console=tty0 console=ttyS0,115200 earlyprintk=ttyS0,115200 consoleblank=0 systemd.show_status=true
+grub-pc grub2/linux_cmdline string console=tty0 console=ttyS0,115200 earlyprintk=ttyS0,115200 consoleblank=0 systemd.show_status=true net.ifnames=0
