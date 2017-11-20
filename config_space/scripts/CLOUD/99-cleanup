@@ -14,8 +14,3 @@ rm -f $target/etc/resolv.conf \
 touch $target/etc/machine-id
 
 shred --remove $target/etc/ssh/ssh_host_*
-
-# FIXME: DHCP RFC3442 is used incorrect in Azure
-if [ -f $target/etc/dhcp/dhclient.conf ]; then
-    sed -ie 's,rfc3442-classless-static-routes,disabled-\0,' $target/etc/dhcp/dhclient.conf
-fi
