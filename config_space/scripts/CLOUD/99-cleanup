@@ -1,5 +1,7 @@
 #! /bin/bash
 
+fcopy -BM /etc/hostname
+
 sed -i "s/PermitRootLogin yes/PermitRootLogin without-password/" $target/etc/ssh/sshd_config
 ainsl /etc/ssh/sshd_config 'ClientAliveInterval 120'
 
