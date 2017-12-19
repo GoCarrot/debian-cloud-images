@@ -38,8 +38,8 @@ OPTIONS:
 EOF
 }
 
-TEMP=$(getopt -o v:a:r:t:z:o:r:d:p:Dh \
-              --long virt-type:,arch:,release:,volume-type:,volume-size:,on-terminate:,root-device:,profile:,dry-run,help \
+TEMP=$(getopt -o v:a:r:t:z:o:r:d:p:FDh \
+              --long virt-type:,arch:,release:,volume-type:,volume-size:,on-terminate:,root-device:,profile:,final,dry-run,help \
               -n "$0" -- "$@")
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
