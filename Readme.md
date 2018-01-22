@@ -9,7 +9,7 @@ Install the necessary fai packages without the recommends, avoid turning your ho
 a dhcp server!
 
 ```
-  # git clone https://git.debian.org/git/cloud/fai-cloud-images.git 
+  # git clone https://salsa.debian.org/cloud-team/fai-cloud-images.git 
   # sudo apt-get install fai-server fai-setup-storage qemu-utils --no-install-recommends
 ```
 
