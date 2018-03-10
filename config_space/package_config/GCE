@@ -5,9 +5,6 @@ google-cloud-sdk
 google-compute-engine
 python-crcmod
 python-google-compute-engine
-# Remove the next line once Google fixes this:
-# https://github.com/GoogleCloudPlatform/compute-image-packages/issues/505
-chrony- ntp
 
 PACKAGES install JESSIE
 cloud-utils/$release-backports
