@@ -1,0 +1,141 @@
+#!/usr/bin/python3
+
+import argparse
+import collections.abc
+import logging
+import os
+import subprocess
+import sys
+
+
+supported_options = ()
+
+
+logger = logging.getLogger()
+
+
+class Arch:
+    pass
+
+
+class ArchAmd64(Arch):
+    NAME = 'amd64'
+    FAI_CLASSES = ('AMD64', 'GRUB_PC')
+
+
+class Release:
+    pass
+
+
+class ReleaseStretch(Release):
+    NAME = 'stretch'
+    FAI_CLASSES = ('STRETCH', 'BACKPORTS')
+
+
+class ReleaseBuster(Release):
+    NAME = 'buster'
+    FAI_CLASSES = ('BUSTER', )
+
+
+class Vendor:
+    FAI_SIZE = '8G'
+
+    def convert_image(self, basename):
+        pass
+
+
+class VendorAzure(Vendor):
+    NAME = 'azure'
+    FAI_CLASSES = ('AZURE', )
+    FAI_SIZE = '30G'
+
+
+class VendorEc2(Vendor):
+    NAME = 'ec2'
+    FAI_CLASSES = ('EC2', )
+    FAI_SIZE = '10G'
+
+
+class VendorGce(Vendor):
+    NAME = 'gce'
+    FAI_CLASSES = ('GCE', )
+    FAI_SIZE = '10G'
+
+
+arches = { i.NAME: i for i in Arch.__subclasses__() }
+releases = { i.NAME: i for i in Release.__subclasses__() }
+vendors = { i.NAME: i for i in Vendor.__subclasses__() }
+
+
+class Classes(collections.abc.MutableSet):
+    def __init__(self):
+        self.__data = []
+    def __contains__(self, v):
+        return v in self.__data
+    def __iter__(self):
+        return iter(self.__data)
+    def __len__(self):
+        return len(self.__data)
+    def add(self, v):
+        logger.info('Adding class %s', v)
+        self.__data.append(v)
+    def discard(self, v):
+        logger.info('Removing class %s', v)
+        self.__data.remove(v)
+
+
+class Main:
+    def __init__(self):
+        self.classes = Classes()
+        self.classes.add('DEBIAN')
+        self.classes.add('CLOUD')
+
+    def set_release(self, release):
+        self.release = releases[release]()
+        self.classes |= self.release.FAI_CLASSES
+
+    def set_vendor(self, vendor):
+        self.vendor = vendors[vendor]()
+        self.classes |= self.vendor.FAI_CLASSES
+
+    def set_arch(self, arch):
+        self.arch = arches[arch]()
+        self.classes |= self.arch.FAI_CLASSES
+
+    def check_kernel(self, options):
+        self.classes.add('LINUX_IMAGE_BASE')
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('release', metavar='RELEASE', choices=sorted(releases.keys()))
+    parser.add_argument('vendor', metavar='VENDOR', choices=sorted(vendors.keys()))
+    parser.add_argument('arch', metavar='ARCH', choices=sorted(arches.keys()))
+    parser.add_argument('basename', metavar='BASENAME')
+    parser.add_argument('-c', '--command', metavar='COMMAND')
+    parser.add_argument('-o', '--option', nargs='*', metavar='OPTION',
+            dest='options', choices=supported_options)
+    args = parser.parse_args()
+
+    m = Main()
+    m.set_release(args.release)
+    m.set_vendor(args.vendor)
+    m.set_arch(args.arch)
+    m.check_kernel(args.options)
+
+    cmd = []
+    if args.command:
+        cmd.append(args.command)
+    else:
+        cmd.extend(('sudo', 'fai-diskimage'))
+    cmd.append('--verbose')
+    cmd.extend(('--hostname', 'debian'))
+    cmd.extend(('--class', ','.join(m.classes)))
+    cmd.extend(('--size', m.vendor.FAI_SIZE))
+    cmd.extend(('--cspace', os.path.join(os.getcwd(), 'config_space')))
+    cmd.append(args.basename + '.raw')
+    logging.info('Running: %s', ' '.join(cmd))
+
+    subprocess.check_call(cmd)
