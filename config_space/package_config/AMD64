@@ -1,0 +1,2 @@
+PACKAGES install-norec LINUX_IMAGE_BASE
+linux-image-amd64
