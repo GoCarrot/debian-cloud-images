@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 
-supported_options = ()
+supported_options = ('use-backports-linux', )
 
 
 logger = logging.getLogger()
@@ -105,6 +105,9 @@ class Main:
     def check_kernel(self, options):
         self.classes.add('LINUX_IMAGE_BASE')
 
+        if 'use-backports-linux' in options:
+            self.classes.add('BACKPORTS_LINUX')
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
@@ -115,7 +118,7 @@ if __name__ == '__main__':
     parser.add_argument('arch', metavar='ARCH', choices=sorted(arches.keys()))
     parser.add_argument('basename', metavar='BASENAME')
     parser.add_argument('-c', '--command', metavar='COMMAND')
-    parser.add_argument('-o', '--option', nargs='*', metavar='OPTION',
+    parser.add_argument('-o', '--option', nargs='*', metavar='OPTION', default=(),
             dest='options', choices=supported_options)
     args = parser.parse_args()
 
