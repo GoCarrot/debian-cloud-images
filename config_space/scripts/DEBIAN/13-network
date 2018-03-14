@@ -7,5 +7,4 @@ error=0; trap 'error=$(($?>$error?$?:$error))' ERR # save maximum error code
 #   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863385
 #   https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
 
-fcopy -M /etc/default/grub.d/10_cloud_disable_net.ifnames.cfg
 $ROOTCMD update-grub
