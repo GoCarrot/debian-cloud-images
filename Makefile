@@ -11,6 +11,9 @@ _image.raw:
 	umask 022; \
 	bin/run-fai $(DIST) $(CLOUD) amd64 $(CLOUD)-$(DIST)-image
 
+sid-image-%:
+	${MAKE} _image.raw CLOUD=$* DIST=sid
+
 buster-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=buster
 

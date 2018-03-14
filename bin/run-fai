@@ -37,6 +37,11 @@ class ReleaseBuster(Release):
     FAI_CLASSES = ('BUSTER', )
 
 
+class ReleaseSid(Release):
+    NAME = 'sid'
+    FAI_CLASSES = ('SID', )
+
+
 class Vendor:
     FAI_SIZE = '8G'
 
