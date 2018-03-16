@@ -1,0 +1,27 @@
+#!/bin/bash
+set -euxE
+shopt -s extglob nullglob
+
+exec > ${FAI_CLOUD_BASENAME}.info
+
+function show() {
+  if [ ${#@} -ge 1 ]; then
+    tail -vn +1 "$@" | sed -e "s:${FAI_ROOT}::"
+  fi
+}
+
+echo "--- CLOUD RELEASE ---"
+cat ${FAI_ROOT}/etc/cloud-release
+echo "--- END CLOUD RELEASE --- "
+echo "--- APT SOURCES.LIST ---"
+show ${FAI_ROOT}/etc/apt/sources.list*() ${FAI_ROOT}/etc/apt/sources.list.d/*
+echo "--- END APT SOURCES.LIST ---"
+echo "--- APT PREFERENCES ---"
+show ${FAI_ROOT}/etc/apt/preferences*() ${FAI_ROOT}/etc/apt/preferences.d/*
+echo "--- END APT PREFERENCES ---"
+echo "--- FILES CHANGED ---"
+debsums -r ${FAI_ROOT} -a -c | sed -e "s:^${FAI_ROOT}::" || [ $? != 2 ]
+echo "--- END FILES CHANGED ---"
+echo "--- PACKAGES ---"
+${ROOTCMD} dpkg -l
+echo "--- END PACKAGES ---"
