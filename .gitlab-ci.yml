@@ -1,0 +1,135 @@
+---
+variables:
+  CLOUD_IMAGE_VERSION: dev
+
+.build: &build
+  stage: build
+  image: debian:stretch-backports
+  tags:
+    - debian-cloud-build
+  script:
+    - BASE=${CLOUD_VENDOR}-${CLOUD_RELEASE}-${CLOUD_IMAGE_VERSION}-image
+    - apt-get update
+    - >
+      apt-get install --no-install-recommends -y -t stretch-backports
+      ca-certificates debsums fai-server fai-setup-storage make python3 sudo qemu-utils udev
+    - bin/run-fai ${CLOUD_RELEASE} ${CLOUD_VENDOR} amd64 ${BASE} ${CLOUD_OPTIONS}
+    - 'xz -vk9T8 *.tar'
+  artifacts:
+    name: $CLOUD_VENDOR-$CLOUD_RELEASE-$CLOUD_IMAGE_VERSION-image
+    expire_in: 2 days
+    paths:
+      - '*.info'
+      - '*.manifest.yml'
+      - '*.tar.xz'
+
+azure-stretch-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: stretch
+    CLOUD_VENDOR: azure
+  only:
+    - web
+
+azure-stretch-backports-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: stretch
+    CLOUD_VENDOR: azure
+    CLOUD_OPTIONS: -o use-backports-linux
+  only:
+    - web
+
+azure-buster-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: azure
+  only:
+    - web
+  # no waagent in buster
+  allow_failure: true
+
+azure-sid-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: azure
+  only:
+    - pushes
+
+ec2-stretch-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: stretch
+    CLOUD_VENDOR: ec2
+  only:
+    - web
+
+ec2-buster-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: ec2
+  only:
+    - web
+
+ec2-sid-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: ec2
+  only:
+    - pushes
+
+gce-stretch-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: stretch
+    CLOUD_VENDOR: gce
+  only:
+    - web
+
+#gce-buster-build:
+#  <<: *build
+#  variables:
+#    CLOUD_RELEASE: buster
+#    CLOUD_VENDOR: gce
+#  only:
+#    - web
+#  # no google specific packages for buster
+#  allow_failure: true
+#
+#gce-sid-build:
+#  <<: *build
+#  variables:
+#    CLOUD_RELEASE: sid
+#    CLOUD_VENDOR: gce
+#  only:
+#    - pushes
+#  # no google specific packages for sid
+#  allow_failure: true
+
+nocloud-stretch-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: stretch
+    CLOUD_VENDOR: nocloud
+  only:
+    - web
+
+nocloud-buster-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: nocloud
+  only:
+    - web
+
+nocloud-sid-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: nocloud
+  only:
+    - pushes
