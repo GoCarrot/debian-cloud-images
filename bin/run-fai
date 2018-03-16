@@ -24,7 +24,7 @@ class ArchAmd64(Arch):
 
 
 class Release:
-    pass
+    SUPPORTS_LINUX_IMAGE_CLOUD = False
 
 
 class ReleaseStretch(Release):
@@ -40,6 +40,7 @@ class ReleaseBuster(Release):
 class ReleaseSid(Release):
     NAME = 'sid'
     FAI_CLASSES = ('SID', )
+    SUPPORTS_LINUX_IMAGE_CLOUD = True
 
 
 class ImageType:
@@ -48,7 +49,16 @@ class ImageType:
 
 
 class ImageTypeRaw(ImageType):
-    pass
+    def convert_image(self, basename, noop):
+        cmd = (
+            'tar', '-cS',
+            '-f', '{}.raw.tar'.format(basename),
+            '{}.raw'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
 
 
 class ImageTypeVhd(ImageType):
@@ -76,12 +86,14 @@ class ImageTypeVhd(ImageType):
 
 class Vendor:
     FAI_SIZE = '8G'
+    USE_LINUX_IMAGE_CLOUD = False
 
 
 class VendorAzure(Vendor):
     NAME = 'azure'
     FAI_CLASSES = ('AZURE', )
     FAI_SIZE = '30G'
+    USE_LINUX_IMAGE_CLOUD = True
 
     image = ImageTypeVhd()
 
@@ -143,7 +155,10 @@ class Main:
         self.classes |= self.arch.FAI_CLASSES
 
     def check_kernel(self, options):
-        self.classes.add('LINUX_IMAGE_BASE')
+        if self.release.SUPPORTS_LINUX_IMAGE_CLOUD and self.vendor.USE_LINUX_IMAGE_CLOUD:
+            self.classes.add('LINUX_IMAGE_CLOUD')
+        else:
+            self.classes.add('LINUX_IMAGE_BASE')
 
         if 'use-backports-linux' in options:
             self.classes.add('BACKPORTS_LINUX')
