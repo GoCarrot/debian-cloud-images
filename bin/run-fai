@@ -42,11 +42,40 @@ class ReleaseSid(Release):
     FAI_CLASSES = ('SID', )
 
 
-class Vendor:
-    FAI_SIZE = '8G'
-
+class ImageType:
     def convert_image(self, basename):
         pass
+
+
+class ImageTypeRaw(ImageType):
+    pass
+
+
+class ImageTypeVhd(ImageType):
+    def convert_image(self, basename, noop):
+        cmd = (
+            'qemu-img', 'convert',
+            '-f', 'raw', '-o', 'subformat=fixed,force_size', '-O', 'vpc',
+            '{}.raw'.format(basename), '{}.vhd'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
+        cmd = (
+            'tar', '-cS',
+            '-f', '{}.vhd.tar'.format(basename),
+            '{}.vhd'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
+
+class Vendor:
+    FAI_SIZE = '8G'
 
 
 class VendorAzure(Vendor):
@@ -54,17 +83,23 @@ class VendorAzure(Vendor):
     FAI_CLASSES = ('AZURE', )
     FAI_SIZE = '30G'
 
+    image = ImageTypeVhd()
+
 
 class VendorEc2(Vendor):
     NAME = 'ec2'
     FAI_CLASSES = ('EC2', )
     FAI_SIZE = '10G'
 
+    image = ImageTypeRaw()
+
 
 class VendorGce(Vendor):
     NAME = 'gce'
     FAI_CLASSES = ('GCE', )
     FAI_SIZE = '10G'
+
+    image = ImageTypeRaw()
 
 
 arches = { i.NAME: i for i in Arch.__subclasses__() }
@@ -146,3 +181,5 @@ if __name__ == '__main__':
 
     if not args.noop:
         subprocess.check_call(cmd)
+
+    m.vendor.image.convert_image(args.basename, args.noop)
