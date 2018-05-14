@@ -90,6 +90,12 @@ class Vendor:
     FAI_SIZE = '8G'
     USE_LINUX_IMAGE_CLOUD = False
 
+class VendorNo(Vendor):
+    NAME = "nocloud"
+    FAI_CLASSES = ('NOCLOUD', )
+
+    image = ImageTypeRaw()
+
 
 class VendorAzure(Vendor):
     NAME = 'azure'
