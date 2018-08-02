@@ -35,6 +35,7 @@ class ReleaseStretch(Release):
 class ReleaseBuster(Release):
     NAME = 'buster'
     FAI_CLASSES = ('BUSTER', )
+    SUPPORTS_LINUX_IMAGE_CLOUD = True
 
 
 class ReleaseSid(Release):
