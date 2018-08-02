@@ -8,9 +8,6 @@ import subprocess
 import sys
 
 
-supported_options = ('use-backports-linux', )
-
-
 logger = logging.getLogger()
 
 
@@ -30,6 +27,12 @@ class Release:
 class ReleaseStretch(Release):
     NAME = 'stretch'
     FAI_CLASSES = ('STRETCH', 'BACKPORTS')
+
+
+class ReleaseStretchBackports(Release):
+    NAME = 'stretch-backports'
+    FAI_CLASSES = ('STRETCH', 'BACKPORTS', 'BACKPORTS_LINUX')
+    SUPPORTS_LINUX_IMAGE_CLOUD = True
 
 
 class ReleaseBuster(Release):
@@ -163,14 +166,11 @@ class Main:
         self.arch = arches[arch]()
         self.classes |= self.arch.FAI_CLASSES
 
-    def check_kernel(self, options):
+    def check_kernel(self):
         if self.release.SUPPORTS_LINUX_IMAGE_CLOUD and self.vendor.USE_LINUX_IMAGE_CLOUD:
             self.classes.add('LINUX_IMAGE_CLOUD')
         else:
             self.classes.add('LINUX_IMAGE_BASE')
-
-        if 'use-backports-linux' in options:
-            self.classes.add('BACKPORTS_LINUX')
 
 
 if __name__ == '__main__':
@@ -182,15 +182,13 @@ if __name__ == '__main__':
     parser.add_argument('arch', metavar='ARCH', choices=sorted(arches.keys()))
     parser.add_argument('basename', metavar='BASENAME')
     parser.add_argument('--noop', action='store_true')
-    parser.add_argument('-o', '--option', nargs='*', metavar='OPTION', default=(),
-            dest='options', choices=supported_options)
     args = parser.parse_args()
 
     m = Main()
     m.set_release(args.release)
     m.set_vendor(args.vendor)
     m.set_arch(args.arch)
-    m.check_kernel(args.options)
+    m.check_kernel()
 
     cmd = ['sudo']
     cmd.append('FAI_CLOUD_BASENAME={}'.format(os.path.realpath(args.basename)))

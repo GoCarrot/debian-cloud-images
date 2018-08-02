@@ -34,9 +34,8 @@ azure-stretch-build:
 azure-stretch-backports-build:
   <<: *build
   variables:
-    CLOUD_RELEASE: stretch
+    CLOUD_RELEASE: stretch-backports
     CLOUD_VENDOR: azure
-    CLOUD_OPTIONS: -o use-backports-linux
   only:
     - web
 
