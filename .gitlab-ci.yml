@@ -13,7 +13,7 @@ variables:
     - >
       apt-get install --no-install-recommends -y -t stretch-backports
       ca-certificates debsums fai-server fai-setup-storage make python3 sudo qemu-utils udev
-    - bin/run-fai ${CLOUD_RELEASE} ${CLOUD_VENDOR} amd64 ${BASE} ${CLOUD_OPTIONS}
+    - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} amd64 ${BASE} ${CLOUD_OPTIONS}
     - 'xz -vk9T8 *.tar'
   artifacts:
     name: $CLOUD_VENDOR-$CLOUD_RELEASE-$CLOUD_IMAGE_VERSION-image
