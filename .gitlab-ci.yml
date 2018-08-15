@@ -5,8 +5,6 @@ variables:
 .build: &build
   stage: build
   image: debian:stretch-backports
-  tags:
-    - debian-cloud-build
   script:
     - BASE=${CLOUD_VENDOR}-${CLOUD_RELEASE}-${CLOUD_IMAGE_VERSION}-image
     - apt-get update
@@ -14,8 +12,7 @@ variables:
       apt-get install --no-install-recommends -y -t stretch-backports
       ca-certificates debsums fai-server fai-setup-storage make python3 sudo qemu-utils udev
     - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} amd64 ${BASE} ${CLOUD_OPTIONS}
-    # Running xz in level 9 with 4 threads needs 2696MB for the compressor alone
-    - 'xz -vk9T4 *.tar'
+    - 'xz -vk5T0 *.tar'
   artifacts:
     name: $CLOUD_VENDOR-$CLOUD_RELEASE-$CLOUD_IMAGE_VERSION-image
     expire_in: 2 days
