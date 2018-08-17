@@ -87,25 +87,25 @@ gce-stretch-build:
   only:
     - web
 
-#gce-buster-build:
-#  <<: *build
-#  variables:
-#    CLOUD_RELEASE: buster
-#    CLOUD_VENDOR: gce
-#  only:
-#    - web
-#  # no google specific packages for buster
-#  allow_failure: true
-#
-#gce-sid-build:
-#  <<: *build
-#  variables:
-#    CLOUD_RELEASE: sid
-#    CLOUD_VENDOR: gce
-#  only:
-#    - pushes
-#  # no google specific packages for sid
-#  allow_failure: true
+gce-buster-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: gce
+  only:
+    - web
+  # uses external stuff
+  allow_failure: true
+
+gce-sid-build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: gce
+  only:
+    - pushes
+  # uses external stuff
+  allow_failure: true
 
 nocloud-stretch-build:
   <<: *build
