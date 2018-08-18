@@ -5,6 +5,8 @@ variables:
 .build: &build
   stage: build
   image: debian:stretch-backports
+  tags:
+    - x86
   script:
     - BASE=${CLOUD_VENDOR}-${CLOUD_RELEASE}-${CLOUD_IMAGE_VERSION}-image
     - apt-get update
