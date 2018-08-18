@@ -5,6 +5,8 @@ variables:
 .build: &build
   stage: build
   image: debian:stretch-backports
+  tags:
+    - x86
   script:
     - BASE=${CLOUD_VENDOR}-${CLOUD_RELEASE}-${CLOUD_IMAGE_VERSION}-image
     - apt-get update
@@ -21,7 +23,7 @@ variables:
       - '*.manifest.yml'
       - '*.tar.xz'
 
-azure-stretch-build:
+azure stretch build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch
@@ -29,7 +31,7 @@ azure-stretch-build:
   only:
     - web
 
-azure-stretch-backports-build:
+azure stretch-backports build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch-backports
@@ -37,7 +39,7 @@ azure-stretch-backports-build:
   only:
     - web
 
-azure-buster-build:
+azure buster build:
   <<: *build
   variables:
     CLOUD_RELEASE: buster
@@ -47,7 +49,7 @@ azure-buster-build:
   # no waagent in buster
   allow_failure: true
 
-azure-sid-build:
+azure sid build:
   <<: *build
   variables:
     CLOUD_RELEASE: sid
@@ -55,7 +57,7 @@ azure-sid-build:
   only:
     - pushes
 
-ec2-stretch-build:
+ec2 stretch build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch
@@ -63,7 +65,7 @@ ec2-stretch-build:
   only:
     - web
 
-ec2-buster-build:
+ec2 buster build:
   <<: *build
   variables:
     CLOUD_RELEASE: buster
@@ -71,7 +73,7 @@ ec2-buster-build:
   only:
     - web
 
-ec2-sid-build:
+ec2 sid build:
   <<: *build
   variables:
     CLOUD_RELEASE: sid
@@ -79,7 +81,7 @@ ec2-sid-build:
   only:
     - pushes
 
-gce-stretch-build:
+gce stretch build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch
@@ -87,27 +89,27 @@ gce-stretch-build:
   only:
     - web
 
-#gce-buster-build:
-#  <<: *build
-#  variables:
-#    CLOUD_RELEASE: buster
-#    CLOUD_VENDOR: gce
-#  only:
-#    - web
-#  # no google specific packages for buster
-#  allow_failure: true
-#
-#gce-sid-build:
-#  <<: *build
-#  variables:
-#    CLOUD_RELEASE: sid
-#    CLOUD_VENDOR: gce
-#  only:
-#    - pushes
-#  # no google specific packages for sid
-#  allow_failure: true
+gce buster build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: gce
+  only:
+    - web
+  # uses external stuff
+  allow_failure: true
 
-nocloud-stretch-build:
+gce sid build:
+  <<: *build
+  variables:
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: gce
+  only:
+    - pushes
+  # uses external stuff
+  allow_failure: true
+
+nocloud stretch build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch
@@ -115,7 +117,7 @@ nocloud-stretch-build:
   only:
     - web
 
-nocloud-buster-build:
+nocloud buster build:
   <<: *build
   variables:
     CLOUD_RELEASE: buster
@@ -123,7 +125,7 @@ nocloud-buster-build:
   only:
     - web
 
-nocloud-sid-build:
+nocloud sid build:
   <<: *build
   variables:
     CLOUD_RELEASE: sid
