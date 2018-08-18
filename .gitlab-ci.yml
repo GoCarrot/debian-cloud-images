@@ -8,7 +8,7 @@ variables:
   tags:
     - x86
   script:
-    - BASE=${CLOUD_VENDOR}-${CLOUD_RELEASE}-${CLOUD_IMAGE_VERSION}-image
+    - BASE=${CLOUD_VENDOR}-${CLOUD_IMAGE_RELEASE}-${CLOUD_IMAGE_VERSION}-image
     - apt-get update
     - >
       apt-get install --no-install-recommends -y -t stretch-backports
@@ -16,7 +16,7 @@ variables:
     - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} amd64 ${BASE} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
-    name: $CLOUD_VENDOR-$CLOUD_RELEASE-$CLOUD_IMAGE_VERSION-image
+    name: $CLOUD_VENDOR-$CLOUD_IMAGE_RELEASE-$CLOUD_IMAGE_VERSION-image
     expire_in: 2 days
     paths:
       - '*.info'
@@ -27,6 +27,7 @@ azure stretch build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch
+    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: azure
   only:
     - triggers
@@ -36,6 +37,7 @@ azure stretch-backports build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch-backports
+    CLOUD_IMAGE_RELEASE: 9-backports
     CLOUD_VENDOR: azure
   only:
     - triggers
@@ -45,6 +47,7 @@ azure buster build:
   <<: *build
   variables:
     CLOUD_RELEASE: buster
+    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: azure
   only:
     - triggers
@@ -56,6 +59,7 @@ azure sid build:
   <<: *build
   variables:
     CLOUD_RELEASE: sid
+    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: azure
   only:
     - pushes
@@ -65,6 +69,7 @@ ec2 stretch build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch
+    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: ec2
   only:
     - triggers
@@ -74,6 +79,7 @@ ec2 buster build:
   <<: *build
   variables:
     CLOUD_RELEASE: buster
+    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: ec2
   only:
     - triggers
@@ -83,6 +89,7 @@ ec2 sid build:
   <<: *build
   variables:
     CLOUD_RELEASE: sid
+    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: ec2
   only:
     - triggers
@@ -92,6 +99,7 @@ gce stretch build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch
+    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: gce
   only:
     - triggers
@@ -101,6 +109,7 @@ gce buster build:
   <<: *build
   variables:
     CLOUD_RELEASE: buster
+    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: gce
   only:
     - triggers
@@ -112,6 +121,7 @@ gce sid build:
   <<: *build
   variables:
     CLOUD_RELEASE: sid
+    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: gce
   only:
     - pushes
@@ -123,6 +133,7 @@ nocloud stretch build:
   <<: *build
   variables:
     CLOUD_RELEASE: stretch
+    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: nocloud
   only:
     - triggers
@@ -132,6 +143,7 @@ nocloud buster build:
   <<: *build
   variables:
     CLOUD_RELEASE: buster
+    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: nocloud
   only:
     - triggers
@@ -141,6 +153,7 @@ nocloud sid build:
   <<: *build
   variables:
     CLOUD_RELEASE: sid
+    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
   only:
     - pushes
