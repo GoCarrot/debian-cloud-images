@@ -1,6 +1,7 @@
 ---
 variables:
   CLOUD_IMAGE_VERSION: dev
+  CLOUD_IMAGE_NAME: ${CLOUD_VENDOR}-${CLOUD_IMAGE_RELEASE}-${CLOUD_IMAGE_VERSION}-image
 
 .build: &build
   stage: build
@@ -8,15 +9,14 @@ variables:
   tags:
     - x86
   script:
-    - BASE=${CLOUD_VENDOR}-${CLOUD_IMAGE_RELEASE}-${CLOUD_IMAGE_VERSION}-image
     - apt-get update
     - >
       apt-get install --no-install-recommends -y -t stretch-backports
       ca-certificates debsums fai-server fai-setup-storage make python3 sudo qemu-utils udev
-    - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} amd64 ${BASE} ${CLOUD_OPTIONS}
+    - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} amd64 ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
-    name: $CLOUD_VENDOR-$CLOUD_IMAGE_RELEASE-$CLOUD_IMAGE_VERSION-image
+    name: ${CLOUD_IMAGE_NAME}
     expire_in: 2 days
     paths:
       - '*.info'
