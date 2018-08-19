@@ -20,6 +20,11 @@ class ArchAmd64(Arch):
     FAI_CLASSES = ('AMD64', 'GRUB_PC')
 
 
+class ArchAmd64Efi(Arch):
+    NAME = 'amd64-efi'
+    FAI_CLASSES = ('AMD64', 'GRUB_EFI_AMD64')
+
+
 class Release:
     SUPPORTS_LINUX_IMAGE_CLOUD = False
 

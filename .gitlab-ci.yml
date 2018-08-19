@@ -10,7 +10,7 @@ variables:
     - apt-get update
     - >
       apt-get install --no-install-recommends -y -t stretch-backports
-      ca-certificates debsums fai-server fai-setup-storage make python3 sudo qemu-utils udev
+      ca-certificates debsums dosfstools fai-server fai-setup-storage make python3 sudo qemu-utils udev
     - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
@@ -157,7 +157,7 @@ gce sid build: &build-gce-sid
   # uses external stuff
   allow_failure: true
 
-nocloud stretch build: &build-nocloud-stretch
+nocloud stretch amd64 build: &build-nocloud-stretch-amd64
   <<: *build
   <<: *only-web
   tags:
@@ -168,7 +168,7 @@ nocloud stretch build: &build-nocloud-stretch
     CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: nocloud
 
-nocloud buster build: &build-nocloud-buster
+nocloud buster amd64 build: &build-nocloud-buster-amd64
   <<: *build
   <<: *only-web
   tags:
@@ -179,13 +179,46 @@ nocloud buster build: &build-nocloud-buster
     CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: nocloud
 
-nocloud sid build: &build-nocloud-sid
+nocloud sid amd64 build: &build-nocloud-sid-amd64
   <<: *build
   <<: *only-pushes
   tags:
     - x86
   variables:
     CLOUD_ARCH: amd64
+    CLOUD_RELEASE: sid
+    CLOUD_IMAGE_RELEASE: sid
+    CLOUD_VENDOR: nocloud
+
+nocloud stretch amd64-efi build: &build-nocloud-stretch-amd64-efi
+  <<: *build
+  <<: *only-web
+  tags:
+    - x86
+  variables:
+    CLOUD_ARCH: amd64-efi
+    CLOUD_RELEASE: stretch
+    CLOUD_IMAGE_RELEASE: 9
+    CLOUD_VENDOR: nocloud
+
+nocloud buster amd64-efi build: &build-nocloud-buster-amd64-efi
+  <<: *build
+  <<: *only-web
+  tags:
+    - x86
+  variables:
+    CLOUD_ARCH: amd64-efi
+    CLOUD_RELEASE: buster
+    CLOUD_IMAGE_RELEASE: 10
+    CLOUD_VENDOR: nocloud
+
+nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
+  <<: *build
+  <<: *only-pushes
+  tags:
+    - x86
+  variables:
+    CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: sid
     CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
@@ -264,22 +297,43 @@ gce sid build official:
     - debian-cloud-images-build
     - x86
 
-nocloud stretch build official:
-  <<: *build-nocloud-stretch
+nocloud stretch amd64 build official:
+  <<: *build-nocloud-stretch-amd64
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
     - x86
 
-nocloud buster build official:
-  <<: *build-nocloud-buster
+nocloud buster amd64 build official:
+  <<: *build-nocloud-buster-amd64
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
     - x86
 
-nocloud sid build official:
-  <<: *build-nocloud-sid
+nocloud sid amd64 build official:
+  <<: *build-nocloud-sid-amd64
+  <<: *only-triggers-official
+  tags:
+    - debian-cloud-images-build
+    - x86
+
+nocloud stretch amd64-efi build official:
+  <<: *build-nocloud-stretch-amd64-efi
+  <<: *only-triggers-official
+  tags:
+    - debian-cloud-images-build
+    - x86
+
+nocloud buster amd64-efi build official:
+  <<: *build-nocloud-buster-amd64-efi
+  <<: *only-triggers-official
+  tags:
+    - debian-cloud-images-build
+    - x86
+
+nocloud sid amd64-efi build official:
+  <<: *build-nocloud-sid-amd64-efi
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
