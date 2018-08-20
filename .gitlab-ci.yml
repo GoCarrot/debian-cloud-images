@@ -1,7 +1,7 @@
 ---
 variables:
   CLOUD_IMAGE_VERSION: dev
-  CLOUD_IMAGE_NAME: debian-${CLOUD_IMAGE_RELEASE}-${CLOUD_IMAGE_VERSION}-${CLOUD_VENDOR}
+  CLOUD_IMAGE_NAME: debian-${CLOUD_IMAGE_RELEASE}-${CLOUD_IMAGE_VERSION}-${CLOUD_VENDOR}-${CLOUD_ARCH}
 
 .build: &build
   stage: build
@@ -13,7 +13,7 @@ variables:
     - >
       apt-get install --no-install-recommends -y -t stretch-backports
       ca-certificates debsums fai-server fai-setup-storage make python3 sudo qemu-utils udev
-    - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} amd64 ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
+    - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
     name: ${CLOUD_IMAGE_NAME}
@@ -26,6 +26,7 @@ variables:
 azure stretch build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: azure
@@ -36,6 +37,7 @@ azure stretch build:
 azure stretch-backports build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
     CLOUD_IMAGE_RELEASE: 9-backports
     CLOUD_VENDOR: azure
@@ -46,6 +48,7 @@ azure stretch-backports build:
 azure buster build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: azure
@@ -58,6 +61,7 @@ azure buster build:
 azure sid build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: azure
@@ -68,6 +72,7 @@ azure sid build:
 ec2 stretch build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: ec2
@@ -78,6 +83,7 @@ ec2 stretch build:
 ec2 buster build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: ec2
@@ -88,6 +94,7 @@ ec2 buster build:
 ec2 sid build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: ec2
@@ -98,6 +105,7 @@ ec2 sid build:
 gce stretch build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: gce
@@ -108,6 +116,7 @@ gce stretch build:
 gce buster build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: gce
@@ -120,6 +129,7 @@ gce buster build:
 gce sid build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: gce
@@ -132,6 +142,7 @@ gce sid build:
 nocloud stretch build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: nocloud
@@ -142,6 +153,7 @@ nocloud stretch build:
 nocloud buster build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: nocloud
@@ -152,6 +164,7 @@ nocloud buster build:
 nocloud sid build:
   <<: *build
   variables:
+    CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
