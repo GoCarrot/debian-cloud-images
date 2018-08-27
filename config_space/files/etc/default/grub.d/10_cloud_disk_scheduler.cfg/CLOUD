@@ -1,3 +1,3 @@
-# Set disk scheduler to noop
+# Set disk scheduler to noop and request block multiqueue usage
 
-GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX elevator=noop"
+GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX elevator=noop scsi_mod.use_blk_mq=Y"
