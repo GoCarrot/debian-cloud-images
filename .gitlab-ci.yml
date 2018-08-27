@@ -29,6 +29,7 @@ azure stretch build:
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: azure
   only:
+    - triggers
     - web
 
 azure stretch-backports build:
@@ -37,6 +38,7 @@ azure stretch-backports build:
     CLOUD_RELEASE: stretch-backports
     CLOUD_VENDOR: azure
   only:
+    - triggers
     - web
 
 azure buster build:
@@ -45,6 +47,7 @@ azure buster build:
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: azure
   only:
+    - triggers
     - web
   # no waagent in buster
   allow_failure: true
@@ -56,6 +59,7 @@ azure sid build:
     CLOUD_VENDOR: azure
   only:
     - pushes
+    - triggers
 
 ec2 stretch build:
   <<: *build
@@ -63,6 +67,7 @@ ec2 stretch build:
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
   only:
+    - triggers
     - web
 
 ec2 buster build:
@@ -71,6 +76,7 @@ ec2 buster build:
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: ec2
   only:
+    - triggers
     - web
 
 ec2 sid build:
@@ -79,6 +85,7 @@ ec2 sid build:
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: ec2
   only:
+    - triggers
     - pushes
 
 gce stretch build:
@@ -87,6 +94,7 @@ gce stretch build:
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: gce
   only:
+    - triggers
     - web
 
 gce buster build:
@@ -95,6 +103,7 @@ gce buster build:
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: gce
   only:
+    - triggers
     - web
   # uses external stuff
   allow_failure: true
@@ -106,6 +115,7 @@ gce sid build:
     CLOUD_VENDOR: gce
   only:
     - pushes
+    - triggers
   # uses external stuff
   allow_failure: true
 
@@ -115,6 +125,7 @@ nocloud stretch build:
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: nocloud
   only:
+    - triggers
     - web
 
 nocloud buster build:
@@ -123,6 +134,7 @@ nocloud buster build:
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: nocloud
   only:
+    - triggers
     - web
 
 nocloud sid build:
@@ -132,3 +144,4 @@ nocloud sid build:
     CLOUD_VENDOR: nocloud
   only:
     - pushes
+    - triggers
