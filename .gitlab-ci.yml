@@ -21,6 +21,10 @@ variables:
       - '*.manifest.yml'
       - '*.tar.xz'
 
+####
+# Different selections when builds will be done
+####
+
 .only-pushes: &only-pushes
   only:
     - pushes
@@ -32,6 +36,10 @@ variables:
 .only-web: &only-web
   only:
     - web
+
+####
+# Builds for developer uploads pushes
+####
 
 azure stretch build: &build-azure-stretch
   <<: *build
@@ -181,6 +189,10 @@ nocloud sid build: &build-nocloud-sid
     CLOUD_RELEASE: sid
     CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
+
+####
+# Official builds done on Debian hardware
+####
 
 azure stretch build official:
   <<: *build-azure-stretch
