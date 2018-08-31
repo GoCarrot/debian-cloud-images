@@ -15,7 +15,7 @@ variables:
     - 'xz -vk5T0 *.tar'
   artifacts:
     name: ${CLOUD_IMAGE_NAME}
-    expire_in: 2 days
+    expire_in: 7 days
     paths:
       - '*.info'
       - '*.manifest.yml'

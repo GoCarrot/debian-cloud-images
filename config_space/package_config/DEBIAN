@@ -1,6 +1,3 @@
-PACKAGES install DHCPC
-isc-dhcp-client
-
 PACKAGES install-norec GRUB_EFI_AMD64
 grub-efi-amd64
 

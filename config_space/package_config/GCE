@@ -5,7 +5,3 @@ google-cloud-sdk
 google-compute-engine
 python-crcmod
 python-google-compute-engine
-
-PACKAGES install JESSIE
-cloud-utils/$release-backports
-python-crcmod/$release-backports

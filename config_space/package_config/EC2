@@ -4,6 +4,3 @@ awscli
 python-boto
 python3-boto
 cloud-init
-
-PACKAGES install JESSIE
-cloud-init/$release-backports
