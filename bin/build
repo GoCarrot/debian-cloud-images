@@ -171,11 +171,12 @@ class Main:
         self.arch = arches[arch]()
         self.classes |= self.arch.FAI_CLASSES
 
-    def check_kernel(self):
+    def check(self):
         if self.release.SUPPORTS_LINUX_IMAGE_CLOUD and self.vendor.USE_LINUX_IMAGE_CLOUD:
             self.classes.add('LINUX_IMAGE_CLOUD')
         else:
             self.classes.add('LINUX_IMAGE_BASE')
+        self.classes.add('LAST')
 
 
 if __name__ == '__main__':
@@ -193,7 +194,7 @@ if __name__ == '__main__':
     m.set_release(args.release)
     m.set_vendor(args.vendor)
     m.set_arch(args.arch)
-    m.check_kernel()
+    m.check()
 
     cmd = ['sudo']
     cmd.append('FAI_CLOUD_BASENAME={}'.format(os.path.realpath(args.basename)))

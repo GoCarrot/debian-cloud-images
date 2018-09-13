@@ -8,6 +8,10 @@ rm -f $target/etc/resolv.conf \
       $target/etc/machine-id \
       $target/var/lib/dbus/machine-id
 
+rm -rf $target/var/cache/apt/*
+rm -rf $target/var/lib/apt/lists/*
+rm -f $target/var/lib/dpkg/available*
+
 touch $target/etc/machine-id
 
 shred --remove $target/etc/ssh/ssh_host_*
