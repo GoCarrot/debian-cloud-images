@@ -141,6 +141,32 @@ class ImageTypeQcow2(ImageType):
             subprocess.check_call(cmd)
 
 
+class ImageTypeVmdk(ImageType):
+    NAME = 'vmdk'
+
+    def convert_image(self, basename, noop):
+        cmd = (
+            'qemu-img', 'convert',
+            '-f', 'raw', '-O', 'vmdk', '-o', 'subformat=streamOptimized',
+            '{}.raw'.format(basename), '{}.vmdk'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
+        cmd = (
+            'tar', '-cS',
+            '-f', '{}.tar'.format(basename),
+            '--transform', 'flags=r;s|.*\.vmdk|disk.vmdk|',
+            '{}.vmdk'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
+
 class Vendor:
     FAI_SIZE = '8G'
     USE_LINUX_IMAGE_CLOUD = False
@@ -166,7 +192,7 @@ class VendorEc2(Vendor):
     FAI_CLASSES = ('EC2', )
     FAI_SIZE = '10G'
 
-    image = ImageTypeRaw()
+    image = ImageTypeVmdk()
 
 
 class VendorOpenstack(Vendor):
