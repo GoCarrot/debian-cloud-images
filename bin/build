@@ -190,7 +190,7 @@ class VendorAzure(Vendor):
 class VendorEc2(Vendor):
     NAME = 'ec2'
     FAI_CLASSES = ('EC2', )
-    FAI_SIZE = '10G'
+    FAI_SIZE = '8G'
 
     image = ImageTypeVmdk()
 
