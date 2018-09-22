@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import collections
 import json
 import logging
 import os
@@ -19,6 +20,20 @@ class ActionEnv(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
+class CloudRelease(collections.OrderedDict):
+    env = [
+        ('id', 'CLOUD_RELEASE_ID'),
+        ('build_info_url', 'CI_JOB_URL'),
+    ]
+
+    def __init__(self):
+        super().__init__()
+        for name, env in self.env:
+            v = os.environ.get(env)
+            if v:
+                self[name] = v
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--basename',
@@ -34,7 +49,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    cloud_release = CloudRelease()
     manifest = {
+        'cloud_release': cloud_release,
         'package_versions': {},
     }
 
