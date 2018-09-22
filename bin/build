@@ -196,18 +196,21 @@ if __name__ == '__main__':
     m.set_arch(args.arch)
     m.check()
 
-    cmd = ['sudo']
-    cmd.append('CLOUD_BUILD_BASENAME={}'.format(os.path.realpath(args.basename)))
-    cmd.append('fai-diskimage')
-    cmd.append('--verbose')
-    cmd.extend(('--hostname', 'debian'))
-    cmd.extend(('--class', ','.join(m.classes)))
-    cmd.extend(('--size', m.vendor.FAI_SIZE))
-    cmd.extend(('--cspace', os.path.join(os.getcwd(), 'config_space')))
-    cmd.append(args.basename + '.raw')
+    env = os.environ.copy()
+    env['CLOUD_BUILD_BASENAME'] = os.path.realpath(args.basename)
+
+    cmd = (
+        'fai-diskimage',
+        '--verbose',
+        '--hostname', 'debian',
+        '--class', ','.join(m.classes),
+        '--size', m.vendor.FAI_SIZE,
+        '--cspace', os.path.join(os.getcwd(), 'config_space'),
+        args.basename + '.raw',
+    )
     logging.info('Running: %s', ' '.join(cmd))
 
     if not args.noop:
-        subprocess.check_call(cmd)
+        subprocess.check_call(cmd, env=env)
 
     m.vendor.image.convert_image(args.basename, args.noop)
