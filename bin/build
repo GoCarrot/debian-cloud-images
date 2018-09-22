@@ -4,6 +4,7 @@ import argparse
 import collections.abc
 import logging
 import os
+import re
 import subprocess
 import sys
 
@@ -131,6 +132,17 @@ class VendorGce(Vendor):
     image = ImageTypeRaw()
 
 
+class Version:
+    re = re.compile(r"(?P<release>^(?P<release_base>\d{8})(?P<release_extra>[a-z])?$)|(^dev)")
+
+    def __init__(self, s):
+        r = self.re.match(s)
+
+        self.release = r.group('release')
+        self.release_base = r.group('release_base')
+        self.release_extra = r.group('release_extra')
+
+
 arches = { i.NAME: i for i in Arch.__subclasses__() }
 releases = { i.NAME: i for i in Release.__subclasses__() }
 vendors = { i.NAME: i for i in Vendor.__subclasses__() }
@@ -158,6 +170,7 @@ class Main:
         self.classes = Classes()
         self.classes.add('DEBIAN')
         self.classes.add('CLOUD')
+        self.env = {}
 
     def set_release(self, release):
         self.release = releases[release]()
@@ -170,6 +183,10 @@ class Main:
     def set_arch(self, arch):
         self.arch = arches[arch]()
         self.classes |= self.arch.FAI_CLASSES
+
+    def set_version(self, version):
+        if version.release:
+            self.env['CLOUD_RELEASE_VERSION'] = version.release
 
     def check(self):
         if self.release.SUPPORTS_LINUX_IMAGE_CLOUD and self.vendor.USE_LINUX_IMAGE_CLOUD:
@@ -187,6 +204,7 @@ if __name__ == '__main__':
     parser.add_argument('vendor', metavar='VENDOR', choices=sorted(vendors.keys()))
     parser.add_argument('arch', metavar='ARCH', choices=sorted(arches.keys()))
     parser.add_argument('basename', metavar='BASENAME')
+    parser.add_argument('version', metavar='VERSION', type=Version)
     parser.add_argument('--noop', action='store_true')
     args = parser.parse_args()
 
@@ -194,9 +212,11 @@ if __name__ == '__main__':
     m.set_release(args.release)
     m.set_vendor(args.vendor)
     m.set_arch(args.arch)
+    m.set_version(args.version)
     m.check()
 
     env = os.environ.copy()
+    env.update(m.env)
     env['CLOUD_BUILD_BASENAME'] = os.path.realpath(args.basename)
 
     cmd = (

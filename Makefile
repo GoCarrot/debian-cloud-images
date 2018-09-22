@@ -9,7 +9,7 @@ help:
 
 _image.raw:
 	umask 022; \
-	sudo bin/build $(DIST) $(CLOUD) amd64 $(CLOUD)-$(DIST)-image
+	sudo bin/build $(DIST) $(CLOUD) amd64 $(CLOUD)-$(DIST)-image dev
 
 sid-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=sid

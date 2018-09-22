@@ -23,6 +23,7 @@ class ActionEnv(argparse.Action):
 class CloudRelease(collections.OrderedDict):
     env = [
         ('id', 'CLOUD_RELEASE_ID'),
+        ('version', 'CLOUD_RELEASE_VERSION'),
         ('build_info_url', 'CI_JOB_URL'),
     ]
 
