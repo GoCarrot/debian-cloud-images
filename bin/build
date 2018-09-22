@@ -197,7 +197,7 @@ if __name__ == '__main__':
     m.check()
 
     cmd = ['sudo']
-    cmd.append('FAI_CLOUD_BASENAME={}'.format(os.path.realpath(args.basename)))
+    cmd.append('CLOUD_BUILD_BASENAME={}'.format(os.path.realpath(args.basename)))
     cmd.append('fai-diskimage')
     cmd.append('--verbose')
     cmd.extend(('--hostname', 'debian'))

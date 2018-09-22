@@ -1,8 +1,0 @@
-#!/bin/bash
-set -euxE
-shopt -s extglob nullglob
-
-exec > ${FAI_CLOUD_BASENAME}.manifest.yml
-
-echo '---'
-${ROOTCMD} dpkg-query -W -f='- { package: "${binary:Package}", version: "${Version}" }\n'

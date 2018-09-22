@@ -1,0 +1,50 @@
+#!/usr/bin/python3
+
+import argparse
+import json
+import logging
+import os
+import subprocess
+
+
+class ActionEnv(argparse.Action):
+    def __init__(self, env, default=None, required=True, **kw):
+        if env:
+            default = os.environ.get(env, default)
+        if default:
+            required = False
+        super().__init__(default=default, required=required, **kw)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--basename',
+        help='(default: $CLOUD_BUILD_BASENAME)',
+        action=ActionEnv,
+        env='CLOUD_BUILD_BASENAME',
+    )
+    parser.add_argument('--root',
+        help='(default: $FAI_ROOT)',
+        action=ActionEnv,
+        env='FAI_ROOT',
+    )
+
+    args = parser.parse_args()
+
+    manifest = {
+        'package_versions': {},
+    }
+
+    with subprocess.Popen(
+        ('dpkg-query', '-W', '--admindir', os.path.join(args.root, 'var/lib/dpkg')),
+        stdout=subprocess.PIPE,
+    ) as f:
+        for l in f.stdout:
+            package, version = l.decode().strip().split()
+            manifest['package_versions'][package] = version
+
+    with open('{}.build.json'.format(args.basename), 'w') as f:
+        json.dump(manifest, f, indent=4, separators=(',', ': '), sort_keys=True)

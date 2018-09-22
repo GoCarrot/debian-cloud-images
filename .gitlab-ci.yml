@@ -19,8 +19,8 @@ variables:
     name: ${CLOUD_IMAGE_NAME}
     expire_in: 7 days
     paths:
+      - '*.build.json'
       - '*.info'
-      - '*.manifest.yml'
       - '*.tar.xz'
 
 ####
