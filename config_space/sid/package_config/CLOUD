@@ -14,7 +14,6 @@ chrony
 
 # Packages from important
 apt-utils
-ifupdown
 init
 iptables
 iputils-ping
