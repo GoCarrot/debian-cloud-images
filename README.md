@@ -16,20 +16,29 @@ the recommends (which avoids turning your host into a DHCP server!)
 
   Call `make help` and follow the instruction
 
+Example 1:
 
+   # make stretch-image-nocloud
 
-## Documentation
+This will create some log output and creates the following files:
 
- * https://fai-project.org/fai-guide/
- * https://noah.meyerhans.us/blog/2017/02/10/using-fai-to-customize-and-build-your-own-cloud-images/
+nocloud-stretch-image.build.json
+nocloud-stretch-image.info
+nocloud-stretch-image.raw
+nocloud-stretch-image.raw.tar
 
+Example 2:
+    # make buster-image-openstack
 
-About the created disk images:
+openstack-buster-image.build.json
+openstack-buster-image.info
+openstack-buster-image.qcow2
+openstack-buster-image.qcow2.tar
+openstack-buster-image.raw
 
-### generic-vm-image-stretch-image.raw:
 
 These images can be used with QEMU-KVM, Virtualbox or any other virtualization
-backend that support raw disk images.
+backend that support raw disk or qcow2 images.
 
 You can login as root on the VM console without a password (but not over
 SSH),and there are no other users. You can add new users using `adduser` as
@@ -38,11 +47,13 @@ usual, and you probably want to add them to the `sudo` group.
 After the disk image is created you can try it with kvm, and wait 5s for the
 boot sequence to start:
 
-    kvm -m1000 -hda generic-vm-image-stretch-image.raw -nographics
+    kvm -m1000 -hda openstack-image-buster.raw
 
 
+## Documentation
 
-
+ * https://fai-project.org/fai-guide/
+ * https://noah.meyerhans.us/blog/2017/02/10/using-fai-to-customize-and-build-your-own-cloud-images/
 
 ## New cloud vendor how-to
 
