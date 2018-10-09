@@ -226,6 +226,28 @@ nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
     CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
+openstack buster amd64 build: &build-openstack-buster-amd64
+  <<: *build
+  <<: *only-pushes
+  tags:
+    - x86
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster
+    CLOUD_IMAGE_RELEASE: buster
+    CLOUD_VENDOR: openstack
+
+openstack sid amd64 build: &build-openstack-sid-amd64
+  <<: *build
+  <<: *only-pushes
+  tags:
+    - x86
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: sid
+    CLOUD_IMAGE_RELEASE: sid
+    CLOUD_VENDOR: openstack
+
 ####
 # Official builds done on Debian hardware
 ####
@@ -337,6 +359,20 @@ nocloud buster amd64-efi build official:
 
 nocloud sid amd64-efi build official:
   <<: *build-nocloud-sid-amd64-efi
+  <<: *only-triggers-official
+  tags:
+    - debian-cloud-images-build
+    - x86
+
+openstack buster amd64 build official:
+  <<: *build-openstack-buster-amd64
+  <<: *only-triggers-official
+  tags:
+    - debian-cloud-images-build
+    - x86
+
+openstack sid amd64 build official:
+  <<: *build-openstack-sid-amd64
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
