@@ -109,6 +109,17 @@ class ImageTypeQcow2(ImageType):
         if not noop:
             subprocess.check_call(cmd)
 
+        cmd = (
+            'tar', '-cS',
+            '-f', '{}.qcow2.tar'.format(basename),
+            '--transform', 'flags=r;s|.*\.qcow2|disk.qcow2|',
+            '{}.qcow2'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
 
 class Vendor:
     FAI_SIZE = '8G'
