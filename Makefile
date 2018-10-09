@@ -22,4 +22,4 @@ stretch-image-%:
 clean: cleanall
 
 cleanall:
-	rm -rf *.raw *vhd
+	rm -rf *.raw *vhd *.tar *.qcow2
