@@ -8,7 +8,8 @@
 # https://github.com/GoogleCloudPlatform/compute-image-packages
 PACKAGES install
 google-cloud-packages-archive-keyring
-cloud-initramfs-growroot
+cloud-guest-utils
+gdisk
 google-cloud-sdk
 google-compute-engine
 python-crcmod
