@@ -4,7 +4,7 @@ help:
 	@echo "To run this makefile, run:"
 	@echo "   make <DIST>-image-<CLOUD>"
 	@echo "  WHERE <DIST> is buster or stretch"
-	@echo "    And <CLOUD> is azure, ec2, gce, openstack"
+	@echo "    And <CLOUD> is azure, ec2, gce, openstack, nocloud"
 
 _image.raw:
 	umask 022; \
