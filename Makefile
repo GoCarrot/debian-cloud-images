@@ -1,5 +1,4 @@
 # path to the config space shoud be absolute, see fai.conf(5)
-BUILDER_IMG = http://cdimage.debian.org/cdimage/openstack/current-9/debian-9-openstack-amd64.qcow2
 
 help:
 	@echo "To run this makefile, run:"
@@ -19,12 +18,6 @@ buster-image-%:
 
 stretch-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=stretch
-
-
-kvm-%:
-	bin/launch_kvm.sh --id $*-$(shell date +%s) \
-		--target $* \
-		--img-url $(BUILDER_IMG)
 
 clean: cleanall
 
