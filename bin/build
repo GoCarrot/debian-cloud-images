@@ -96,6 +96,31 @@ class ImageTypeVhd(ImageType):
             subprocess.check_call(cmd)
 
 
+class ImageTypeQcow2(ImageType):
+    def convert_image(self, basename, noop):
+        cmd = (
+            'qemu-img', 'convert',
+            '-f', 'raw', '{}.raw'.format(basename),
+            '-o', 'compat=0.10',
+            '-O', 'qcow2', '{}.qcow2'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
+        cmd = (
+            'tar', '-cS',
+            '-f', '{}.qcow2.tar'.format(basename),
+            '--transform', 'flags=r;s|.*\.qcow2|disk.qcow2|',
+            '{}.qcow2'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
+
 class Vendor:
     FAI_SIZE = '8G'
     USE_LINUX_IMAGE_CLOUD = False
@@ -122,6 +147,14 @@ class VendorEc2(Vendor):
     FAI_SIZE = '10G'
 
     image = ImageTypeRaw()
+
+
+class VendorOpenstack(Vendor):
+    NAME = 'openstack'
+    FAI_CLASSES = ('OPENSTACK', )
+    FAI_SIZE = '2G'
+
+    image = ImageTypeQcow2()
 
 
 class VendorGce(Vendor):
