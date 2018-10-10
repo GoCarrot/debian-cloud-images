@@ -41,10 +41,15 @@ class CloudRelease(collections.OrderedDict):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--basename',
-        help='(default: $CLOUD_BUILD_BASENAME)',
+    parser.add_argument('--name',
+        help='(default: $CLOUD_BUILD_NAME)',
         action=ActionEnv,
-        env='CLOUD_BUILD_BASENAME',
+        env='CLOUD_BUILD_NAME',
+    )
+    parser.add_argument('--output-dir',
+        help='(default: $CLOUD_BUILD_OUTPUT_DIR)',
+        action=ActionEnv,
+        env='CLOUD_BUILD_OUTPUT_DIR',
     )
     parser.add_argument('--root',
         help='(default: $FAI_ROOT)',
@@ -61,6 +66,10 @@ if __name__ == '__main__':
 
     cloud_release = CloudRelease()
     manifest = {
+        '_meta': {
+            'name': args.name,
+            'stage': 'build',
+        },
         'cloud_release': cloud_release,
         'package_versions': {},
     }
@@ -73,7 +82,7 @@ if __name__ == '__main__':
             package, version = l.decode().strip().split()
             manifest['package_versions'][package] = version
 
-    with open('{}.build.json'.format(args.basename), 'w') as f:
+    with open('{}/{}.build.json'.format(args.output_dir, args.name), 'w') as f:
         json.dump(manifest, f, indent=4, separators=(',', ': '), sort_keys=True)
 
     if args.write:

@@ -246,7 +246,7 @@ if __name__ == '__main__':
     parser.add_argument('release', metavar='RELEASE', choices=sorted(releases.keys()))
     parser.add_argument('vendor', metavar='VENDOR', choices=sorted(vendors.keys()))
     parser.add_argument('arch', metavar='ARCH', choices=sorted(arches.keys()))
-    parser.add_argument('basename', metavar='BASENAME')
+    parser.add_argument('name', metavar='NAME')
     parser.add_argument('version', metavar='VERSION', type=Version)
     parser.add_argument('--noop', action='store_true')
     args = parser.parse_args()
@@ -260,7 +260,8 @@ if __name__ == '__main__':
 
     env = os.environ.copy()
     env.update(m.env)
-    env['CLOUD_BUILD_BASENAME'] = os.path.realpath(args.basename)
+    env['CLOUD_BUILD_NAME'] = args.name
+    env['CLOUD_BUILD_OUTPUT_DIR'] = os.getcwd()
 
     if os.path.isdir(os.path.join(os.getcwd(), 'config_space')):
         config_space_folder = os.path.join(os.getcwd(), 'config_space')
@@ -274,11 +275,11 @@ if __name__ == '__main__':
         '--class', ','.join(m.classes),
         '--size', m.vendor.FAI_SIZE,
         '--cspace', config_space_folder,
-        args.basename + '.raw',
+        args.name + '.raw',
     )
     logging.info('Running: %s', ' '.join(cmd))
 
     if not args.noop:
         subprocess.check_call(cmd, env=env)
 
-    m.vendor.image.convert_image(args.basename, args.noop)
+    m.vendor.image.convert_image(args.name, args.noop)
