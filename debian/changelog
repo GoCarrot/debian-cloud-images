@@ -1,0 +1,5 @@
+debian-cloud-images (0.0.1) unstable; urgency=medium
+
+  * Initial package (Closes: #910706).
+
+ -- Thomas Goirand <zigo@debian.org>  Tue, 09 Oct 2018 22:42:14 +0200

@@ -14,10 +14,28 @@ echo "--- CLOUD RELEASE ---"
 cat ${FAI_ROOT}/etc/cloud-release
 echo "--- END CLOUD RELEASE --- "
 echo "--- APT SOURCES.LIST ---"
-show ${FAI_ROOT}/etc/apt/sources.list*() ${FAI_ROOT}/etc/apt/sources.list.d/*
+if [ -n "${FAI_ROOT}" ] ; then
+	if [ -r ${FAI_ROOT}/etc/apt/sources.list ] ; then
+		show ${FAI_ROOT}/etc/apt/sources.list
+	fi
+	if [ -d "${FAI_ROOT}/etc/apt/sources.list.d" ] ; then
+		for i in $(find ${FAI_ROOT}/etc/apt/sources.list.d -type f) ; do
+			show ${i}
+		done
+	fi
+fi
 echo "--- END APT SOURCES.LIST ---"
 echo "--- APT PREFERENCES ---"
-show ${FAI_ROOT}/etc/apt/preferences*() ${FAI_ROOT}/etc/apt/preferences.d/*
+if [ -n "${FAI_ROOT}" ] ; then
+	if [ -r "${FAI_ROOT}/etc/apt/preferences" ] ; then
+		show ${FAI_ROOT}/etc/apt/preferences
+	fi
+	if [ -d "${FAI_ROOT}/etc/apt/preferences.d" ] ; then
+		for i in $(find ${FAI_ROOT}/etc/apt/preferences.d type -f) ; do
+			show ${i}
+		done
+	fi
+fi
 echo "--- END APT PREFERENCES ---"
 echo "--- FILES CHANGED ---"
 debsums -r ${FAI_ROOT} -a -c | sed -e "s:^${FAI_ROOT}::" || [ $? != 2 ]

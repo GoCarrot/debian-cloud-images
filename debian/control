@@ -1,0 +1,33 @@
+Source: debian-cloud-images
+Section: web
+Priority: optional
+Maintainer: Debian Cloud Team <team+cloud@tracker.debian.org>
+Uploaders:
+ Thomas Goirand <zigo@debian.org>,
+Build-Depends:
+ debhelper (>= 9),
+ dh-python,
+ python3-all,
+ python3-setuptools,
+Standards-Version: 4.2.0
+Vcs-Browser: https://salsa.debian.org/cloud-team/debian/debian-cloud-images
+Vcs-Git: https://salsa.debian.org/cloud-team/debian/debian-cloud-images.git
+Homepage: https://salsa.debian.org/cloud-team/debian/debian-cloud-images
+
+Package: debian-cloud-images
+Architecture: all
+Depends:
+ fai-server,
+ fai-setup-storage,
+ qemu-utils,
+ ${python3:Depends},
+ ${misc:Depends},
+Description: tool used by the Debian Cloud Team to create official cloud images
+ This package contains a script which is used by the Debian Cloud Team to
+ generate the official Debian Cloud images for different providers. Currently
+ supported clouds are:
+  * AWS (amd64)
+  * Azure (amd64)
+  * GCE (amd64)
+  * OpenStack (amd64, arm64)
+  * helpful for creating images to be used
