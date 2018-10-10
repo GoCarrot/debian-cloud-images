@@ -72,7 +72,7 @@ class ImageTypeRaw(ImageType):
     def convert_image(self, basename, noop):
         cmd = (
             'tar', '-cS',
-            '-f', '{}.raw.tar'.format(basename),
+            '-f', '{}.tar'.format(basename),
             '--transform', 'flags=r;s|.*\.raw|disk.raw|',
             '{}.raw'.format(basename),
         )
@@ -96,7 +96,7 @@ class ImageTypeVhd(ImageType):
 
         cmd = (
             'tar', '-cS',
-            '-f', '{}.vhd.tar'.format(basename),
+            '-f', '{}.tar'.format(basename),
             '--transform', 'flags=r;s|.*\.vhd|disk.vhd|',
             '{}.vhd'.format(basename),
         )
@@ -121,7 +121,7 @@ class ImageTypeQcow2(ImageType):
 
         cmd = (
             'tar', '-cS',
-            '-f', '{}.qcow2.tar'.format(basename),
+            '-f', '{}.tar'.format(basename),
             '--transform', 'flags=r;s|.*\.qcow2|disk.qcow2|',
             '{}.qcow2'.format(basename),
         )
