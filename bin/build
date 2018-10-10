@@ -33,7 +33,7 @@ class ArchArm64(Arch):
 
 class ArchPpc64El(Arch):
     NAME = 'ppc64el'
-    FAI_CLASSES = ('PPC64EL', )
+    FAI_CLASSES = ('PPC64EL', 'GRUB_IEEE1275')
 
 
 class Release:
