@@ -31,6 +31,11 @@ class ArchArm64(Arch):
     FAI_CLASSES = ('ARM64', 'GRUB_EFI_ARM64')
 
 
+class ArchPpc64El(Arch):
+    NAME = 'ppc64el'
+    FAI_CLASSES = ('PPC64EL', )
+
+
 class Release:
     SUPPORTS_LINUX_IMAGE_CLOUD = False
 
