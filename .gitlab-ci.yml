@@ -10,7 +10,9 @@ variables:
     - apt-get update
     - >
       apt-get install --no-install-recommends -y -t stretch-backports
-      ca-certificates debsums dosfstools fai-server fai-setup-storage make python3 qemu-utils udev
+      ca-certificates debsums dosfstools fai-server fai-setup-storage make python3 qemu-user-static qemu-utils udev
+    - mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+    - echo ':qemu-aarch64-test:M::\x7f\x45\x4c\x46\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-aarch64-static:OCF' > /proc/sys/fs/binfmt_misc/register
     # Some of our build environments run with SELinux enabled, make sure it is detected by all the tools
     - if [ -d /sys/fs/selinux ]; then mount -t selinuxfs none /sys/fs/selinux; mkdir -p /etc/selinux; touch /etc/selinux/config; fi
     - echo bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_IMAGE_VERSION} ${CLOUD_OPTIONS}
@@ -222,6 +224,17 @@ nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
     - x86
   variables:
     CLOUD_ARCH: amd64-efi
+    CLOUD_RELEASE: sid
+    CLOUD_IMAGE_RELEASE: sid
+    CLOUD_VENDOR: nocloud
+
+nocloud sid arm64 build: &build-nocloud-sid-arm64
+  <<: *build
+  <<: *only-pushes
+  tags:
+    - x86
+  variables:
+    CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
