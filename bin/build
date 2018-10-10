@@ -252,13 +252,18 @@ if __name__ == '__main__':
     env.update(m.env)
     env['CLOUD_BUILD_BASENAME'] = os.path.realpath(args.basename)
 
+    if os.path.isdir(os.path.join(os.getcwd(), 'config_space')):
+        config_space_folder = os.path.join(os.getcwd(), 'config_space')
+    else:
+        config_space_folder = '/usr/share/debian-cloud-images/config_space'
+
     cmd = (
         'fai-diskimage',
         '--verbose',
         '--hostname', 'debian',
         '--class', ','.join(m.classes),
         '--size', m.vendor.FAI_SIZE,
-        '--cspace', os.path.join(os.getcwd(), 'config_space'),
+        '--cspace', config_space_folder,
         args.basename + '.raw',
     )
     logging.info('Running: %s', ' '.join(cmd))
