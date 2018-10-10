@@ -42,23 +42,27 @@ class Release:
 
 class ReleaseStretch(Release):
     NAME = 'stretch'
+    ID = '9'
     FAI_CLASSES = ('STRETCH', 'BACKPORTS')
 
 
 class ReleaseStretchBackports(Release):
     NAME = 'stretch-backports'
+    ID = '9-backports'
     FAI_CLASSES = ('STRETCH', 'BACKPORTS', 'BACKPORTS_LINUX')
     SUPPORTS_LINUX_IMAGE_CLOUD = True
 
 
 class ReleaseBuster(Release):
     NAME = 'buster'
+    ID = '10'
     FAI_CLASSES = ('BUSTER', )
     SUPPORTS_LINUX_IMAGE_CLOUD = True
 
 
 class ReleaseSid(Release):
     NAME = 'sid'
+    ID = 'sid'
     FAI_CLASSES = ('SID', )
     SUPPORTS_LINUX_IMAGE_CLOUD = True
 
@@ -69,6 +73,8 @@ class ImageType:
 
 
 class ImageTypeRaw(ImageType):
+    NAME = 'raw'
+
     def convert_image(self, basename, noop):
         cmd = (
             'tar', '-cS',
@@ -83,6 +89,8 @@ class ImageTypeRaw(ImageType):
 
 
 class ImageTypeVhd(ImageType):
+    NAME = 'vhd'
+
     def convert_image(self, basename, noop):
         cmd = (
             'qemu-img', 'convert',
@@ -107,6 +115,8 @@ class ImageTypeVhd(ImageType):
 
 
 class ImageTypeQcow2(ImageType):
+    NAME = 'qcow2'
+
     def convert_image(self, basename, noop):
         cmd = (
             'qemu-img', 'convert',
@@ -217,14 +227,19 @@ class Main:
 
     def set_release(self, release):
         self.release = releases[release]()
+        self.env['CLOUD_BUILD_INFO_RELEASE'] = self.release.NAME
+        self.env['CLOUD_BUILD_INFO_RELEASE_ID'] = self.release.ID
         self.classes |= self.release.FAI_CLASSES
 
     def set_vendor(self, vendor):
         self.vendor = vendors[vendor]()
+        self.env['CLOUD_BUILD_INFO_VENDOR'] = self.vendor.NAME
+        self.env['CLOUD_BUILD_INFO_IMAGE_TYPE'] = self.vendor.image.NAME
         self.classes |= self.vendor.FAI_CLASSES
 
     def set_arch(self, arch):
         self.arch = arches[arch]()
+        self.env['CLOUD_BUILD_INFO_ARCH'] = self.arch.NAME
         self.classes |= self.arch.FAI_CLASSES
 
     def set_version(self, version):
