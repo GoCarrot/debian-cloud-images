@@ -5,11 +5,11 @@ variables:
 
 .build: &build
   stage: build
-  image: debian:stretch-backports
+  image: debian:buster
   script:
     - apt-get update
     - >
-      apt-get install --no-install-recommends -y -t stretch-backports
+      apt-get install --no-install-recommends -y
       ca-certificates debsums dosfstools fai-server fai-setup-storage make python3 qemu-user-static qemu-utils udev
     - mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
     - echo ':qemu-aarch64-test:M::\x7f\x45\x4c\x46\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-aarch64-static:OCF' > /proc/sys/fs/binfmt_misc/register
