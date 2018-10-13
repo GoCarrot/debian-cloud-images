@@ -4,5 +4,8 @@ grub-efi-amd64
 PACKAGES install-norec GRUB_EFI_ARM64
 grub-efi-arm64
 
+PACKAGES install-norec GRUB_IEEE1275
+grub-ieee1275
+
 PACKAGES install-norec GRUB_PC
 grub-pc
