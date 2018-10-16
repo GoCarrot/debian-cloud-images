@@ -5,7 +5,7 @@ This repository aims to build Debian images for all cloud providers
 ## Getting started
 
 You will need a checkout of this repository on your disk and a recent fai-server
-package (at least 5.3.6) installed. Install the necessary fai packages without
+package (at least 5.7.2) installed. Install the necessary fai packages without
 the recommends (which avoids turning your host into a DHCP server!)
 
 ```
