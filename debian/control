@@ -18,6 +18,7 @@ Package: debian-cloud-images
 Architecture: all
 Depends:
  fai-server (>= 5.7),
+ fai-client (>= 5.7),
  fai-setup-storage,
  qemu-utils,
  ${python3:Depends},
