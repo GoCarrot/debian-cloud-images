@@ -17,7 +17,8 @@ Homepage: https://salsa.debian.org/cloud-team/debian/debian-cloud-images
 Package: debian-cloud-images
 Architecture: all
 Depends:
- fai-server,
+ fai-server (>= 5.7),
+ fai-client (>= 5.7),
  fai-setup-storage,
  qemu-utils,
  ${python3:Depends},
