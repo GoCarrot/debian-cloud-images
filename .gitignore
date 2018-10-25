@@ -1,2 +1,4 @@
+__pycache__/
+.pytest_cache/
 *-image.raw
 *-image.vhd
