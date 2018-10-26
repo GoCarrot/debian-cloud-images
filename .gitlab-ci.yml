@@ -1,4 +1,8 @@
 ---
+stages:
+  - build
+  - vendor upload
+
 variables:
   CLOUD_IMAGE_VERSION: dev
   CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_IMAGE_VERSION}-${CLOUD_VENDOR}-${CLOUD_ARCH}
@@ -388,3 +392,35 @@ openstack sid amd64 build official:
   tags:
     - debian-cloud-images-build
     - x86
+
+####
+# Provider uploads for developer pushs
+####
+
+gce upload:
+  stage: vendor upload
+  image: debian:buster
+  script:
+    - apt-get update
+    - apt-get install --no-install-recommends -y python3-libcloud
+    - echo "${CLOUD_UPLOAD_GCE_AUTH}" > .auth
+    - >
+      python3 -m debian_cloud_images.cli.upload_gce
+      --auth .auth
+      --version-override "${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}"
+      "${CLOUD_UPLOAD_GCE_DEV_PROJECT}" "${CLOUD_UPLOAD_GCE_DEV_BUCKET}"
+  dependencies:
+    - gce stretch build
+    - gce buster build
+    - gce sid build
+  only:
+    refs:
+      - pushes
+      - web
+    variables:
+      - $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"
+  artifacts:
+    name: ${CLOUD_IMAGE_NAME}-upload_vendor
+    expire_in: 7 days
+    paths:
+      - '*.upload_vendor.json'

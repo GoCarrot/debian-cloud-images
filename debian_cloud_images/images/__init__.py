@@ -72,6 +72,6 @@ class Image:
             self.build_vendor: data,
         }
 
-        manifest_file = self.path.joinpath('{}.{}.json'.format(image.name, stage))
+        manifest_file = self.__path.joinpath('{}.{}.json'.format(self.name, stage))
         with manifest_file.open('w') as f:
             json.dump(manifest, f, indent=4, separators=(',', ': '), sort_keys=True)
