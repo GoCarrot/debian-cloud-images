@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 
 class BaseCommand:
@@ -33,8 +34,8 @@ class BaseCommand:
             help='enable debug output',
         )
 
-    def __init__(self, **kw):
-        pass
+    def __init__(self, *, debug=False, **kw):
+        logging.basicConfig(level=debug and logging.DEBUG or logging.INFO)
 
     def __call__(self):
         raise NotImplementedError

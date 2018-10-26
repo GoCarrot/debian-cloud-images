@@ -2,6 +2,7 @@ import json
 import pathlib
 import pkg_resources
 import pytest
+import tarfile
 
 from debian_cloud_images.images import Images
 
@@ -48,3 +49,26 @@ def test_Image(images_path):
     images.read_path(images_path)
     image = images['test']
     assert image.build_arch == 'amd64'
+
+    with pytest.raises(RuntimeError):
+        image.get_tar()
+
+
+def test_Image_get_tar(images_path):
+    with tarfile.open(images_path.joinpath('test.tar').as_posix(), 'w:'):
+        pass
+
+    images = Images()
+    images.read_path(images_path)
+    image = images['test']
+    assert image.get_tar()
+
+
+def test_Image_get_tar_xz(images_path):
+    with tarfile.open(images_path.joinpath('test.tar.xz').as_posix(), 'w:xz'):
+        pass
+
+    images = Images()
+    images.read_path(images_path)
+    image = images['test']
+    assert image.get_tar()
