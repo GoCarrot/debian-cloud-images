@@ -397,6 +397,39 @@ openstack sid amd64 build official:
 # Provider uploads for developer pushs
 ####
 
+ec2 upload:
+  stage: vendor upload
+  image: debian:buster
+  script:
+    - apt-get update
+    - apt-get install --no-install-recommends -y python3-libcloud
+    - >
+      echo
+      python3 -m debian_cloud_images.cli.upload_ec2
+      --version-override "'${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}'"
+      --regions "'${CLOUD_UPLOAD_EC2_DEV_REGIONS}'"
+      "'${CLOUD_UPLOAD_EC2_DEV_BUCKET}'"
+    - >
+      python3 -m debian_cloud_images.cli.upload_ec2
+      --version-override "${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}"
+      --regions "${CLOUD_UPLOAD_EC2_DEV_REGIONS}"
+      "${CLOUD_UPLOAD_EC2_DEV_BUCKET}"
+  dependencies:
+    - ec2 stretch build
+    - ec2 buster build
+    - ec2 sid build
+  only:
+    refs:
+      - pushes
+      - web
+    variables:
+      - $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1"
+  artifacts:
+    name: ${CLOUD_IMAGE_NAME}-upload_vendor
+    expire_in: 7 days
+    paths:
+      - '*.upload_vendor.json'
+
 gce upload:
   stage: vendor upload
   image: debian:buster

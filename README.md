@@ -67,6 +67,14 @@ for a cloud image.
 
 Uploaders typically need some variables set with credentials or targets.
 
+### Amazon EC2
+
+ * `$CLOUD_UPLOAD_EC2_DEV_ENABLED`: Set to `1` to upload and create images during development.
+ * `$CLOUD_UPLOAD_EC2_DEV_BUCKET`: Amazon S3 bucket to create temporary files during development.
+ * `$CLOUD_UPLOAD_EC2_DEV_REGIONS`: Comma separated list of Amazon EC2 regions to create images during development.
+ * `$AWS_ACCESS_KEY_ID`
+ * `$AWS_SECRET_ACCESS_KEY`
+
 ### Google Compute Engine
 
  * `$CLOUD_UPLOAD_GCE_AUTH`: JSON string of service account credentials.
