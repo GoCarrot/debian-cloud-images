@@ -51,7 +51,7 @@ class ImageTypeRaw(ImageType):
         cmd = (
             'tar', '-cS',
             '-f', '{}.tar'.format(basename),
-            '--transform', 'flags=r;s|.*\.raw|disk.raw|',
+            '--transform', r'flags=r;s|.*\.raw|disk.raw|',
             '{}.raw'.format(basename),
         )
         logging.info('Running: %s', ' '.join(cmd))
@@ -77,7 +77,7 @@ class ImageTypeVhd(ImageType):
         cmd = (
             'tar', '-cS',
             '-f', '{}.tar'.format(basename),
-            '--transform', 'flags=r;s|.*\.vhd|disk.vhd|',
+            '--transform', r'flags=r;s|.*\.vhd|disk.vhd|',
             '{}.vhd'.format(basename),
         )
         logging.info('Running: %s', ' '.join(cmd))
@@ -104,7 +104,7 @@ class ImageTypeQcow2(ImageType):
         cmd = (
             'tar', '-cS',
             '-f', '{}.tar'.format(basename),
-            '--transform', 'flags=r;s|.*\.qcow2|disk.qcow2|',
+            '--transform', r'flags=r;s|.*\.qcow2|disk.qcow2|',
             '{}.qcow2'.format(basename),
         )
         logging.info('Running: %s', ' '.join(cmd))
@@ -130,7 +130,7 @@ class ImageTypeVmdk(ImageType):
         cmd = (
             'tar', '-cS',
             '-f', '{}.tar'.format(basename),
-            '--transform', 'flags=r;s|.*\.vmdk|disk.vmdk|',
+            '--transform', r'flags=r;s|.*\.vmdk|disk.vmdk|',
             '{}.vmdk'.format(basename),
         )
         logging.info('Running: %s', ' '.join(cmd))
