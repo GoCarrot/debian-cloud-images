@@ -8,6 +8,23 @@ class ActionCommaSeparated(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
+class ActionEnum(argparse.Action):
+    def __init__(self, enum, help='', **kw):
+        self.enum = enum
+        choices = (name for name, member in enum.__members__.items())
+        help += ' (choices: {})'.format(', '.join(choices))
+        super().__init__(help=help, type=self.get_value, **kw)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
+
+    def get_value(self, name):
+        try:
+            return self.enum[name]
+        except KeyError:
+            raise argparse.ArgumentError(self, 'invalid value: {}'.format(name))
+
+
 class ActionEnv(argparse.Action):
     def __init__(self, env, default=None, required=True, help=None, **kw):
         default = os.environ.get(env, default)

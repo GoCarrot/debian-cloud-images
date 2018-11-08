@@ -1,4 +1,5 @@
 import collections.abc
+import enum
 import logging
 import os
 import re
@@ -6,63 +7,36 @@ import subprocess
 
 from .base import BaseCommand
 
+from ..utils import argparse_ext
+
 
 logger = logging.getLogger()
 
 
 class Arch:
-    pass
-
-
-class ArchAmd64(Arch):
-    NAME = 'amd64'
-    FAI_CLASSES = ('AMD64', 'GRUB_PC')
-
-
-class ArchAmd64Efi(Arch):
-    NAME = 'amd64-efi'
-    FAI_CLASSES = ('AMD64', 'GRUB_EFI_AMD64')
-
-
-class ArchArm64(Arch):
-    NAME = 'arm64'
-    FAI_CLASSES = ('ARM64', 'GRUB_EFI_ARM64')
-
-
-class ArchPpc64El(Arch):
-    NAME = 'ppc64el'
-    FAI_CLASSES = ('PPC64EL', 'GRUB_IEEE1275')
+    def __init__(self, kw):
+        def init(*, fai_classes):
+            self.fai_classes = fai_classes
+        init(**kw)
 
 
 class Release:
-    SUPPORTS_LINUX_IMAGE_CLOUD = False
+    def __init__(self, kw):
+        def init(*, id, fai_classes, supports_linux_image_cloud=False):
+            self.id = id
+            self.fai_classes = fai_classes
+            self.supports_linux_image_cloud = supports_linux_image_cloud
+        init(**kw)
 
 
-class ReleaseStretch(Release):
-    NAME = 'stretch'
-    ID = '9'
-    FAI_CLASSES = ('STRETCH', 'BACKPORTS')
-
-
-class ReleaseStretchBackports(Release):
-    NAME = 'stretch-backports'
-    ID = '9-backports'
-    FAI_CLASSES = ('STRETCH', 'BACKPORTS', 'BACKPORTS_LINUX')
-    SUPPORTS_LINUX_IMAGE_CLOUD = True
-
-
-class ReleaseBuster(Release):
-    NAME = 'buster'
-    ID = '10'
-    FAI_CLASSES = ('BUSTER', )
-    SUPPORTS_LINUX_IMAGE_CLOUD = True
-
-
-class ReleaseSid(Release):
-    NAME = 'sid'
-    ID = 'sid'
-    FAI_CLASSES = ('SID', )
-    SUPPORTS_LINUX_IMAGE_CLOUD = True
+class Vendor:
+    def __init__(self, kw):
+        def init(*, fai_size, fai_classes, image_cls, use_linux_image_cloud=False):
+            self.fai_size = fai_size
+            self.fai_classes = fai_classes
+            self.image = image_cls()
+            self.use_linux_image_cloud = use_linux_image_cloud
+        init(**kw)
 
 
 class ImageType:
@@ -165,49 +139,85 @@ class ImageTypeVmdk(ImageType):
             subprocess.check_call(cmd)
 
 
-class Vendor:
-    FAI_SIZE = '8G'
-    USE_LINUX_IMAGE_CLOUD = False
+ArchEnum = enum.Enum(
+    'ArchEnum',
+    {
+        'amd64': {
+            'fai_classes': ('AMD64', 'GRUB_PC'),
+        },
+        'amd64-efi': {
+            'fai_classes': ('AMD64', 'GRUB_EFI_AMD64'),
+        },
+        'arm64': {
+            'fai_classes': ('ARM64', 'GRUB_EFI_ARM64'),
+        },
+        'ppc64el': {
+            'fai_classes': ('PPC64EL', 'GRUB_IEEE1275'),
+        },
+    },
+    type=Arch,
+)
 
 
-class VendorNo(Vendor):
-    NAME = "nocloud"
-    FAI_CLASSES = ('NOCLOUD', )
-
-    image = ImageTypeRaw()
-
-
-class VendorAzure(Vendor):
-    NAME = 'azure'
-    FAI_CLASSES = ('AZURE', )
-    FAI_SIZE = '30G'
-    USE_LINUX_IMAGE_CLOUD = True
-
-    image = ImageTypeVhd()
-
-
-class VendorEc2(Vendor):
-    NAME = 'ec2'
-    FAI_CLASSES = ('EC2', )
-    FAI_SIZE = '8G'
-
-    image = ImageTypeVmdk()
-
-
-class VendorOpenstack(Vendor):
-    NAME = 'openstack'
-    FAI_CLASSES = ('OPENSTACK', )
-    FAI_SIZE = '2G'
-
-    image = ImageTypeQcow2()
+ReleaseEnum = enum.Enum(
+    'ReleaseEnum',
+    {
+        'stretch': {
+            'id': '9',
+            'fai_classes': ('STRETCH', 'BACKPORTS'),
+        },
+        'stretch-backports': {
+            'id': '9-backports',
+            'fai_classes': ('STRETCH', 'BACKPORTS', 'BACKPORTS_LINUX'),
+            'supports_linux_image_cloud': True,
+        },
+        'buster': {
+            'id': '10',
+            'fai_classes': ('BUSTER', ),
+            'supports_linux_image_cloud': True,
+        },
+        'sid': {
+            'id': 'sid',
+            'fai_classes': ('SID', ),
+            'supports_linux_image_cloud': True,
+        },
+    },
+    type=Release,
+)
 
 
-class VendorGce(Vendor):
-    NAME = 'gce'
-    FAI_CLASSES = ('GCE', )
-    FAI_SIZE = '10G'
-
-    image = ImageTypeRaw()
+VendorEnum = enum.Enum(
+    'VendorEnum',
+    {
+        'azure': {
+            'fai_size': '30G',
+            'fai_classes': ('AZURE', ),
+            'image_cls': ImageTypeVhd,
+            'use_linux_image_cloud': True,
+        },
+        'ec2': {
+            'fai_size': '8G',
+            'fai_classes': ('EC2', ),
+            'image_cls': ImageTypeVmdk,
+        },
+        'gce': {
+            'fai_size': '10G',
+            'fai_classes': ('GCE', ),
+            'image_cls': ImageTypeRaw,
+        },
+        'nocloud': {
+            'fai_size': '8G',
+            'fai_classes': ('NOCLOUD', ),
+            'image_cls': ImageTypeRaw,
+        },
+        'openstack': {
+            'fai_size': '2G',
+            'fai_classes': ('OPENSTACK', ),
+            'image_cls': ImageTypeQcow2,
+        },
+    },
+    type=Vendor,
+)
 
 
 class Version:
@@ -243,11 +253,6 @@ class Classes(collections.abc.MutableSet):
         self.__data.remove(v)
 
 
-arches = { i.NAME: i for i in Arch.__subclasses__() }
-releases = { i.NAME: i for i in Release.__subclasses__() }
-vendors = { i.NAME: i for i in Vendor.__subclasses__() }
-
-
 class Check:
     def __init__(self):
         self.classes = Classes()
@@ -256,28 +261,28 @@ class Check:
         self.env = {}
 
     def set_release(self, release):
-        self.release = releases[release]()
-        self.env['CLOUD_BUILD_INFO_RELEASE'] = self.release.NAME
-        self.env['CLOUD_BUILD_INFO_RELEASE_ID'] = self.release.ID
-        self.classes |= self.release.FAI_CLASSES
+        self.release = release
+        self.env['CLOUD_BUILD_INFO_RELEASE'] = self.release.name
+        self.env['CLOUD_BUILD_INFO_RELEASE_ID'] = self.release.id
+        self.classes |= self.release.fai_classes
 
     def set_vendor(self, vendor):
-        self.vendor = vendors[vendor]()
-        self.env['CLOUD_BUILD_INFO_VENDOR'] = self.vendor.NAME
+        self.vendor = vendor
+        self.env['CLOUD_BUILD_INFO_VENDOR'] = self.vendor.name
         self.env['CLOUD_BUILD_INFO_IMAGE_TYPE'] = self.vendor.image.NAME
-        self.classes |= self.vendor.FAI_CLASSES
+        self.classes |= self.vendor.fai_classes
 
     def set_arch(self, arch):
-        self.arch = arches[arch]()
-        self.env['CLOUD_BUILD_INFO_ARCH'] = self.arch.NAME
-        self.classes |= self.arch.FAI_CLASSES
+        self.arch = arch
+        self.env['CLOUD_BUILD_INFO_ARCH'] = self.arch.name
+        self.classes |= self.arch.fai_classes
 
     def set_version(self, version):
         if version.release:
             self.env['CLOUD_RELEASE_VERSION'] = version.release
 
     def check(self):
-        if self.release.SUPPORTS_LINUX_IMAGE_CLOUD and self.vendor.USE_LINUX_IMAGE_CLOUD:
+        if self.release.supports_linux_image_cloud and self.vendor.use_linux_image_cloud:
             self.classes.add('LINUX_IMAGE_CLOUD')
         else:
             self.classes.add('LINUX_IMAGE_BASE')
@@ -293,9 +298,27 @@ class BuildCommand(BaseCommand):
     def _argparse_register(cls, parser):
         super()._argparse_register(parser)
 
-        parser.add_argument('release', metavar='RELEASE', choices=sorted(releases.keys()))
-        parser.add_argument('vendor', metavar='VENDOR', choices=sorted(vendors.keys()))
-        parser.add_argument('arch', metavar='ARCH', choices=sorted(arches.keys()))
+        parser.add_argument(
+            'release',
+            action=argparse_ext.ActionEnum,
+            enum=ReleaseEnum,
+            help='Debian release to build',
+            metavar='RELEASE',
+        )
+        parser.add_argument(
+            'vendor',
+            action=argparse_ext.ActionEnum,
+            enum=VendorEnum,
+            help='Vendor to build image for',
+            metavar='VENDOR',
+        )
+        parser.add_argument(
+            'arch',
+            action=argparse_ext.ActionEnum,
+            enum=ArchEnum,
+            help='Architecture or sub-architecture to build image for',
+            metavar='ARCH',
+        )
         parser.add_argument('name', metavar='NAME')
         parser.add_argument('version', metavar='VERSION', type=Version)
         parser.add_argument('--noop', action='store_true')
@@ -328,7 +351,7 @@ class BuildCommand(BaseCommand):
             '--verbose',
             '--hostname', 'debian',
             '--class', ','.join(self.c.classes),
-            '--size', self.c.vendor.FAI_SIZE,
+            '--size', self.c.vendor.fai_size,
             '--cspace', config_space_folder,
             name + '.raw',
         )
