@@ -24,8 +24,13 @@ variables:
         # Some of our build environments run with SELinux enabled, make sure it is detected by all the tools
         if [ -d /sys/fs/selinux ]; then mount -t selinuxfs none /sys/fs/selinux; mkdir -p /etc/selinux; touch /etc/selinux/config; fi
       fi
-    - echo bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_IMAGE_VERSION} ${CLOUD_OPTIONS}
-    - bin/build ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_IMAGE_VERSION} ${CLOUD_OPTIONS}
+    - >
+      echo
+      python3 -m debian_cloud_images.cli.build
+      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_IMAGE_VERSION} ${CLOUD_OPTIONS}
+    - >
+      python3 -m debian_cloud_images.cli.build
+      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_IMAGE_VERSION} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
     name: ${CLOUD_IMAGE_NAME}
