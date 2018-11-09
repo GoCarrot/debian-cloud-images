@@ -33,6 +33,18 @@ class ImageUploaderEc2:
             }
         return ret
 
+    def compute_regions(self, region_base):
+        if self.regions:
+            if 'all' in self.regions:
+                # All regions specified, use complete list
+                return self.compute
+
+            # Explicit regions specified
+            return {r: v for r, v in self.compute.items() if r in self.regions}
+
+        # No regions specified, use region of bucket
+        return {r: v for r, v in self.compute.items() if r == region_base}
+
     @property
     def storage(self):
         ret = self.__storage
@@ -103,12 +115,12 @@ class ImageUploaderEc2:
     def copy_snapshot(self, image, name, snapshot_base):
         """ Copy snapshot to other regions """
 
-        snapshots_creating = []
-        for region, compute in self.compute.items():
-            if self.regions and region not in self.regions:
-                continue
+        region_base = snapshot_base.driver.region_name
+        compute_regions = self.compute_regions(region_base)
 
-            if region == snapshot_base.driver.region_name:
+        snapshots_creating = []
+        for region, compute in compute_regions.items():
+            if region == region_base:
                 snapshot = snapshot_base
             else:
                 snapshot = compute.ex_copy_snapshot(snapshot_base)
@@ -213,6 +225,7 @@ class UploadEc2Command(UploadBaseCommand):
         parser.add_argument(
             '--regions',
             action=argparse_ext.ActionCommaSeparated,
+            help='Regions to copy snapshot and image to or "all" (default: region of bucket)',
         )
 
     def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], variant=None, version_override=None, **kw):
