@@ -266,8 +266,13 @@ class BuildCommand(BaseCommand):
             metavar='TYPE',
         )
         parser.add_argument('--noop', action='store_true')
+        parser.add_argument(
+            '--localdebs',
+            action='store_true',
+            help='Read extra debs from localdebs directory',
+        )
 
-    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, build_type=None, name=None, noop=False, **kw):
+    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, build_type=None, localdebs=False, name=None, noop=False, **kw):
         super().__init__(**kw)
 
         self.name = name
@@ -279,6 +284,8 @@ class BuildCommand(BaseCommand):
         self.c.set_vendor(vendor)
         self.c.set_arch(arch)
         self.c.set_version(build_id, ci_pipeline_iid)
+        if localdebs:
+            self.c.classes.add('LOCALDEBS')
         self.c.check()
 
         self.env = os.environ.copy()
