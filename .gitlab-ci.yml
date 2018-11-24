@@ -5,7 +5,7 @@ stages:
 
 variables:
   CLOUD_IMAGE_VERSION: dev
-  CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_IMAGE_VERSION}-${CLOUD_VENDOR}-${CLOUD_ARCH}
+  CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_VENDOR}-${CLOUD_ARCH}
 
 .build: &build
   stage: build
