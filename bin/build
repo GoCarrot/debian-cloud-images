@@ -42,23 +42,27 @@ class Release:
 
 class ReleaseStretch(Release):
     NAME = 'stretch'
+    ID = '9'
     FAI_CLASSES = ('STRETCH', 'BACKPORTS')
 
 
 class ReleaseStretchBackports(Release):
     NAME = 'stretch-backports'
+    ID = '9-backports'
     FAI_CLASSES = ('STRETCH', 'BACKPORTS', 'BACKPORTS_LINUX')
     SUPPORTS_LINUX_IMAGE_CLOUD = True
 
 
 class ReleaseBuster(Release):
     NAME = 'buster'
+    ID = '10'
     FAI_CLASSES = ('BUSTER', )
     SUPPORTS_LINUX_IMAGE_CLOUD = True
 
 
 class ReleaseSid(Release):
     NAME = 'sid'
+    ID = 'sid'
     FAI_CLASSES = ('SID', )
     SUPPORTS_LINUX_IMAGE_CLOUD = True
 
@@ -69,10 +73,12 @@ class ImageType:
 
 
 class ImageTypeRaw(ImageType):
+    NAME = 'raw'
+
     def convert_image(self, basename, noop):
         cmd = (
             'tar', '-cS',
-            '-f', '{}.raw.tar'.format(basename),
+            '-f', '{}.tar'.format(basename),
             '--transform', 'flags=r;s|.*\.raw|disk.raw|',
             '{}.raw'.format(basename),
         )
@@ -83,6 +89,8 @@ class ImageTypeRaw(ImageType):
 
 
 class ImageTypeVhd(ImageType):
+    NAME = 'vhd'
+
     def convert_image(self, basename, noop):
         cmd = (
             'qemu-img', 'convert',
@@ -96,7 +104,7 @@ class ImageTypeVhd(ImageType):
 
         cmd = (
             'tar', '-cS',
-            '-f', '{}.vhd.tar'.format(basename),
+            '-f', '{}.tar'.format(basename),
             '--transform', 'flags=r;s|.*\.vhd|disk.vhd|',
             '{}.vhd'.format(basename),
         )
@@ -107,6 +115,8 @@ class ImageTypeVhd(ImageType):
 
 
 class ImageTypeQcow2(ImageType):
+    NAME = 'qcow2'
+
     def convert_image(self, basename, noop):
         cmd = (
             'qemu-img', 'convert',
@@ -121,9 +131,35 @@ class ImageTypeQcow2(ImageType):
 
         cmd = (
             'tar', '-cS',
-            '-f', '{}.qcow2.tar'.format(basename),
+            '-f', '{}.tar'.format(basename),
             '--transform', 'flags=r;s|.*\.qcow2|disk.qcow2|',
             '{}.qcow2'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
+
+class ImageTypeVmdk(ImageType):
+    NAME = 'vmdk'
+
+    def convert_image(self, basename, noop):
+        cmd = (
+            'qemu-img', 'convert',
+            '-f', 'raw', '-O', 'vmdk', '-o', 'subformat=streamOptimized',
+            '{}.raw'.format(basename), '{}.vmdk'.format(basename),
+        )
+        logging.info('Running: %s', ' '.join(cmd))
+
+        if not noop:
+            subprocess.check_call(cmd)
+
+        cmd = (
+            'tar', '-cS',
+            '-f', '{}.tar'.format(basename),
+            '--transform', 'flags=r;s|.*\.vmdk|disk.vmdk|',
+            '{}.vmdk'.format(basename),
         )
         logging.info('Running: %s', ' '.join(cmd))
 
@@ -154,9 +190,9 @@ class VendorAzure(Vendor):
 class VendorEc2(Vendor):
     NAME = 'ec2'
     FAI_CLASSES = ('EC2', )
-    FAI_SIZE = '10G'
+    FAI_SIZE = '8G'
 
-    image = ImageTypeRaw()
+    image = ImageTypeVmdk()
 
 
 class VendorOpenstack(Vendor):
@@ -217,14 +253,19 @@ class Main:
 
     def set_release(self, release):
         self.release = releases[release]()
+        self.env['CLOUD_BUILD_INFO_RELEASE'] = self.release.NAME
+        self.env['CLOUD_BUILD_INFO_RELEASE_ID'] = self.release.ID
         self.classes |= self.release.FAI_CLASSES
 
     def set_vendor(self, vendor):
         self.vendor = vendors[vendor]()
+        self.env['CLOUD_BUILD_INFO_VENDOR'] = self.vendor.NAME
+        self.env['CLOUD_BUILD_INFO_IMAGE_TYPE'] = self.vendor.image.NAME
         self.classes |= self.vendor.FAI_CLASSES
 
     def set_arch(self, arch):
         self.arch = arches[arch]()
+        self.env['CLOUD_BUILD_INFO_ARCH'] = self.arch.NAME
         self.classes |= self.arch.FAI_CLASSES
 
     def set_version(self, version):
@@ -246,7 +287,7 @@ if __name__ == '__main__':
     parser.add_argument('release', metavar='RELEASE', choices=sorted(releases.keys()))
     parser.add_argument('vendor', metavar='VENDOR', choices=sorted(vendors.keys()))
     parser.add_argument('arch', metavar='ARCH', choices=sorted(arches.keys()))
-    parser.add_argument('basename', metavar='BASENAME')
+    parser.add_argument('name', metavar='NAME')
     parser.add_argument('version', metavar='VERSION', type=Version)
     parser.add_argument('--noop', action='store_true')
     args = parser.parse_args()
@@ -260,7 +301,8 @@ if __name__ == '__main__':
 
     env = os.environ.copy()
     env.update(m.env)
-    env['CLOUD_BUILD_BASENAME'] = os.path.realpath(args.basename)
+    env['CLOUD_BUILD_NAME'] = args.name
+    env['CLOUD_BUILD_OUTPUT_DIR'] = os.getcwd()
 
     if os.path.isdir(os.path.join(os.getcwd(), 'config_space')):
         config_space_folder = os.path.join(os.getcwd(), 'config_space')
@@ -274,11 +316,11 @@ if __name__ == '__main__':
         '--class', ','.join(m.classes),
         '--size', m.vendor.FAI_SIZE,
         '--cspace', config_space_folder,
-        args.basename + '.raw',
+        args.name + '.raw',
     )
     logging.info('Running: %s', ' '.join(cmd))
 
     if not args.noop:
         subprocess.check_call(cmd, env=env)
 
-    m.vendor.image.convert_image(args.basename, args.noop)
+    m.vendor.image.convert_image(args.name, args.noop)

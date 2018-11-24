@@ -62,3 +62,22 @@ mostly everywhere. If you really need adjustments for your image, start looking
 at the directory structure and only drop in adjustments where really required.
 Our CLOUD (base) class should already take care of the most of what is needed
 for a cloud image.
+
+## Uploader
+
+Uploaders typically need some variables set with credentials or targets.
+
+### Amazon EC2
+
+ * `$CLOUD_UPLOAD_EC2_DEV_ENABLED`: Set to `1` to upload and create images during development.
+ * `$CLOUD_UPLOAD_EC2_DEV_BUCKET`: Amazon S3 bucket to create temporary files during development.
+ * `$CLOUD_UPLOAD_EC2_DEV_REGIONS`: Comma separated list of Amazon EC2 regions to create images during development.
+ * `$AWS_ACCESS_KEY_ID`
+ * `$AWS_SECRET_ACCESS_KEY`
+
+### Google Compute Engine
+
+ * `$CLOUD_UPLOAD_GCE_AUTH`: JSON string of service account credentials.
+ * `$CLOUD_UPLOAD_GCE_DEV_ENABLED`: Set to `1` to upload and create images during development.
+ * `$CLOUD_UPLOAD_GCE_DEV_PROJECT`: Google Cloud project to create images during development.
+ * `$CLOUD_UPLOAD_GCE_DEV_BUCKET`: Google Storage bucket to create temporary files during development.

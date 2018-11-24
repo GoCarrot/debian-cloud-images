@@ -2,7 +2,7 @@
 set -euxE
 shopt -s extglob nullglob
 
-exec > ${CLOUD_BUILD_BASENAME}.info
+exec > ${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.info
 
 function show() {
   if [ ${#@} -ge 1 ]; then

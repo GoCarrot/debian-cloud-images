@@ -20,6 +20,23 @@ class ActionEnv(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
+class BuildInfo(dict):
+    env = [
+        ('arch', 'CLOUD_BUILD_INFO_ARCH'),
+        ('release', 'CLOUD_BUILD_INFO_RELEASE'),
+        ('release_id', 'CLOUD_BUILD_INFO_RELEASE_ID'),
+        ('vendor', 'CLOUD_BUILD_INFO_VENDOR'),
+        ('image_type', 'CLOUD_BUILD_INFO_IMAGE_TYPE'),
+    ]
+
+    def __init__(self):
+        super().__init__()
+        for name, env in self.env:
+            v = os.environ.get(env)
+            if v:
+                self[name] = v
+
+
 class CloudRelease(collections.OrderedDict):
     env = [
         ('id', 'CLOUD_RELEASE_ID'),
@@ -41,10 +58,15 @@ class CloudRelease(collections.OrderedDict):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--basename',
-        help='(default: $CLOUD_BUILD_BASENAME)',
+    parser.add_argument('--name',
+        help='(default: $CLOUD_BUILD_NAME)',
         action=ActionEnv,
-        env='CLOUD_BUILD_BASENAME',
+        env='CLOUD_BUILD_NAME',
+    )
+    parser.add_argument('--output-dir',
+        help='(default: $CLOUD_BUILD_OUTPUT_DIR)',
+        action=ActionEnv,
+        env='CLOUD_BUILD_OUTPUT_DIR',
     )
     parser.add_argument('--root',
         help='(default: $FAI_ROOT)',
@@ -59,10 +81,17 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    build_info = BuildInfo()
     cloud_release = CloudRelease()
+    package_versions = {}
     manifest = {
+        '_meta': {
+            'name': args.name,
+            'stage': 'build',
+        },
+        'build_info': build_info,
         'cloud_release': cloud_release,
-        'package_versions': {},
+        'package_versions': package_versions,
     }
 
     with subprocess.Popen(
@@ -71,9 +100,9 @@ if __name__ == '__main__':
     ) as f:
         for l in f.stdout:
             package, version = l.decode().strip().split()
-            manifest['package_versions'][package] = version
+            package_versions[package] = version
 
-    with open('{}.build.json'.format(args.basename), 'w') as f:
+    with open('{}/{}.build.json'.format(args.output_dir, args.name), 'w') as f:
         json.dump(manifest, f, indent=4, separators=(',', ': '), sort_keys=True)
 
     if args.write:

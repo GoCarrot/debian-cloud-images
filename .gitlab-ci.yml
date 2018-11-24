@@ -1,7 +1,11 @@
 ---
+stages:
+  - build
+  - vendor upload
+
 variables:
   CLOUD_IMAGE_VERSION: dev
-  CLOUD_IMAGE_NAME: debian-${CLOUD_IMAGE_RELEASE}-${CLOUD_IMAGE_VERSION}-${CLOUD_VENDOR}-${CLOUD_ARCH}
+  CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_IMAGE_VERSION}-${CLOUD_VENDOR}-${CLOUD_ARCH}
 
 .build: &build
   stage: build
@@ -59,7 +63,6 @@ azure stretch build: &build-azure-stretch
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
-    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: azure
 
 azure stretch-backports build: &build-azure-stretch-backports
@@ -70,7 +73,6 @@ azure stretch-backports build: &build-azure-stretch-backports
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
-    CLOUD_IMAGE_RELEASE: 9-backports
     CLOUD_VENDOR: azure
 
 azure buster build: &build-azure-buster
@@ -81,7 +83,6 @@ azure buster build: &build-azure-buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
-    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: azure
   # no waagent in buster
   allow_failure: true
@@ -94,7 +95,6 @@ azure sid build: &build-azure-sid
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
-    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: azure
 
 ec2 stretch build: &build-ec2-stretch
@@ -105,7 +105,6 @@ ec2 stretch build: &build-ec2-stretch
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
-    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: ec2
 
 ec2 buster build: &build-ec2-buster
@@ -116,7 +115,6 @@ ec2 buster build: &build-ec2-buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
-    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: ec2
 
 ec2 sid build: &build-ec2-sid
@@ -127,7 +125,6 @@ ec2 sid build: &build-ec2-sid
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
-    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: ec2
 
 gce stretch build: &build-gce-stretch
@@ -138,7 +135,6 @@ gce stretch build: &build-gce-stretch
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
-    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: gce
 
 gce buster build: &build-gce-buster
@@ -149,7 +145,6 @@ gce buster build: &build-gce-buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
-    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: gce
   # uses external stuff
   allow_failure: true
@@ -162,7 +157,6 @@ gce sid build: &build-gce-sid
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
-    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: gce
   # uses external stuff
   allow_failure: true
@@ -175,7 +169,6 @@ nocloud stretch amd64 build: &build-nocloud-stretch-amd64
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
-    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: nocloud
 
 nocloud buster amd64 build: &build-nocloud-buster-amd64
@@ -186,7 +179,6 @@ nocloud buster amd64 build: &build-nocloud-buster-amd64
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
-    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: nocloud
 
 nocloud sid amd64 build: &build-nocloud-sid-amd64
@@ -197,7 +189,6 @@ nocloud sid amd64 build: &build-nocloud-sid-amd64
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
-    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
 nocloud stretch amd64-efi build: &build-nocloud-stretch-amd64-efi
@@ -208,7 +199,6 @@ nocloud stretch amd64-efi build: &build-nocloud-stretch-amd64-efi
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: stretch
-    CLOUD_IMAGE_RELEASE: 9
     CLOUD_VENDOR: nocloud
 
 nocloud buster amd64-efi build: &build-nocloud-buster-amd64-efi
@@ -219,7 +209,6 @@ nocloud buster amd64-efi build: &build-nocloud-buster-amd64-efi
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: buster
-    CLOUD_IMAGE_RELEASE: 10
     CLOUD_VENDOR: nocloud
 
 nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
@@ -230,7 +219,6 @@ nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: sid
-    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
 nocloud sid arm64 build: &build-nocloud-sid-arm64
@@ -241,7 +229,6 @@ nocloud sid arm64 build: &build-nocloud-sid-arm64
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
-    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
 nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
@@ -252,7 +239,6 @@ nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
-    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: nocloud
   # is just built for test purposes
   allow_failure: true
@@ -265,7 +251,6 @@ openstack buster amd64 build: &build-openstack-buster-amd64
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
-    CLOUD_IMAGE_RELEASE: buster
     CLOUD_VENDOR: openstack
 
 openstack sid amd64 build: &build-openstack-sid-amd64
@@ -276,7 +261,6 @@ openstack sid amd64 build: &build-openstack-sid-amd64
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
-    CLOUD_IMAGE_RELEASE: sid
     CLOUD_VENDOR: openstack
 
 ####
@@ -408,3 +392,68 @@ openstack sid amd64 build official:
   tags:
     - debian-cloud-images-build
     - x86
+
+####
+# Provider uploads for developer pushs
+####
+
+ec2 upload:
+  stage: vendor upload
+  image: debian:buster
+  script:
+    - apt-get update
+    - apt-get install --no-install-recommends -y python3-libcloud
+    - >
+      echo
+      python3 -m debian_cloud_images.cli.upload_ec2
+      --version-override "'${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}'"
+      --regions "'${CLOUD_UPLOAD_EC2_DEV_REGIONS}'"
+      "'${CLOUD_UPLOAD_EC2_DEV_BUCKET}'"
+    - >
+      python3 -m debian_cloud_images.cli.upload_ec2
+      --version-override "${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}"
+      --regions "${CLOUD_UPLOAD_EC2_DEV_REGIONS}"
+      "${CLOUD_UPLOAD_EC2_DEV_BUCKET}"
+  dependencies:
+    - ec2 stretch build
+    - ec2 buster build
+    - ec2 sid build
+  only:
+    refs:
+      - pushes
+      - web
+    variables:
+      - $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1"
+  artifacts:
+    name: ${CLOUD_IMAGE_NAME}-upload_vendor
+    expire_in: 7 days
+    paths:
+      - '*.upload_vendor.json'
+
+gce upload:
+  stage: vendor upload
+  image: debian:buster
+  script:
+    - apt-get update
+    - apt-get install --no-install-recommends -y python3-libcloud
+    - echo "${CLOUD_UPLOAD_GCE_AUTH}" > .auth
+    - >
+      python3 -m debian_cloud_images.cli.upload_gce
+      --auth .auth
+      --version-override "${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}"
+      "${CLOUD_UPLOAD_GCE_DEV_PROJECT}" "${CLOUD_UPLOAD_GCE_DEV_BUCKET}"
+  dependencies:
+    - gce stretch build
+    - gce buster build
+    - gce sid build
+  only:
+    refs:
+      - pushes
+      - web
+    variables:
+      - $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"
+  artifacts:
+    name: ${CLOUD_IMAGE_NAME}-upload_vendor
+    expire_in: 7 days
+    paths:
+      - '*.upload_vendor.json'
