@@ -221,11 +221,12 @@ VendorEnum = enum.Enum(
 
 
 class Version:
-    re = re.compile(r"(?P<release>^(?P<release_base>\d{8})(?P<release_extra>[a-z])?$)|(^dev)")
+    re = re.compile(r"(?P<release>^(?P<release_base>\d{8})(?P<release_extra>[a-z])?$)|(^[a-z0-9-]+-[0-9]+$)|(^dev)")
 
     def __init__(self, s):
         r = self.re.match(s)
 
+        self.version = r.group(0)
         self.release = r.group('release')
         self.release_base = r.group('release_base')
         self.release_extra = r.group('release_extra')
@@ -278,8 +279,7 @@ class Check:
         self.classes |= self.arch.fai_classes
 
     def set_version(self, version):
-        if version.release:
-            self.env['CLOUD_RELEASE_VERSION'] = version.release
+        self.env['CLOUD_RELEASE_VERSION'] = version.version
 
     def check(self):
         if self.release.supports_linux_image_cloud and self.vendor.use_linux_image_cloud:

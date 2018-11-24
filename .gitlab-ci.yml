@@ -4,7 +4,7 @@ stages:
   - vendor upload
 
 variables:
-  CLOUD_IMAGE_VERSION: dev
+  CLOUD_IMAGE_VERSION: ${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}
   CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_VENDOR}-${CLOUD_ARCH}
 
 .build: &build
@@ -411,12 +411,10 @@ ec2 upload:
     - >
       echo
       python3 -m debian_cloud_images.cli.upload_ec2
-      --version-override "'${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}'"
       --regions "'${CLOUD_UPLOAD_EC2_DEV_REGIONS}'"
       "'${CLOUD_UPLOAD_EC2_DEV_BUCKET}'"
     - >
       python3 -m debian_cloud_images.cli.upload_ec2
-      --version-override "${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}"
       --regions "${CLOUD_UPLOAD_EC2_DEV_REGIONS}"
       "${CLOUD_UPLOAD_EC2_DEV_BUCKET}"
   dependencies:
@@ -445,7 +443,6 @@ gce upload:
     - >
       python3 -m debian_cloud_images.cli.upload_gce
       --auth .auth
-      --version-override "${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}"
       "${CLOUD_UPLOAD_GCE_DEV_PROJECT}" "${CLOUD_UPLOAD_GCE_DEV_BUCKET}"
   dependencies:
     - gce stretch build
