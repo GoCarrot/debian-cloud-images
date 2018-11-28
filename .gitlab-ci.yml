@@ -245,7 +245,7 @@ nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
 
 openstack buster amd64 build: &build-openstack-buster-amd64
   <<: *build
-  <<: *only-pushes
+  <<: *only-web
   tags:
     - x86
   variables:
