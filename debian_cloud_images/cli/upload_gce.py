@@ -105,7 +105,7 @@ class ImageUploaderGce:
 
         logging.info('Uploading file to %s/%s', self.bucket, file_out)
 
-        with image.get_tar() as tar:
+        with image.open_tar() as tar:
             f = tar.fileobj
             f.seek(0)
             return self.storage.upload_object_via_stream(

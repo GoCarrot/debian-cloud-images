@@ -74,18 +74,18 @@ def test_Image(images_path):
     assert image.build_arch == 'amd64'
 
     with pytest.raises(RuntimeError):
-        image.get_tar()
+        image.open_tar()
 
 
-def test_Image_get_tar(images_path_tar):
+def test_Image_open_tar(images_path_tar):
     images = Images()
     images.read_path(images_path_tar)
     image = images['test']
-    assert image.get_tar()
+    assert image.open_tar()
 
 
-def test_Image_get_tar_xz(images_path_tar_xz):
+def test_Image_open_tar_xz(images_path_tar_xz):
     images = Images()
     images.read_path(images_path_tar_xz)
     image = images['test']
-    assert image.get_tar()
+    assert image.open_tar()

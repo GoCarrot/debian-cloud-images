@@ -189,7 +189,7 @@ class ImageUploaderEc2:
 
         logging.info('Uploading file to %s/%s', self.bucket, file_out)
 
-        with image.get_tar() as tar:
+        with image.open_tar() as tar:
             return self.storage.upload_object_via_stream(
                 iterator=tar.extractfile('disk.vmdk'),
                 container=None,

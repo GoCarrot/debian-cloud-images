@@ -40,7 +40,7 @@ class Image:
         self.build_vendor = data['build_info']['vendor']
         self.build_version = data['cloud_release'].get('version')
 
-    def get_tar(self):
+    def open_tar(self):
         for ext in ('.tar', '.tar.xz'):
             file_in = self.__path.joinpath(self.name + ext)
             if file_in.exists():
