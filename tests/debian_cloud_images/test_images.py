@@ -92,6 +92,9 @@ def test_Image_open_image(images_path_tar):
     with image.open_image('qcow2') as f:
         assert f.read(8) == b'QFI\xfb\0\0\0\2'
 
+    with image.open_image('vmdk') as f:
+        assert f.read(8) == b'KDMV\3\0\0\0'
+
 
 def test_Image_open_tar(images_path_tar):
     images = Images()

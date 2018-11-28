@@ -47,6 +47,8 @@ class Image:
     def _convert_image_f(self, format):
         if format == 'qcow2':
             return self.__convert_image_to_qcow2
+        if format == 'vmdk':
+            return self.__convert_image_to_vmdk
         raise NotImplementedError
 
     def __convert_image_to_qcow2(self, name_in, name_out):
@@ -57,6 +59,17 @@ class Image:
             '-O', 'qcow2',
             '-c',
             '-o', 'compat=0.10',
+            name_in,
+            name_out,
+        ))
+
+    def __convert_image_to_vmdk(self, name_in, name_out):
+        subprocess.check_call((
+            'qemu-img',
+            'convert',
+            '-f', 'raw',
+            '-O', 'vmdk',
+            '-o', 'subformat=streamOptimized',
             name_in,
             name_out,
         ))
