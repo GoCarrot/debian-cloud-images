@@ -3,6 +3,7 @@ import json
 import pathlib
 import pkg_resources
 import pytest
+import shutil
 import tarfile
 
 from debian_cloud_images.images import Images
@@ -13,6 +14,11 @@ if pkg_resources.parse_version(pytest.__version__) < pkg_resources.parse_version
     @pytest.fixture
     def tmp_path(tmpdir):
         return pathlib.Path(tmpdir.dirname)
+
+
+check_no_qemu_img = shutil.which('qemu-img') is None
+skip_no_qemu_img = pytest.mark.skipif(check_no_qemu_img,
+                                      reason='Need available qemu-img')
 
 
 @pytest.fixture
@@ -75,6 +81,16 @@ def test_Image(images_path):
 
     with pytest.raises(RuntimeError):
         image.open_tar()
+
+
+@skip_no_qemu_img
+def test_Image_open_image(images_path_tar):
+    images = Images()
+    images.read_path(images_path_tar)
+    image = images['test']
+
+    with image.open_image('qcow2') as f:
+        assert f.read(8) == b'QFI\xfb\0\0\0\2'
 
 
 def test_Image_open_tar(images_path_tar):
