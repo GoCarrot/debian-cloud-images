@@ -1,5 +1,6 @@
 import io
 import json
+import os
 import pathlib
 import pkg_resources
 import pytest
@@ -91,6 +92,11 @@ def test_Image_open_image(images_path_tar):
 
     with image.open_image('qcow2') as f:
         assert f.read(8) == b'QFI\xfb\0\0\0\2'
+
+    with image.open_image('vhd') as f:
+        assert f.read(8) == b'1' * 8
+        f.seek(-512, os.SEEK_END)
+        assert f.read(16) == b'conectix\0\0\0\2\0\1\0\0'
 
     with image.open_image('vmdk') as f:
         assert f.read(8) == b'KDMV\3\0\0\0'
