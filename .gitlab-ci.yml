@@ -407,7 +407,7 @@ ec2 upload:
   image: debian:buster
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y python3-libcloud
+    - apt-get install --no-install-recommends -y python3-libcloud qemu-utils
     - >
       echo
       python3 -m debian_cloud_images.cli.upload_ec2
