@@ -38,7 +38,6 @@ class Image:
 
     def read_build_manifest(self, data):
         self.build_arch = data['build_info']['arch']
-        self.build_image_type = data['build_info']['image_type']
         self.build_release = data['build_info']['release']
         self.build_release_id = data['build_info']['release_id']
         self.build_vendor = data['build_info']['vendor']

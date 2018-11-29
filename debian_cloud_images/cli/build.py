@@ -270,7 +270,6 @@ class Check:
     def set_vendor(self, vendor):
         self.vendor = vendor
         self.env['CLOUD_BUILD_INFO_VENDOR'] = self.vendor.name
-        self.env['CLOUD_BUILD_INFO_IMAGE_TYPE'] = self.vendor.image.NAME
         self.classes |= self.vendor.fai_classes
 
     def set_arch(self, arch):

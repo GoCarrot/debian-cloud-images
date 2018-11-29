@@ -33,7 +33,6 @@ def images_path(tmp_path):
                 },
                 'build_info': {
                     'arch': 'amd64',
-                    'image_type': 'vhd',
                     'release': 'sid',
                     'release_id': 'sid',
                     'vendor': 'azure',
