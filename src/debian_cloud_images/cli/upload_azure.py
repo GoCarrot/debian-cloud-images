@@ -1,21 +1,36 @@
+import argparse
 import http.client
 import logging
 
 from .upload_base import UploadBaseCommand
 from ..utils.files import ChunkedFile
+from ..utils.libcloud.storage.azure_blobs import AzureBlobsOAuth2StorageDriver
 
 from libcloud.storage.types import Provider as StorageProvider
 from libcloud.storage.providers import get_driver as storage_driver
 from libcloud.storage.drivers.azure_blobs import AzureBlobLease
 
 
+class AzureAuth:
+    def __init__(self, tenant_id, client_id, client_secret):
+        self.tenant_id = tenant_id
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+
+class ActionAzureAuth(argparse.Action):
+    def __call__(self, parser, namespace, value, option_string=None):
+        setattr(namespace, self.dest, AzureAuth(*value.split(':')))
+
+
 class ImageUploaderAzure:
     storage_cls = storage_driver(StorageProvider.AZURE_BLOBS)
 
-    def __init__(self, storage_name, storage_container, storage_secret, variant, version_override):
+    def __init__(self, storage_name, storage_container, auth, storage_secret, variant, version_override):
         self.storage_name = storage_name
-        self.storage_secret = storage_secret
         self.storage_container = storage_container
+        self.auth = auth
+        self.storage_secret = storage_secret
         self.variant = variant
         self.version_override = version_override
 
@@ -25,7 +40,19 @@ class ImageUploaderAzure:
     def storage(self):
         ret = self.__storage
         if ret is None:
-            ret = self.__storage = self.storage_cls(key=self.storage_name, secret=self.storage_secret)
+            if self.auth:
+                ret = AzureBlobsOAuth2StorageDriver(
+                    key=self.storage_name,
+                    tenant_id=self.auth.tenant_id,
+                    client_id=self.auth.client_id,
+                    client_secret=self.auth.client_secret,
+                )
+            else:
+                ret = self.storage_cls(
+                    key=self.storage_name,
+                    secret=self.storage_secret,
+                )
+            self.__storage = ret
         return ret
 
     def __call__(self, image):
@@ -100,7 +127,7 @@ class ImageUploaderAzure:
 class UploadAzureCommand(UploadBaseCommand):
     argparser_name = 'upload-azure'
     argparser_help = 'upload Debian images to Azure'
-    argparser_usage = '%(prog)s STORAGE CONTAINER SECRET'
+    argparser_usage = '%(prog)s STORAGE CONTAINER'
 
     @classmethod
     def _argparse_register(cls, parser):
@@ -116,18 +143,27 @@ class UploadAzureCommand(UploadBaseCommand):
             help='Azure Storage container',
             metavar='CONTAINER',
         )
-        parser.add_argument(
-            'storage_secret',
+
+        auth_group = parser.add_mutually_exclusive_group(required=True)
+        auth_group.add_argument(
+            '--auth',
+            action=ActionAzureAuth,
+            help='Authentication info for Azure AD application',
+            metavar='TENANT:APPLICATION:SECRET',
+        )
+        auth_group.add_argument(
+            '--storage-secret',
             help='Azure Storage access key',
             metavar='SECRET',
         )
 
-    def __init__(self, *, storage_name=None, storage_container=None, storage_secret=None, variant=None, version_override=None, **kw):
+    def __init__(self, *, storage_name=None, storage_container=None, auth=None, storage_secret=None, variant=None, version_override=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
             storage_name=storage_name,
             storage_container=storage_container,
+            auth=auth,
             storage_secret=storage_secret,
             variant=variant,
             version_override=version_override,

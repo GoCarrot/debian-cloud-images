@@ -275,9 +275,9 @@ azure upload:
   script:
     - >
       ./bin/debian-cloud-images upload-azure
+      ${CLOUD_UPLOAD_AZURE_DEV_STORAGE_SECRET:+--storage-secret "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_SECRET}"}
       "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME}"
       "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_CONTAINER}"
-      "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_SECRET}"
   dependencies:
     - azure stretch build
     - azure stretch-backports build
