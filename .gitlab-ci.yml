@@ -104,24 +104,45 @@ azure sid build: &build-azure-sid
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: azure
 
-ec2 stretch build: &build-ec2-stretch
+ec2 stretch amd64 build: &build-ec2-amd64-stretch
   extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
-ec2 buster build: &build-ec2-buster
+ec2 buster amd64 build: &build-ec2-amd64-buster
   extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: ec2
 
-ec2 sid build: &build-ec2-sid
+ec2 sid amd64 build: &build-ec2-amd64-sid
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: ec2
+
+ec2 stretch arm64 build: &build-ec2-arm64-stretch
+  extends: .build dev web
+  variables:
+    CLOUD_ARCH: arm64
+    CLOUD_RELEASE: stretch
+    CLOUD_VENDOR: ec2
+
+ec2 buster arm64 build: &build-ec2-arm64-buster
+  extends: .build dev web
+  variables:
+    CLOUD_ARCH: arm64
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: ec2
+
+ec2 sid arm64 build: &build-ec2-arm64-sid
+  extends: .build dev web
+  variables:
+    CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: ec2
 
@@ -221,16 +242,16 @@ azure sid build official:
   <<: *build-azure-sid
   extends: .build official
 
-ec2 stretch build official:
-  <<: *build-ec2-stretch
+ec2 stretch amd64 build official:
+  <<: *build-ec2-amd64-stretch
   extends: .build official
 
-ec2 buster build official:
-  <<: *build-ec2-buster
+ec2 buster amd64 build official:
+  <<: *build-ec2-amd64-buster
   extends: .build official
 
-ec2 sid build official:
-  <<: *build-ec2-sid
+ec2 sid amd64 build official:
+  <<: *build-ec2-amd64-sid
   extends: .build official
 
 gce stretch build official:
@@ -309,9 +330,12 @@ ec2 upload:
       --regions "${CLOUD_UPLOAD_EC2_DEV_REGIONS}"
       "${CLOUD_UPLOAD_EC2_DEV_BUCKET}"
   dependencies:
-    - ec2 stretch build
-    - ec2 buster build
-    - ec2 sid build
+    - ec2 stretch amd64 build
+    - ec2 buster amd64 build
+    - ec2 sid amd64 build
+    - ec2 stretch arm64 build
+    - ec2 buster arm64 build
+    - ec2 sid arm64 build
   only:
     refs:
       - pushes
