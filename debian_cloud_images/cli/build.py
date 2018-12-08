@@ -53,7 +53,7 @@ ArchEnum = enum.Enum(
             'fai_classes': ('AMD64', 'GRUB_PC'),
         },
         'amd64-efi': {
-            'fai_classes': ('AMD64', 'GRUB_EFI_AMD64'),
+            'fai_classes': ('AMD64', 'GRUB_CLOUD_AMD64'),
         },
         'arm64': {
             'fai_classes': ('ARM64', 'GRUB_EFI_ARM64'),
