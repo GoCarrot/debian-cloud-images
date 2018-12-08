@@ -166,27 +166,6 @@ nocloud sid amd64 build: &build-nocloud-sid-amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
-nocloud stretch amd64-efi build: &build-nocloud-stretch-amd64-efi
-  extends: .build dev web
-  variables:
-    CLOUD_ARCH: amd64-efi
-    CLOUD_RELEASE: stretch
-    CLOUD_VENDOR: nocloud
-
-nocloud buster amd64-efi build: &build-nocloud-buster-amd64-efi
-  extends: .build dev web
-  variables:
-    CLOUD_ARCH: amd64-efi
-    CLOUD_RELEASE: buster
-    CLOUD_VENDOR: nocloud
-
-nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
-  extends: .build dev pushes
-  variables:
-    CLOUD_ARCH: amd64-efi
-    CLOUD_RELEASE: sid
-    CLOUD_VENDOR: nocloud
-
 nocloud sid arm64 build: &build-nocloud-sid-arm64
   extends: .build dev pushes
   variables:
@@ -271,18 +250,6 @@ nocloud buster amd64 build official:
 
 nocloud sid amd64 build official:
   <<: *build-nocloud-sid-amd64
-  extends: .build official
-
-nocloud stretch amd64-efi build official:
-  <<: *build-nocloud-stretch-amd64-efi
-  extends: .build official
-
-nocloud buster amd64-efi build official:
-  <<: *build-nocloud-buster-amd64-efi
-  extends: .build official
-
-nocloud sid amd64-efi build official:
-  <<: *build-nocloud-sid-amd64-efi
   extends: .build official
 
 openstack buster amd64 build official:
