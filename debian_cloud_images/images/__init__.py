@@ -1,6 +1,10 @@
+import contextlib
 import json
 import logging
+import os
+import subprocess
 import tarfile
+import tempfile
 
 
 logger = logging.getLogger(__name__)
@@ -34,13 +38,73 @@ class Image:
 
     def read_build_manifest(self, data):
         self.build_arch = data['build_info']['arch']
-        self.build_image_type = data['build_info']['image_type']
         self.build_release = data['build_info']['release']
         self.build_release_id = data['build_info']['release_id']
         self.build_vendor = data['build_info']['vendor']
         self.build_version = data['cloud_release'].get('version')
 
-    def get_tar(self):
+    def _convert_image_f(self, format):
+        if format == 'qcow2':
+            return self.__convert_image_to_qcow2
+        if format == 'vhd':
+            return self.__convert_image_to_vhd
+        if format == 'vmdk':
+            return self.__convert_image_to_vmdk
+        raise NotImplementedError
+
+    def __convert_image_to_qcow2(self, name_in, name_out):
+        subprocess.check_call((
+            'qemu-img',
+            'convert',
+            '-f', 'raw',
+            '-O', 'qcow2',
+            '-c',
+            '-o', 'compat=0.10',
+            name_in,
+            name_out,
+        ))
+
+    def __convert_image_to_vhd(self, name_in, name_out):
+        subprocess.check_call((
+            'qemu-img',
+            'convert',
+            '-f', 'raw',
+            '-O', 'vpc',
+            '-o', 'subformat=fixed,force_size',
+            name_in,
+            name_out,
+        ))
+
+    def __convert_image_to_vmdk(self, name_in, name_out):
+        subprocess.check_call((
+            'qemu-img',
+            'convert',
+            '-f', 'raw',
+            '-O', 'vmdk',
+            '-o', 'subformat=streamOptimized',
+            name_in,
+            name_out,
+        ))
+
+    @contextlib.contextmanager
+    def open_image(self, format):
+        convert = self._convert_image_f(format)
+
+        with self.open_tar() as tar:
+            with tempfile.TemporaryDirectory() as tempdirname:
+                name_raw = os.path.join(tempdirname, 'disk.raw')
+                name_converted = os.path.join(tempdirname, 'disk.{}'.format(format))
+
+                logger.debug('Extract image to %s', name_raw)
+                tar.extract('disk.raw', path=tempdirname, set_attrs=False)
+
+                logger.debug('Converting image %s to %s as %s', name_raw, name_converted, format)
+                convert(name_raw, name_converted)
+
+                with open(name_converted, mode='rb', buffering=0) as fout_converted:
+                    yield fout_converted
+
+    def open_tar(self):
         for ext in ('.tar', '.tar.xz'):
             file_in = self.__path.joinpath(self.name + ext)
             if file_in.exists():

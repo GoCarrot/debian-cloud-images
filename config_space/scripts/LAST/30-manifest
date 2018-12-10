@@ -26,7 +26,6 @@ class BuildInfo(dict):
         ('release', 'CLOUD_BUILD_INFO_RELEASE'),
         ('release_id', 'CLOUD_BUILD_INFO_RELEASE_ID'),
         ('vendor', 'CLOUD_BUILD_INFO_VENDOR'),
-        ('image_type', 'CLOUD_BUILD_INFO_IMAGE_TYPE'),
     ]
 
     def __init__(self):

@@ -31,112 +31,11 @@ class Release:
 
 class Vendor:
     def __init__(self, kw):
-        def init(*, fai_size, fai_classes, image_cls, use_linux_image_cloud=False):
+        def init(*, fai_size, fai_classes, use_linux_image_cloud=False):
             self.fai_size = fai_size
             self.fai_classes = fai_classes
-            self.image = image_cls()
             self.use_linux_image_cloud = use_linux_image_cloud
         init(**kw)
-
-
-class ImageType:
-    def convert_image(self, basename):
-        pass
-
-
-class ImageTypeRaw(ImageType):
-    NAME = 'raw'
-
-    def convert_image(self, basename, noop):
-        cmd = (
-            'tar', '-cS',
-            '-f', '{}.tar'.format(basename),
-            '--transform', r'flags=r;s|.*\.raw|disk.raw|',
-            '{}.raw'.format(basename),
-        )
-        logging.info('Running: %s', ' '.join(cmd))
-
-        if not noop:
-            subprocess.check_call(cmd)
-
-
-class ImageTypeVhd(ImageType):
-    NAME = 'vhd'
-
-    def convert_image(self, basename, noop):
-        cmd = (
-            'qemu-img', 'convert',
-            '-f', 'raw', '-o', 'subformat=fixed,force_size', '-O', 'vpc',
-            '{}.raw'.format(basename), '{}.vhd'.format(basename),
-        )
-        logging.info('Running: %s', ' '.join(cmd))
-
-        if not noop:
-            subprocess.check_call(cmd)
-
-        cmd = (
-            'tar', '-cS',
-            '-f', '{}.tar'.format(basename),
-            '--transform', r'flags=r;s|.*\.vhd|disk.vhd|',
-            '{}.vhd'.format(basename),
-        )
-        logging.info('Running: %s', ' '.join(cmd))
-
-        if not noop:
-            subprocess.check_call(cmd)
-
-
-class ImageTypeQcow2(ImageType):
-    NAME = 'qcow2'
-
-    def convert_image(self, basename, noop):
-        cmd = (
-            'qemu-img', 'convert',
-            '-f', 'raw', '{}.raw'.format(basename),
-            '-o', 'compat=0.10',
-            '-O', 'qcow2', '{}.qcow2'.format(basename),
-        )
-        logging.info('Running: %s', ' '.join(cmd))
-
-        if not noop:
-            subprocess.check_call(cmd)
-
-        cmd = (
-            'tar', '-cS',
-            '-f', '{}.tar'.format(basename),
-            '--transform', r'flags=r;s|.*\.qcow2|disk.qcow2|',
-            '{}.qcow2'.format(basename),
-        )
-        logging.info('Running: %s', ' '.join(cmd))
-
-        if not noop:
-            subprocess.check_call(cmd)
-
-
-class ImageTypeVmdk(ImageType):
-    NAME = 'vmdk'
-
-    def convert_image(self, basename, noop):
-        cmd = (
-            'qemu-img', 'convert',
-            '-f', 'raw', '-O', 'vmdk', '-o', 'subformat=streamOptimized',
-            '{}.raw'.format(basename), '{}.vmdk'.format(basename),
-        )
-        logging.info('Running: %s', ' '.join(cmd))
-
-        if not noop:
-            subprocess.check_call(cmd)
-
-        cmd = (
-            'tar', '-cS',
-            '-f', '{}.tar'.format(basename),
-            '--transform', r'flags=r;s|.*\.vmdk|disk.vmdk|',
-            '{}.vmdk'.format(basename),
-        )
-        logging.info('Running: %s', ' '.join(cmd))
-
-        if not noop:
-            subprocess.check_call(cmd)
 
 
 ArchEnum = enum.Enum(
@@ -192,28 +91,23 @@ VendorEnum = enum.Enum(
         'azure': {
             'fai_size': '30G',
             'fai_classes': ('AZURE', ),
-            'image_cls': ImageTypeVhd,
             'use_linux_image_cloud': True,
         },
         'ec2': {
             'fai_size': '8G',
             'fai_classes': ('EC2', ),
-            'image_cls': ImageTypeVmdk,
         },
         'gce': {
             'fai_size': '10G',
             'fai_classes': ('GCE', ),
-            'image_cls': ImageTypeRaw,
         },
         'nocloud': {
             'fai_size': '8G',
             'fai_classes': ('NOCLOUD', ),
-            'image_cls': ImageTypeRaw,
         },
         'openstack': {
             'fai_size': '2G',
             'fai_classes': ('OPENSTACK', ),
-            'image_cls': ImageTypeQcow2,
         },
     },
     type=Vendor,
@@ -270,7 +164,6 @@ class Check:
     def set_vendor(self, vendor):
         self.vendor = vendor
         self.env['CLOUD_BUILD_INFO_VENDOR'] = self.vendor.name
-        self.env['CLOUD_BUILD_INFO_IMAGE_TYPE'] = self.vendor.image.NAME
         self.classes |= self.vendor.fai_classes
 
     def set_arch(self, arch):
@@ -356,13 +249,20 @@ class BuildCommand(BaseCommand):
             name + '.raw',
         )
 
+        self.cmd_tar = (
+            'tar',
+            '-cS',
+            '-f', '{}.tar'.format(name),
+            '--transform', r'flags=r;s|.*\.raw|disk.raw|',
+            '{}.raw'.format(name),
+        )
+
     def __call__(self):
-        logging.info('Running: %s', ' '.join(self.cmd))
+        logging.info('Running: %s; %s', ' '.join(self.cmd), ' '.join(self.cmd_tar))
 
         if not self.noop:
             subprocess.check_call(self.cmd, env=self.env)
-
-        self.c.vendor.image.convert_image(self.name, self.noop)
+            subprocess.check_call(self.cmd_tar)
 
 
 if __name__ == '__main__':
