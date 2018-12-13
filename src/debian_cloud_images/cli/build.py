@@ -2,6 +2,7 @@ import collections.abc
 import enum
 import logging
 import os
+import pathlib
 import re
 import subprocess
 
@@ -273,8 +274,15 @@ class BuildCommand(BaseCommand):
             action='store_true',
             help='Read extra debs from localdebs directory',
         )
+        parser.add_argument(
+            '--path',
+            default='.',
+            help='write manifests and images to (default: .)',
+            metavar='PATH',
+            type=pathlib.Path
+        )
 
-    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, build_type=None, localdebs=False, name=None, noop=False, **kw):
+    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, build_type=None, localdebs=False, name=None, path=None, noop=False, **kw):
         super().__init__(**kw)
 
         self.name = name
@@ -293,7 +301,10 @@ class BuildCommand(BaseCommand):
         self.env = os.environ.copy()
         self.env.update(self.c.env)
         self.env['CLOUD_BUILD_NAME'] = name
-        self.env['CLOUD_BUILD_OUTPUT_DIR'] = os.getcwd()
+        self.env['CLOUD_BUILD_OUTPUT_DIR'] = path.resolve()
+
+        image_raw = path / '{}.raw'.format(name)
+        image_tar = path / '{}.tar'.format(name)
 
         self.cmd = (
             'fai-diskimage',
@@ -302,15 +313,15 @@ class BuildCommand(BaseCommand):
             '--class', ','.join(self.c.classes),
             '--size', self.c.vendor.fai_size,
             '--cspace', fai_config_path,
-            name + '.raw',
+            image_raw.as_posix(),
         )
 
         self.cmd_tar = (
             'tar',
             '-cS',
-            '-f', '{}.tar'.format(name),
+            '-f', image_tar.as_posix(),
             '--transform', r'flags=r;s|.*\.raw|disk.raw|',
-            '{}.raw'.format(name),
+            image_raw.as_posix(),
         )
 
     def __call__(self):
