@@ -130,7 +130,7 @@ class Image:
         """ Write upload manifest """
         manifest = {
             '_meta': {
-                'basename': self.name,
+                'name': self.name,
                 'stage': stage,
             },
             self.build_vendor: data,
