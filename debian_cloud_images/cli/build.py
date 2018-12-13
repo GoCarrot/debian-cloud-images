@@ -115,7 +115,7 @@ VendorEnum = enum.Enum(
 
 
 class BuildId:
-    re = re.compile(r"^\d{8}|[a-z][a-z0-9-]+$")
+    re = re.compile(r"^(?P<release>\d{8})|[a-z][a-z0-9-]+$")
 
     def __init__(self, s):
         r = self.re.match(s)
@@ -124,6 +124,7 @@ class BuildId:
             raise ValueError('invalid build id value')
 
         self.id = r.group(0)
+        self.release = r.group('release')
 
 
 class Classes(collections.abc.MutableSet):
@@ -173,6 +174,8 @@ class Check:
 
     def set_version(self, build_id, ci_pipeline_iid):
         self.env['CLOUD_RELEASE_VERSION'] = '{!s}-{!s}'.format(build_id.id, ci_pipeline_iid)
+        if self.vendor.name == 'azure':
+            self.env['CLOUD_RELEASE_VERSION_AZURE'] = '0.{!s}.{!s}'.format(build_id.release or 0, ci_pipeline_iid)
 
     def check(self):
         if self.release.supports_linux_image_cloud and self.vendor.use_linux_image_cloud:
