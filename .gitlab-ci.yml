@@ -14,13 +14,9 @@ variables:
     - apt-get update
     - >
       apt-get install --no-install-recommends -y
-      ca-certificates debsums dosfstools fai-server fai-setup-storage make python3 qemu-user-static qemu-utils udev
+      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage make python3 qemu-user-static qemu-utils udev
     - |
       if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
-        # Do manual binfmt-misc support, see #910952
-        mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
-        echo ':qemu-aarch64-test:M::\x7f\x45\x4c\x46\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-aarch64-static:OCF' > /proc/sys/fs/binfmt_misc/register
-        echo ':qemu-ppc64le-test:M::\x7f\x45\x4c\x46\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15\x00:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\x00:/usr/bin/qemu-ppc64le-static:OCF' > /proc/sys/fs/binfmt_misc/register
         # Some of our build environments run with SELinux enabled, make sure it is detected by all the tools
         if [ -d /sys/fs/selinux ]; then mount -t selinuxfs none /sys/fs/selinux; mkdir -p /etc/selinux; touch /etc/selinux/config; fi
       fi
@@ -63,8 +59,6 @@ variables:
 azure stretch build: &build-azure-stretch
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
@@ -73,8 +67,6 @@ azure stretch build: &build-azure-stretch
 azure stretch-backports build: &build-azure-stretch-backports
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
@@ -83,8 +75,6 @@ azure stretch-backports build: &build-azure-stretch-backports
 azure buster build: &build-azure-buster
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -95,8 +85,6 @@ azure buster build: &build-azure-buster
 azure sid build: &build-azure-sid
   <<: *build
   <<: *only-pushes
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
@@ -105,8 +93,6 @@ azure sid build: &build-azure-sid
 ec2 stretch build: &build-ec2-stretch
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
@@ -115,8 +101,6 @@ ec2 stretch build: &build-ec2-stretch
 ec2 buster build: &build-ec2-buster
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -125,8 +109,6 @@ ec2 buster build: &build-ec2-buster
 ec2 sid build: &build-ec2-sid
   <<: *build
   <<: *only-pushes
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
@@ -135,8 +117,6 @@ ec2 sid build: &build-ec2-sid
 gce stretch build: &build-gce-stretch
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
@@ -145,8 +125,6 @@ gce stretch build: &build-gce-stretch
 gce buster build: &build-gce-buster
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -157,8 +135,6 @@ gce buster build: &build-gce-buster
 gce sid build: &build-gce-sid
   <<: *build
   <<: *only-pushes
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
@@ -169,8 +145,6 @@ gce sid build: &build-gce-sid
 nocloud stretch amd64 build: &build-nocloud-stretch-amd64
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
@@ -179,8 +153,6 @@ nocloud stretch amd64 build: &build-nocloud-stretch-amd64
 nocloud buster amd64 build: &build-nocloud-buster-amd64
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -189,8 +161,6 @@ nocloud buster amd64 build: &build-nocloud-buster-amd64
 nocloud sid amd64 build: &build-nocloud-sid-amd64
   <<: *build
   <<: *only-pushes
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
@@ -199,8 +169,6 @@ nocloud sid amd64 build: &build-nocloud-sid-amd64
 nocloud stretch amd64-efi build: &build-nocloud-stretch-amd64-efi
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: stretch
@@ -209,8 +177,6 @@ nocloud stretch amd64-efi build: &build-nocloud-stretch-amd64-efi
 nocloud buster amd64-efi build: &build-nocloud-buster-amd64-efi
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: buster
@@ -219,8 +185,6 @@ nocloud buster amd64-efi build: &build-nocloud-buster-amd64-efi
 nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
   <<: *build
   <<: *only-pushes
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: sid
@@ -229,8 +193,6 @@ nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
 nocloud sid arm64 build: &build-nocloud-sid-arm64
   <<: *build
   <<: *only-pushes
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
@@ -239,8 +201,6 @@ nocloud sid arm64 build: &build-nocloud-sid-arm64
 nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
   <<: *build
   <<: *only-pushes
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
@@ -251,8 +211,6 @@ nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
 openstack buster amd64 build: &build-openstack-buster-amd64
   <<: *build
   <<: *only-web
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -261,8 +219,6 @@ openstack buster amd64 build: &build-openstack-buster-amd64
 openstack sid amd64 build: &build-openstack-sid-amd64
   <<: *build
   <<: *only-pushes
-  tags:
-    - x86
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
@@ -277,126 +233,108 @@ azure stretch build official:
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 azure stretch-backports build official:
   <<: *build-azure-stretch-backports
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 azure buster build official:
   <<: *build-azure-buster
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 azure sid build official:
   <<: *build-azure-sid
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 ec2 stretch build official:
   <<: *build-ec2-stretch
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 ec2 buster build official:
   <<: *build-ec2-buster
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 ec2 sid build official:
   <<: *build-ec2-sid
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 gce stretch build official:
   <<: *build-gce-stretch
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 gce buster build official:
   <<: *build-gce-buster
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 gce sid build official:
   <<: *build-gce-sid
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 nocloud stretch amd64 build official:
   <<: *build-nocloud-stretch-amd64
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 nocloud buster amd64 build official:
   <<: *build-nocloud-buster-amd64
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 nocloud sid amd64 build official:
   <<: *build-nocloud-sid-amd64
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 nocloud stretch amd64-efi build official:
   <<: *build-nocloud-stretch-amd64-efi
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 nocloud buster amd64-efi build official:
   <<: *build-nocloud-buster-amd64-efi
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 nocloud sid amd64-efi build official:
   <<: *build-nocloud-sid-amd64-efi
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 openstack buster amd64 build official:
   <<: *build-openstack-buster-amd64
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 openstack sid amd64 build official:
   <<: *build-openstack-sid-amd64
   <<: *only-triggers-official
   tags:
     - debian-cloud-images-build
-    - x86
 
 ####
 # Provider uploads for developer pushs
