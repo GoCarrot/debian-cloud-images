@@ -4,7 +4,7 @@ stages:
   - vendor upload
 
 variables:
-  CLOUD_IMAGE_VERSION: ${CI_PROJECT_NAMESPACE}-${CI_PIPELINE_ID}
+  CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}
   CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_VENDOR}-${CLOUD_ARCH}
 
 .build: &build
@@ -23,10 +23,12 @@ variables:
     - >
       echo
       python3 -m debian_cloud_images.cli.build
-      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_IMAGE_VERSION} ${CLOUD_OPTIONS}
+      --build-id ${CLOUD_IMAGE_BUILD_ID}
+      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
     - >
       python3 -m debian_cloud_images.cli.build
-      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_IMAGE_VERSION} ${CLOUD_OPTIONS}
+      --build-id ${CLOUD_IMAGE_BUILD_ID}
+      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
     name: ${CLOUD_IMAGE_NAME}

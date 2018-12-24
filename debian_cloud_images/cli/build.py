@@ -114,16 +114,17 @@ VendorEnum = enum.Enum(
 )
 
 
-class Version:
-    re = re.compile(r"(?P<release>^(?P<release_base>\d{8})(?P<release_extra>[a-z])?$)|(^[a-z0-9-]+-[0-9]+$)|(^dev)")
+class BuildId:
+    re = re.compile(r"^(?P<release>\d{8})|[a-z][a-z0-9-]+$")
 
     def __init__(self, s):
         r = self.re.match(s)
 
-        self.version = r.group(0)
+        if not r:
+            raise ValueError('invalid build id value')
+
+        self.id = r.group(0)
         self.release = r.group('release')
-        self.release_base = r.group('release_base')
-        self.release_extra = r.group('release_extra')
 
 
 class Classes(collections.abc.MutableSet):
@@ -171,8 +172,10 @@ class Check:
         self.env['CLOUD_BUILD_INFO_ARCH'] = self.arch.name
         self.classes |= self.arch.fai_classes
 
-    def set_version(self, version):
-        self.env['CLOUD_RELEASE_VERSION'] = version.version
+    def set_version(self, build_id, ci_pipeline_iid):
+        self.env['CLOUD_RELEASE_VERSION'] = '{!s}-{!s}'.format(build_id.id, ci_pipeline_iid)
+        if self.vendor.name == 'azure':
+            self.env['CLOUD_RELEASE_VERSION_AZURE'] = '0.{!s}.{!s}'.format(build_id.release or 0, ci_pipeline_iid)
 
     def check(self):
         if self.release.supports_linux_image_cloud and self.vendor.use_linux_image_cloud:
@@ -213,10 +216,22 @@ class BuildCommand(BaseCommand):
             metavar='ARCH',
         )
         parser.add_argument('name', metavar='NAME')
-        parser.add_argument('version', metavar='VERSION', type=Version)
+        parser.add_argument(
+            '--build-id',
+            metavar='ID',
+            required=True,
+            type=BuildId,
+        )
+        parser.add_argument(
+            '--ci-pipeline-iid',
+            action=argparse_ext.ActionEnv,
+            env='CI_PIPELINE_IID',
+            metavar='ID',
+            type=int,
+        )
         parser.add_argument('--noop', action='store_true')
 
-    def __init__(self, *, release=None, vendor=None, arch=None, version=None, name=None, noop=False, **kw):
+    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, name=None, noop=False, **kw):
         super().__init__(**kw)
 
         self.name = name
@@ -226,7 +241,7 @@ class BuildCommand(BaseCommand):
         self.c.set_release(release)
         self.c.set_vendor(vendor)
         self.c.set_arch(arch)
-        self.c.set_version(version)
+        self.c.set_version(build_id, ci_pipeline_iid)
         self.c.check()
 
         self.env = os.environ.copy()

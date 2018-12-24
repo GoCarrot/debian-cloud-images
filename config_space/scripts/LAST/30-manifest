@@ -40,6 +40,7 @@ class CloudRelease(collections.OrderedDict):
     env = [
         ('id', 'CLOUD_RELEASE_ID'),
         ('version', 'CLOUD_RELEASE_VERSION'),
+        ('azure_version', 'CLOUD_RELEASE_VERSION_AZURE'),
         ('build_info_url', 'CI_JOB_URL'),
     ]
 
