@@ -7,7 +7,7 @@ variables:
   CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}
   CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_VENDOR}-${CLOUD_ARCH}
 
-.build: &build
+.build:
   stage: build
   image: debian:buster
   script:
@@ -42,41 +42,43 @@ variables:
 # Different selections when builds will be done
 ####
 
-.only-pushes: &only-pushes
+.build dev pushes:
+  extends: .build
   only:
     - pushes
 
-.only-triggers-official: &only-triggers-official
-  only:
-    - triggers@cloud-team/debian-cloud-images
-
-.only-web: &only-web
+.build dev web:
+  extends: .build
   only:
     - web
+
+.build official:
+  extends: .build
+  only:
+    - triggers@cloud-team/debian-cloud-images
+  tags:
+    - debian-cloud-images-build
 
 ####
 # Builds for developer uploads pushes
 ####
 
 azure stretch build: &build-azure-stretch
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: azure
 
 azure stretch-backports build: &build-azure-stretch-backports
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
     CLOUD_VENDOR: azure
 
 azure buster build: &build-azure-buster
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -85,48 +87,42 @@ azure buster build: &build-azure-buster
   allow_failure: true
 
 azure sid build: &build-azure-sid
-  <<: *build
-  <<: *only-pushes
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: azure
 
 ec2 stretch build: &build-ec2-stretch
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
 ec2 buster build: &build-ec2-buster
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: ec2
 
 ec2 sid build: &build-ec2-sid
-  <<: *build
-  <<: *only-pushes
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: ec2
 
 gce stretch build: &build-gce-stretch
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: gce
 
 gce buster build: &build-gce-buster
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -135,8 +131,7 @@ gce buster build: &build-gce-buster
   allow_failure: true
 
 gce sid build: &build-gce-sid
-  <<: *build
-  <<: *only-pushes
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
@@ -145,64 +140,56 @@ gce sid build: &build-gce-sid
   allow_failure: true
 
 nocloud stretch amd64 build: &build-nocloud-stretch-amd64
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: nocloud
 
 nocloud buster amd64 build: &build-nocloud-buster-amd64
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: nocloud
 
 nocloud sid amd64 build: &build-nocloud-sid-amd64
-  <<: *build
-  <<: *only-pushes
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
 nocloud stretch amd64-efi build: &build-nocloud-stretch-amd64-efi
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: nocloud
 
 nocloud buster amd64-efi build: &build-nocloud-buster-amd64-efi
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: nocloud
 
 nocloud sid amd64-efi build: &build-nocloud-sid-amd64-efi
-  <<: *build
-  <<: *only-pushes
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64-efi
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
 nocloud sid arm64 build: &build-nocloud-sid-arm64
-  <<: *build
-  <<: *only-pushes
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
 nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
-  <<: *build
-  <<: *only-pushes
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
@@ -211,16 +198,14 @@ nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
   allow_failure: true
 
 openstack buster amd64 build: &build-openstack-buster-amd64
-  <<: *build
-  <<: *only-web
+  extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: openstack
 
 openstack sid amd64 build: &build-openstack-sid-amd64
-  <<: *build
-  <<: *only-pushes
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
@@ -232,111 +217,75 @@ openstack sid amd64 build: &build-openstack-sid-amd64
 
 azure stretch build official:
   <<: *build-azure-stretch
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 azure stretch-backports build official:
   <<: *build-azure-stretch-backports
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 azure buster build official:
   <<: *build-azure-buster
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 azure sid build official:
   <<: *build-azure-sid
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 ec2 stretch build official:
   <<: *build-ec2-stretch
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 ec2 buster build official:
   <<: *build-ec2-buster
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 ec2 sid build official:
   <<: *build-ec2-sid
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 gce stretch build official:
   <<: *build-gce-stretch
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 gce buster build official:
   <<: *build-gce-buster
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 gce sid build official:
   <<: *build-gce-sid
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 nocloud stretch amd64 build official:
   <<: *build-nocloud-stretch-amd64
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 nocloud buster amd64 build official:
   <<: *build-nocloud-buster-amd64
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 nocloud sid amd64 build official:
   <<: *build-nocloud-sid-amd64
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 nocloud stretch amd64-efi build official:
   <<: *build-nocloud-stretch-amd64-efi
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 nocloud buster amd64-efi build official:
   <<: *build-nocloud-buster-amd64-efi
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 nocloud sid amd64-efi build official:
   <<: *build-nocloud-sid-amd64-efi
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 openstack buster amd64 build official:
   <<: *build-openstack-buster-amd64
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 openstack sid amd64 build official:
   <<: *build-openstack-sid-amd64
-  <<: *only-triggers-official
-  tags:
-    - debian-cloud-images-build
+  extends: .build official
 
 ####
 # Provider uploads for developer pushs
