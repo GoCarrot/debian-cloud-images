@@ -118,11 +118,11 @@ class Image:
             raise RuntimeError('No version or version override specified')
 
         if variant == 'daily':
-            return 'debian-{}-daily-{}'.format(self.build_release_id, version)
+            return 'debian-{}-{}-daily-{}'.format(self.build_release_id, self.build_arch, version)
         elif variant == 'dev':
-            return 'debian-{}-dev-{}'.format(self.build_release_id, version)
+            return 'debian-{}-{}-dev-{}'.format(self.build_release_id, self.build_arch, version)
         elif variant == 'release':
-            return 'debian-{}-{}'.format(self.build_release_id, version)
+            return 'debian-{}-{}-{}'.format(self.build_release_id, self.build_arch, version)
         else:
             raise RuntimeError
 
