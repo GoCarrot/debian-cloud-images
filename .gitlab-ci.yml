@@ -46,11 +46,15 @@ variables:
   extends: .build
   only:
     - pushes
+  variables:
+    CLOUD_IMAGE_TYPE: dev
 
 .build dev web:
   extends: .build
   only:
     - web
+  variables:
+    CLOUD_IMAGE_TYPE: dev
 
 .build official:
   extends: .build
@@ -58,6 +62,8 @@ variables:
     - triggers@cloud-team/debian-cloud-images
   tags:
     - debian-cloud-images-build
+  variables:
+    CLOUD_IMAGE_TYPE: official
 
 ####
 # Builds for developer uploads pushes
