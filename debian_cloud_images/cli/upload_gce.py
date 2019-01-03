@@ -91,6 +91,10 @@ class ImageUploaderGce:
         return self.compute.ex_create_image(
             name=gce_name,
             volume=url,
+            guest_os_features=(
+                'UEFI_COMPATIBLE',
+                'VIRTIO_SCSI_MULTIQUEUE',
+            ),
         )
 
     def delete_file(self, image, gce_file):
