@@ -38,6 +38,14 @@ class Vendor:
         init(**kw)
 
 
+class BuildType:
+    def __init__(self, kw):
+        def init(*, fai_classes, require_release=False):
+            self.fai_classes = fai_classes
+            self.require_release = require_release
+        init(**kw)
+
+
 ArchEnum = enum.Enum(
     'ArchEnum',
     {
@@ -114,6 +122,21 @@ VendorEnum = enum.Enum(
 )
 
 
+BuildTypeEnum = enum.Enum(
+    'BuildTypeEnum',
+    {
+        'dev': {
+            'fai_classes': ('TYPE_DEV', ),
+        },
+        'official': {
+            'fai_classes': (),
+            'require_release': True,
+        },
+    },
+    type=BuildType,
+)
+
+
 class BuildId:
     re = re.compile(r"^(?P<release>\d{8})|[a-z][a-z0-9-]+$")
 
@@ -155,6 +178,11 @@ class Check:
         self.classes.add('DEBIAN')
         self.classes.add('CLOUD')
         self.env = {}
+
+    def set_type(self, _type):
+        self.type = _type
+        self.env['CLOUD_BUILD_TYPE'] = self.type.name
+        self.classes |= self.type.fai_classes
 
     def set_release(self, release):
         self.release = release
@@ -229,15 +257,24 @@ class BuildCommand(BaseCommand):
             metavar='ID',
             type=int,
         )
+        parser.add_argument(
+            '--build-type',
+            action=argparse_ext.ActionEnum,
+            enum=BuildTypeEnum,
+            default='dev',
+            help='Type of image to build',
+            metavar='TYPE',
+        )
         parser.add_argument('--noop', action='store_true')
 
-    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, name=None, noop=False, **kw):
+    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, build_type=None, name=None, noop=False, **kw):
         super().__init__(**kw)
 
         self.name = name
         self.noop = noop
 
         self.c = Check()
+        self.c.set_type(build_type)
         self.c.set_release(release)
         self.c.set_vendor(vendor)
         self.c.set_arch(arch)
