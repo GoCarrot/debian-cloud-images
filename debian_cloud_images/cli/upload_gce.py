@@ -93,6 +93,7 @@ class ImageUploaderGce:
             volume=url,
             guest_os_features=(
                 'UEFI_COMPATIBLE',
+                'VIRTIO_SCSI_MULTIQUEUE',
             ),
         )
 
