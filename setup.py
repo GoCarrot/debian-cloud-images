@@ -4,6 +4,7 @@ setuptools.setup(
     name='debian_cloud_images',
     version='0',
     packages=setuptools.find_namespace_packages(exclude=['tests', 'tests.*']),
+    zip_safe=False,
     entry_points={
         'console_scripts': ['debian-cloud-images=debian_cloud_images.cli.all:main'],
     },
