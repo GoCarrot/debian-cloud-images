@@ -7,6 +7,7 @@ import subprocess
 
 from .base import BaseCommand
 
+from ..build import fai_config_path
 from ..utils import argparse_ext
 
 
@@ -293,18 +294,13 @@ class BuildCommand(BaseCommand):
         self.env['CLOUD_BUILD_NAME'] = name
         self.env['CLOUD_BUILD_OUTPUT_DIR'] = os.getcwd()
 
-        if os.path.isdir(os.path.join(os.getcwd(), 'config_space')):
-            config_space_folder = os.path.join(os.getcwd(), 'config_space')
-        else:
-            config_space_folder = '/usr/share/debian-cloud-images/config_space'
-
         self.cmd = (
             'fai-diskimage',
             '--verbose',
             '--hostname', 'debian',
             '--class', ','.join(self.c.classes),
             '--size', self.c.vendor.fai_size,
-            '--cspace', config_space_folder,
+            '--cspace', fai_config_path,
             name + '.raw',
         )
 
