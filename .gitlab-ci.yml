@@ -7,14 +7,17 @@ variables:
   CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}
   CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_VENDOR}-${CLOUD_ARCH}
 
+before_script:
+  - apt-get update
+  - apt-get install --no-install-recommends -y python3-libcloud qemu-utils
+
 .build:
   stage: build
   image: debian:buster
   script:
-    - apt-get update
     - >
       apt-get install --no-install-recommends -y
-      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage make python3 qemu-user-static qemu-utils udev
+      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage make qemu-user-static qemu-utils udev
     - |
       if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
         # Some of our build environments run with SELinux enabled, make sure it is detected by all the tools
@@ -22,12 +25,12 @@ variables:
       fi
     - >
       echo
-      python3 -m debian_cloud_images.cli.build
+      debian-cloud-images build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
       --build-type ${CLOUD_IMAGE_TYPE}
       ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
     - >
-      python3 -m debian_cloud_images.cli.build
+      ./bin/debian-cloud-images build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
       --build-type ${CLOUD_IMAGE_TYPE}
       ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
@@ -270,15 +273,13 @@ ec2 upload:
   stage: vendor upload
   image: debian:buster
   script:
-    - apt-get update
-    - apt-get install --no-install-recommends -y python3-libcloud qemu-utils
     - >
       echo
-      python3 -m debian_cloud_images.cli.upload_ec2
+      debian-cloud-images upload-ec2
       --regions "'${CLOUD_UPLOAD_EC2_DEV_REGIONS}'"
       "'${CLOUD_UPLOAD_EC2_DEV_BUCKET}'"
     - >
-      python3 -m debian_cloud_images.cli.upload_ec2
+      ./bin/debian-cloud-images upload-ec2
       --regions "${CLOUD_UPLOAD_EC2_DEV_REGIONS}"
       "${CLOUD_UPLOAD_EC2_DEV_BUCKET}"
   dependencies:
@@ -302,11 +303,9 @@ gce upload:
   stage: vendor upload
   image: debian:buster
   script:
-    - apt-get update
-    - apt-get install --no-install-recommends -y python3-libcloud
     - echo "${CLOUD_UPLOAD_GCE_AUTH}" > .auth
     - >
-      python3 -m debian_cloud_images.cli.upload_gce
+      ./bin/debian-cloud-images upload-gce
       --auth .auth
       "${CLOUD_UPLOAD_GCE_DEV_PROJECT}" "${CLOUD_UPLOAD_GCE_DEV_BUCKET}"
   dependencies:

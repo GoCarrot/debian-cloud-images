@@ -8,7 +8,7 @@ help:
 
 _image.raw:
 	umask 022; \
-	sudo python3 -m debian_cloud_images.cli.build $(DIST) $(CLOUD) amd64 $(CLOUD)-$(DIST)-image --build-id manual --ci-pipeline-iid 0 --localdebs
+	sudo ./bin/debian-cloud-images build $(DIST) $(CLOUD) amd64 $(CLOUD)-$(DIST)-image --build-id manual --ci-pipeline-iid 0 --localdebs
 
 sid-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=sid
