@@ -1,4 +1,6 @@
 __pycache__/
-.pytest_cache/
-*-image.raw
-*-image.vhd
+/.pybuild/
+/.pytest_cache/
+/src/*.egg-info/
+/*-image.raw
+/*-image.vhd
