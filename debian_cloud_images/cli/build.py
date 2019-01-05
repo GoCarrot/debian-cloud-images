@@ -198,6 +198,9 @@ class Check:
         self.classes |= self.arch.fai_classes
 
     def set_version(self, build_id, ci_pipeline_iid):
+        if self.type.require_release and not build_id.release:
+            raise ValueError('need release build id for selected build type')
+
         self.env['CLOUD_RELEASE_VERSION'] = '{!s}-{!s}'.format(build_id.id, ci_pipeline_iid)
         if self.vendor.name == 'azure':
             self.env['CLOUD_RELEASE_VERSION_AZURE'] = '0.{!s}.{!s}'.format(build_id.release or 0, ci_pipeline_iid)

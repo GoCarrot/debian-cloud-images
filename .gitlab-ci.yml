@@ -24,10 +24,12 @@ variables:
       echo
       python3 -m debian_cloud_images.cli.build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
+      --build-type ${CLOUD_IMAGE_TYPE}
       ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
     - >
       python3 -m debian_cloud_images.cli.build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
+      --build-type ${CLOUD_IMAGE_TYPE}
       ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
