@@ -294,6 +294,7 @@ ec2 upload:
     expire_in: 7 days
     paths:
       - '*.upload_vendor.json'
+  allow_failure: true
 
 gce upload:
   stage: vendor upload
@@ -321,3 +322,4 @@ gce upload:
     expire_in: 7 days
     paths:
       - '*.upload_vendor.json'
+  allow_failure: true
