@@ -159,8 +159,6 @@ gce buster build: &build-gce-buster
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: gce
-  # uses external stuff
-  allow_failure: true
 
 gce sid build: &build-gce-sid
   extends: .build dev pushes
@@ -168,8 +166,6 @@ gce sid build: &build-gce-sid
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: gce
-  # uses external stuff
-  allow_failure: true
 
 nocloud stretch amd64 build: &build-nocloud-stretch-amd64
   extends: .build dev web
