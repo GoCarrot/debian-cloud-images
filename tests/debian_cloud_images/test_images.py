@@ -105,11 +105,13 @@ def test_Image_open_tar(images_path_tar):
     images = Images()
     images.read_path(images_path_tar)
     image = images['test']
-    assert image.open_tar()
+    with image.open_tar() as f:
+        assert f
 
 
 def test_Image_open_tar_xz(images_path_tar_xz):
     images = Images()
     images.read_path(images_path_tar_xz)
     image = images['test']
-    assert image.open_tar()
+    with image.open_tar() as f:
+        assert f

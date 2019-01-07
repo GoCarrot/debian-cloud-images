@@ -269,6 +269,32 @@ openstack sid amd64 build official:
 # Provider uploads for developer pushs
 ####
 
+azure upload:
+  stage: vendor upload
+  image: debian:buster
+  script:
+    - >
+      ./bin/debian-cloud-images upload-azure
+      ${CLOUD_UPLOAD_AZURE_DEV_STORAGE_SECRET:+--storage-secret "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_SECRET}"}
+      "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME}"
+      "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_CONTAINER}"
+  dependencies:
+    - azure stretch build
+    - azure stretch-backports build
+    - azure buster build
+    - azure sid build
+  only:
+    refs:
+      - pushes
+      - web
+    variables:
+      - $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1"
+  artifacts:
+    name: ${CLOUD_IMAGE_NAME}-upload_vendor
+    expire_in: 7 days
+    paths:
+      - '*.upload_vendor.json'
+
 ec2 upload:
   stage: vendor upload
   image: debian:buster

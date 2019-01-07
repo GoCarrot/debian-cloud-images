@@ -81,3 +81,10 @@ Uploaders typically need some variables set with credentials or targets.
  * `$CLOUD_UPLOAD_GCE_DEV_ENABLED`: Set to `1` to upload and create images during development.
  * `$CLOUD_UPLOAD_GCE_DEV_PROJECT`: Google Cloud project to create images during development.
  * `$CLOUD_UPLOAD_GCE_DEV_BUCKET`: Google Storage bucket to create temporary files during development.
+
+### Microsoft Azure
+
+ * `$CLOUD_UPLOAD_AZURE_DEV_ENABLED`: Set to `1` to upload images during development.
+ * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME`: Azure Storage name.
+ * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_CONTAINER`: Azure Storage container.
+ * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_SECRET`: Azure Storage access key.
