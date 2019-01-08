@@ -1,6 +1,6 @@
-import http.client
+import requests
+import urllib.parse
 
-from libcloud.common.base import Connection
 from libcloud.common.aws import AWSDriver
 from libcloud.storage.drivers.s3 import BaseS3StorageDriver, S3SignatureV4Connection
 
@@ -10,20 +10,24 @@ class S3BucketStorageDriver(AWSDriver, BaseS3StorageDriver):
     connectionCls = S3SignatureV4Connection
 
     def __init__(self, bucket, key, secret=None, region=None, **kwargs):
-        host = '{}.s3.amazonaws.com'.format(bucket)
-        self.region_name = self._get_region(host)
+        host, self.region_name = self._get_host_region(bucket)
         super().__init__(key=key, secret=secret, host=host, **kwargs)
 
-    def _get_region(self, host):
-        """ Detect bucket region from unauthenticated request """
-        connection = Connection(host=host)
+    def _get_host_region(self, bucket):
+        """ Detect bucket host and region from unauthenticated request """
+        host = '{}.s3.amazonaws.com'.format(bucket)
 
-        r = connection.request('/', method='HEAD', raw=True)
+        r = requests.head('https://{}/'.format(host), allow_redirects=False)
 
-        if r.status in (http.client.OK, http.client.FORBIDDEN):
-            return r.headers['x-amz-bucket-region']
+        if r.status_code in (200, 403):
+            region = r.headers['x-amz-bucket-region']
+        elif r.status_code in (307, ):
+            host = urllib.parse.urlsplit(r.headers['location']).netloc
+            region = r.headers['x-amz-bucket-region']
+        else:
+            raise RuntimeError(r.status_code)
 
-        raise RuntimeError(r.status)
+        return host, region
 
     def _get_container_path(self, container):
         if container:
