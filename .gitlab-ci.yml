@@ -140,7 +140,7 @@ ec2 buster arm64 build: &build-ec2-arm64-buster
     CLOUD_VENDOR: ec2
 
 ec2 sid arm64 build: &build-ec2-arm64-sid
-  extends: .build dev web
+  extends: .build dev pushes
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
