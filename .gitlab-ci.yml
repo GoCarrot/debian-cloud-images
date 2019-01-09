@@ -184,6 +184,20 @@ generic sid amd64 build: &build-generic-sid-amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
+genericcloud buster amd64 build: &build-genericcloud-buster-amd64
+  extends: .build dev web
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: genericcloud
+
+genericcloud sid amd64 build: &build-genericcloud-sid-amd64
+  extends: .build dev pushes
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: genericcloud
+
 nocloud stretch amd64 build: &build-nocloud-stretch-amd64
   extends: .build dev web
   variables:
@@ -271,6 +285,14 @@ generic buster amd64 build official:
 
 generic sid amd64 build official:
   <<: *build-generic-sid-amd64
+  extends: .build official
+
+genericcloud buster amd64 build official:
+  <<: *build-genericcloud-buster-amd64
+  extends: .build official
+
+genericcloud sid amd64 build official:
+  <<: *build-genericcloud-sid-amd64
   extends: .build official
 
 nocloud stretch amd64 build official:

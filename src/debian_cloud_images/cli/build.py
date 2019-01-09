@@ -120,6 +120,11 @@ VendorEnum = enum.Enum(
             'fai_size': '2G',
             'fai_classes': ('GENERIC', ),
         },
+        'genericcloud': {
+            'fai_size': '2G',
+            'fai_classes': ('GENERIC', ),
+            'use_linux_image_cloud': True,
+        },
         'nocloud': {
             'fai_size': '2G',
             'fai_classes': ('NOCLOUD', ),
