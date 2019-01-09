@@ -116,13 +116,13 @@ VendorEnum = enum.Enum(
             'fai_classes': ('GCE', ),
             'use_linux_image_cloud': True,
         },
+        'generic': {
+            'fai_size': '2G',
+            'fai_classes': ('GENERIC', ),
+        },
         'nocloud': {
             'fai_size': '2G',
             'fai_classes': ('NOCLOUD', ),
-        },
-        'openstack': {
-            'fai_size': '2G',
-            'fai_classes': ('GENERIC', ),
         },
     },
     type=Vendor,
