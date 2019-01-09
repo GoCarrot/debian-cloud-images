@@ -13,6 +13,11 @@ class ImageUploaderEc2:
     compute_cls = ExEC2NodeDriver
     storage_cls = S3BucketStorageDriver
 
+    architecture_map = {
+        'amd64': 'x86_64',
+        'arm64': 'arm64',
+    }
+
     def __init__(self, bucket, key, secret, regions, variant, version_override):
         self.bucket = bucket
         self.key = key
@@ -79,7 +84,8 @@ class ImageUploaderEc2:
     def create_image(self, image, name, snapshots):
         """ Create images in all regions """
 
-        images = {}
+        ec2_images = {}
+
         for snapshot in snapshots:
             mapping = [{
                 'DeviceName': '/dev/xvda',
@@ -90,10 +96,13 @@ class ImageUploaderEc2:
                 },
             }]
 
-            image = snapshot.driver.ex_register_image(
+            driver = snapshot.driver
+            architecture = self.architecture_map[image.build_arch]
+
+            ec2_image = driver.ex_register_image(
                 name=name,
                 description='Test',
-                architecture='x86_64',
+                architecture=architecture,
                 block_device_mapping=mapping,
                 root_device_name='/dev/xvda',
                 virtualization_type='hvm',
@@ -101,16 +110,16 @@ class ImageUploaderEc2:
                 sriov_net_support='simple',
             )
 
-            logging.info('Image %s/%s registered from %s', image.driver.region_name, image.id, snapshot.id)
+            logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
-            image.driver.ex_create_tags(image, {
+            driver.ex_create_tags(ec2_image, {
                 'AMI': name,
                 'Project': 'images',
             })
 
-            images[image.driver.region_name] = image
+            ec2_images[driver.region_name] = ec2_image
 
-        return images
+        return ec2_images
 
     def copy_snapshot(self, image, name, snapshot_base):
         """ Copy snapshot to other regions """
