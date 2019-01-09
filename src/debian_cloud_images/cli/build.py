@@ -122,7 +122,7 @@ VendorEnum = enum.Enum(
         },
         'openstack': {
             'fai_size': '2G',
-            'fai_classes': ('OPENSTACK', ),
+            'fai_classes': ('GENERIC', ),
         },
     },
     type=Vendor,
