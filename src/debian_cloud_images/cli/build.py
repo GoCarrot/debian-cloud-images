@@ -106,6 +106,7 @@ VendorEnum = enum.Enum(
         'gce': {
             'fai_size': '10G',
             'fai_classes': ('GCE', ),
+            'use_linux_image_cloud': True,
         },
         'nocloud': {
             'fai_size': '8G',
