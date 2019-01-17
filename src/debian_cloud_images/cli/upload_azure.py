@@ -4,6 +4,8 @@ import logging
 
 from .upload_base import UploadBaseCommand
 from ..utils.files import ChunkedFile
+from ..utils.libcloud.compute.azure_arm import ExAzureNodeDriver
+from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 from ..utils.libcloud.storage.azure_blobs import AzureBlobsOAuth2StorageDriver
 
 from libcloud.storage.types import Provider as StorageProvider
@@ -18,41 +20,70 @@ class AzureAuth:
         self.client_secret = client_secret
 
 
+class AzureResourceGroup:
+    def __init__(self, subscription_id, resource_group):
+        self.subscription_id = subscription_id
+        self.resource_group = resource_group
+
+
 class ActionAzureAuth(argparse.Action):
     def __call__(self, parser, namespace, value, option_string=None):
         setattr(namespace, self.dest, AzureAuth(*value.split(':')))
 
 
+class ActionAzureResourceGroup(argparse.Action):
+    def __call__(self, parser, namespace, value, option_string=None):
+        setattr(namespace, self.dest, AzureResourceGroup(*value.split(':')))
+
+
 class ImageUploaderAzure:
     storage_cls = storage_driver(StorageProvider.AZURE_BLOBS)
 
-    def __init__(self, storage_name, storage_container, auth, storage_secret, variant, version_override):
+    def __init__(self, storage_group, storage_name, storage_container, image_group, auth, variant, version_override):
+        self.storage_group = storage_group
         self.storage_name = storage_name
         self.storage_container = storage_container
+        self.image_group = image_group
         self.auth = auth
-        self.storage_secret = storage_secret
         self.variant = variant
         self.version_override = version_override
 
-        self.__storage = None
+        self.__compute_driver = self.__storage = self.__storage_driver = None
+
+    @property
+    def compute_driver(self):
+        ret = self.__compute_driver
+        if ret is None:
+            ret = self.__compute_driver = ExAzureNodeDriver(
+                tenant_id=self.auth.tenant_id,
+                subscription_id=self.storage_group.subscription_id,
+                client_id=self.auth.client_id,
+                client_secret=self.auth.client_secret,
+            )
+        return ret
 
     @property
     def storage(self):
         ret = self.__storage
         if ret is None:
-            if self.auth:
-                ret = AzureBlobsOAuth2StorageDriver(
-                    key=self.storage_name,
-                    tenant_id=self.auth.tenant_id,
-                    client_id=self.auth.client_id,
-                    client_secret=self.auth.client_secret,
-                )
-            else:
-                ret = self.storage_cls(
-                    key=self.storage_name,
-                    secret=self.storage_secret,
-                )
-            self.__storage = ret
+            ret = self.__storage = AzureBlobsOAuth2StorageDriver(
+                key=self.storage_name,
+                tenant_id=self.auth.tenant_id,
+                client_id=self.auth.client_id,
+                client_secret=self.auth.client_secret,
+            )
+        return ret
+
+    @property
+    def storage_driver(self):
+        ret = self.__storage_driver
+        if ret is None:
+            ret = self.__storage_driver = AzureResourceManagementStorageDriver(
+                tenant_id=self.auth.tenant_id,
+                subscription_id=self.storage_group.subscription_id,
+                client_id=self.auth.client_id,
+                client_secret=self.auth.client_secret,
+            )
         return ret
 
     def __call__(self, image):
@@ -65,12 +96,35 @@ class ImageUploaderAzure:
         image_url = 'https://{}.blob.core.windows.net{}'.format(self.storage_name, image_path)
 
         self.upload_file(image, image_path)
+        self.create_image(image, image_name, image_url)
 
         image.write_vendor_manifest(
             'upload_vendor',
             {
-                'url': image_url,
             },
+        )
+
+        self.delete_file(image, image_path)
+
+    def create_image(self, image, image_name, image_url):
+        image_storage = self.storage_driver.get_storage(self.storage_group.resource_group, self.storage_name)
+        image_location = image_storage.extra['location']
+
+        logging.info('Create image %s/%s in %s', self.image_group.resource_group, image_name, image_location)
+
+        return self.compute_driver.ex_create_computeimage(
+            name=image_name,
+            ex_resource_group=self.image_group.resource_group,
+            location=image_location,
+            ex_blob=image_url,
+        )
+
+    def delete_file(self, image, path):
+        logging.info('Deleting file %ss', path)
+
+        self.storage.connection.request(
+            path,
+            method='DELETE',
         )
 
     def upload_file(self, image, path):
@@ -134,6 +188,12 @@ class UploadAzureCommand(UploadBaseCommand):
         super()._argparse_register(parser)
 
         parser.add_argument(
+            'group',
+            action=ActionAzureResourceGroup,
+            help='Azure Subscription and Resource group',
+            metavar='SUBSCRIPTION:GROUP',
+        )
+        parser.add_argument(
             'storage_name',
             help='Azure Storage name',
             metavar='STORAGE',
@@ -143,28 +203,22 @@ class UploadAzureCommand(UploadBaseCommand):
             help='Azure Storage container',
             metavar='CONTAINER',
         )
-
-        auth_group = parser.add_mutually_exclusive_group(required=True)
-        auth_group.add_argument(
+        parser.add_argument(
             '--auth',
             action=ActionAzureAuth,
             help='Authentication info for Azure AD application',
             metavar='TENANT:APPLICATION:SECRET',
         )
-        auth_group.add_argument(
-            '--storage-secret',
-            help='Azure Storage access key',
-            metavar='SECRET',
-        )
 
-    def __init__(self, *, storage_name=None, storage_container=None, auth=None, storage_secret=None, variant=None, version_override=None, **kw):
+    def __init__(self, *, group=None, storage_name=None, storage_container=None, auth=None, variant=None, version_override=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
+            storage_group=group,
             storage_name=storage_name,
             storage_container=storage_container,
+            image_group=group,
             auth=auth,
-            storage_secret=storage_secret,
             variant=variant,
             version_override=version_override,
         )
