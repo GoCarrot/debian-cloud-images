@@ -1,6 +1,4 @@
 PACKAGES install-norec
-dbus
 cloud-init
 cloud-utils
-libpam-systemd
 locales-all
