@@ -1,4 +1,4 @@
-PACKAGES install
+PACKAGES install-norec
 apt-transport-https
 awscli
 python-boto
