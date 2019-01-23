@@ -1,4 +1,3 @@
 PACKAGES install-norec
 cloud-init
-cloud-utils
 locales-all
