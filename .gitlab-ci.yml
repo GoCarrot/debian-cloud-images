@@ -5,7 +5,6 @@ stages:
 
 variables:
   CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}
-  CLOUD_IMAGE_NAME: debian-${CLOUD_RELEASE}-${CLOUD_VENDOR}-${CLOUD_ARCH}
 
 before_script:
   - apt-get update
@@ -36,7 +35,7 @@ before_script:
       ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
-    name: ${CLOUD_IMAGE_NAME}
+    name: debian-${CLOUD_RELEASE}-${CLOUD_VENDOR}-${CLOUD_ARCH}
     expire_in: 7 days
     paths:
       - '*.build.json'
@@ -308,7 +307,7 @@ azure upload:
     variables:
       - $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1"
   artifacts:
-    name: ${CLOUD_IMAGE_NAME}-upload_vendor
+    name: upload_vendor-azure
     expire_in: 7 days
     paths:
       - '*.upload_vendor.json'
@@ -340,7 +339,7 @@ ec2 upload:
     variables:
       - $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1"
   artifacts:
-    name: ${CLOUD_IMAGE_NAME}-upload_vendor
+    name: upload_vendor-ec2
     expire_in: 7 days
     paths:
       - '*.upload_vendor.json'
@@ -366,7 +365,7 @@ gce upload:
     variables:
       - $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"
   artifacts:
-    name: ${CLOUD_IMAGE_NAME}-upload_vendor
+    name: upload_vendor-gce
     expire_in: 7 days
     paths:
       - '*.upload_vendor.json'
