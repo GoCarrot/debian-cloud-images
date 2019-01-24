@@ -204,7 +204,7 @@ class Check:
         if self.type.require_release and not build_id.release:
             raise ValueError('need release build id for selected build type')
 
-        self.env['CLOUD_RELEASE_VERSION'] = '{!s}-{!s}'.format(build_id.id, ci_pipeline_iid)
+        self.env['CLOUD_RELEASE_VERSION'] = self.version = '{!s}-{!s}'.format(build_id.id, ci_pipeline_iid)
         if self.vendor.name == 'azure':
             self.env['CLOUD_RELEASE_VERSION_AZURE'] = '0.{!s}.{!s}'.format(build_id.release or 0, ci_pipeline_iid)
 
@@ -246,7 +246,6 @@ class BuildCommand(BaseCommand):
             help='Architecture or sub-architecture to build image for',
             metavar='ARCH',
         )
-        parser.add_argument('name', metavar='NAME')
         parser.add_argument(
             '--build-id',
             metavar='ID',
@@ -281,11 +280,14 @@ class BuildCommand(BaseCommand):
             metavar='PATH',
             type=pathlib.Path
         )
+        parser.add_argument(
+            '--override-name',
+            help='override name of output',
+        )
 
-    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, build_type=None, localdebs=False, name=None, path=None, noop=False, **kw):
+    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, build_type=None, localdebs=False, path=None, noop=False, override_name=None, **kw):
         super().__init__(**kw)
 
-        self.name = name
         self.noop = noop
 
         self.c = Check()
@@ -297,6 +299,14 @@ class BuildCommand(BaseCommand):
         if localdebs:
             self.c.classes.add('LOCALDEBS')
         self.c.check()
+
+        name = override_name or 'debian-{release}-{vendor}-{arch}-{build_type}-{version}'.format(
+            build_type=self.c.type.name,
+            release=self.c.release.name,
+            vendor=self.c.vendor.name,
+            arch=self.c.arch.name,
+            version=self.c.version,
+        )
 
         self.env = os.environ.copy()
         self.env.update(self.c.env)

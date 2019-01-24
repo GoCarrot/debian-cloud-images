@@ -28,12 +28,12 @@ before_script:
       debian-cloud-images build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
       --build-type ${CLOUD_IMAGE_TYPE}
-      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
+      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_OPTIONS}
     - >
       ./bin/debian-cloud-images build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
       --build-type ${CLOUD_IMAGE_TYPE}
-      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_IMAGE_NAME} ${CLOUD_OPTIONS}
+      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_OPTIONS}
     - 'xz -vk5T0 *.tar'
   artifacts:
     name: ${CLOUD_IMAGE_NAME}
