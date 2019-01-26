@@ -31,7 +31,7 @@ if [ -n "${FAI_ROOT}" ] ; then
 		show ${FAI_ROOT}/etc/apt/preferences
 	fi
 	if [ -d "${FAI_ROOT}/etc/apt/preferences.d" ] ; then
-		for i in $(find ${FAI_ROOT}/etc/apt/preferences.d type -f) ; do
+		for i in $(find ${FAI_ROOT}/etc/apt/preferences.d -type f) ; do
 			show ${i}
 		done
 	fi
