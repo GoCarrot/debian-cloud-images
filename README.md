@@ -6,49 +6,55 @@ This repository aims to build Debian images for all cloud providers
 
 You will need a checkout of this repository on your disk and a recent fai-server
 package (at least 5.7) installed. Install the necessary fai packages without
-the recommends (which avoids turning your host into a DHCP server!)
+the recommends (which avoids turning your host into a DHCP server!).
+You also need python3-libcloud from Buster or newer.
 
 ```
   # git clone https://salsa.debian.org/cloud-team/debian-cloud-images.git
   # sudo apt install --no-install-recommends ca-certificates debsums dosfstools \
-  fai-server fai-setup-storage make python3 qemu-utils udev
+    fai-server fai-setup-storage make python3 python3-libcloud qemu-utils udev
 ```
 
-  Call `make help` and follow the instruction
+  Call `make help` and follow the instructions
 
 Example 1:
 
+```
    # make stretch-image-nocloud
+```
 
-This will create some log output and creates the following files:
+This will create some log output and the following files:
 
-nocloud-stretch-image.build.json
-nocloud-stretch-image.info
-nocloud-stretch-image.raw
-nocloud-stretch-image.raw.tar
+- nocloud-stretch-image.build.json
+- nocloud-stretch-image.info
+- nocloud-stretch-image.raw
+- nocloud-stretch-image.raw.tar
 
 Example 2:
+
+```
     # make buster-image-openstack
+```
 
-openstack-buster-image.build.json
-openstack-buster-image.info
-openstack-buster-image.qcow2
-openstack-buster-image.qcow2.tar
-openstack-buster-image.raw
-
+- openstack-buster-image.build.json
+- openstack-buster-image.info
+- openstack-buster-image.qcow2
+- openstack-buster-image.qcow2.tar
+- openstack-buster-image.raw
 
 These images can be used with QEMU-KVM, Virtualbox or any other virtualization
 backend that support raw disk or qcow2 images.
 
 You can login as root on the VM console without a password (but not over
-SSH),and there are no other users. You can add new users using `adduser` as
+SSH), and there are no other users. You can add new users using `adduser` as
 usual, and you probably want to add them to the `sudo` group.
 
 After the disk image is created you can try it with kvm, and wait 5s for the
 boot sequence to start:
 
-    kvm -m1000 -hda openstack-image-buster.raw
-
+```
+    # kvm -m1000 -hda openstack-image-buster.raw
+```
 
 ## Documentation
 
