@@ -206,9 +206,10 @@ class Check:
         if self.type.require_release and not build_id.release:
             raise ValueError('need release build id for selected build type')
 
-        self.env['CLOUD_RELEASE_VERSION'] = self.version = '{!s}-{!s}'.format(build_id.id, ci_pipeline_iid)
+        self.version = '{!s}-{!s}'.format(build_id.id, ci_pipeline_iid)
+        self.env['CLOUD_RELEASE_VERSION'] = self.info['version'] = self.version
         if self.vendor.name == 'azure':
-            self.env['CLOUD_RELEASE_VERSION_AZURE'] = '0.{!s}.{!s}'.format(build_id.release or 0, ci_pipeline_iid)
+            self.env['CLOUD_RELEASE_VERSION_AZURE'] = self.info['version_azure'] = '0.{!s}.{!s}'.format(build_id.release or 0, ci_pipeline_iid)
 
     def check(self):
         if self.release.supports_linux_image_cloud and self.vendor.use_linux_image_cloud:
