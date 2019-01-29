@@ -15,12 +15,10 @@ class ImageUploaderGce:
     storage_cls = storage_driver(StorageProvider.GOOGLE_STORAGE)
     compute_cls = compute_driver(ComputeProvider.GCE)
 
-    def __init__(self, project, bucket, auth, variant, version_override):
+    def __init__(self, project, bucket, auth):
         self.project = project
         self.bucket = bucket
         self.auth = auth
-        self.variant = variant
-        self.version_override = version_override
 
         self.__compute = self.__storage = None
 
@@ -51,12 +49,12 @@ class ImageUploaderGce:
             container_name=self.bucket,
         )
 
-    def __call__(self, image):
+    def __call__(self, image, public_info):
         if image.build_vendor != 'gce':
             logging.warning('Image %s is no GCE image, ignoring', image.name)
             return
 
-        gce_name = image.image_name(self.variant, self.version_override)
+        gce_name = public_info.vendor_name
 
         if self.check_image(image, gce_name):
             logging.warning('Image %s already exists, not uploading', gce_name)
@@ -165,7 +163,7 @@ class UploadGceCommand(UploadBaseCommand):
             metavar='FILE',
         )
 
-    def __init__(self, *, project=None, bucket=None, auth=None, variant=None, version_override=None, **kw):
+    def __init__(self, *, project=None, bucket=None, auth=None, **kw):
         super().__init__(**kw)
 
         if auth:
@@ -176,8 +174,6 @@ class UploadGceCommand(UploadBaseCommand):
             project=project,
             bucket=bucket,
             auth=auth,
-            variant=variant,
-            version_override=version_override,
         )
 
 

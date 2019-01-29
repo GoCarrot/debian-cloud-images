@@ -18,13 +18,11 @@ class ImageUploaderEc2:
         'arm64': 'arm64',
     }
 
-    def __init__(self, bucket, key, secret, regions, variant, version_override):
+    def __init__(self, bucket, key, secret, regions):
         self.bucket = bucket
         self.key = key
         self.secret = secret
         self.regions = regions
-        self.variant = variant
-        self.version_override = version_override
 
         self.__compute = self.__storage = None
 
@@ -57,12 +55,12 @@ class ImageUploaderEc2:
             ret = self.__storage = self.storage_cls(bucket=self.bucket, key=self.key, secret=self.secret)
         return ret
 
-    def __call__(self, image):
+    def __call__(self, image, public_info):
         if image.build_vendor != 'ec2':
             logging.warning('Image %s is no ec2 image, ignoring', image.name)
             return
 
-        name = image.image_name(self.variant, self.version_override)
+        name = public_info.vendor_name
 
         obj = self.upload_file(image, name)
 
@@ -237,7 +235,7 @@ class UploadEc2Command(UploadBaseCommand):
             help='Regions to copy snapshot and image to or "all" (default: region of bucket)',
         )
 
-    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], variant=None, version_override=None, **kw):
+    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderEc2(
@@ -245,8 +243,6 @@ class UploadEc2Command(UploadBaseCommand):
             key=access_key_id,
             secret=access_secret_key,
             regions=regions,
-            variant=variant,
-            version_override=version_override,
         )
 
 
