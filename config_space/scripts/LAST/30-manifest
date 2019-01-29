@@ -20,22 +20,6 @@ class ActionEnv(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
-class BuildInfo(dict):
-    env = [
-        ('arch', 'CLOUD_BUILD_INFO_ARCH'),
-        ('release', 'CLOUD_BUILD_INFO_RELEASE'),
-        ('release_id', 'CLOUD_BUILD_INFO_RELEASE_ID'),
-        ('vendor', 'CLOUD_BUILD_INFO_VENDOR'),
-    ]
-
-    def __init__(self):
-        super().__init__()
-        for name, env in self.env:
-            v = os.environ.get(env)
-            if v:
-                self[name] = v
-
-
 class CloudRelease(collections.OrderedDict):
     env = [
         ('id', 'CLOUD_RELEASE_ID'),
@@ -58,6 +42,11 @@ class CloudRelease(collections.OrderedDict):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--info',
+        help='(default: $CLOUD_BUILD_INFO)',
+        action=ActionEnv,
+        env='CLOUD_BUILD_INFO',
+    )
     parser.add_argument('--name',
         help='(default: $CLOUD_BUILD_NAME)',
         action=ActionEnv,
@@ -81,7 +70,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    build_info = BuildInfo()
     cloud_release = CloudRelease()
     package_versions = {}
     manifest = {
@@ -89,7 +77,7 @@ if __name__ == '__main__':
             'name': args.name,
             'stage': 'build',
         },
-        'build_info': build_info,
+        'build_info': json.loads(args.info),
         'cloud_release': cloud_release,
         'package_versions': package_versions,
     }

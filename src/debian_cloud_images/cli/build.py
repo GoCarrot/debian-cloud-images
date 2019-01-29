@@ -1,5 +1,6 @@
 import collections.abc
 import enum
+import json
 import logging
 import os
 import pathlib
@@ -178,26 +179,27 @@ class Check:
         self.classes.add('DEBIAN')
         self.classes.add('CLOUD')
         self.env = {}
+        self.info = {}
 
     def set_type(self, _type):
         self.type = _type
-        self.env['CLOUD_BUILD_TYPE'] = self.type.name
+        self.info['type'] = self.type.name
         self.classes |= self.type.fai_classes
 
     def set_release(self, release):
         self.release = release
-        self.env['CLOUD_BUILD_INFO_RELEASE'] = self.release.name
-        self.env['CLOUD_BUILD_INFO_RELEASE_ID'] = self.release.id
+        self.info['release'] = self.release.name
+        self.info['release_id'] = self.release.id
         self.classes |= self.release.fai_classes
 
     def set_vendor(self, vendor):
         self.vendor = vendor
-        self.env['CLOUD_BUILD_INFO_VENDOR'] = self.vendor.name
+        self.info['vendor'] = self.vendor.name
         self.classes |= self.vendor.fai_classes
 
     def set_arch(self, arch):
         self.arch = arch
-        self.env['CLOUD_BUILD_INFO_ARCH'] = self.arch.name
+        self.info['arch'] = self.arch.name
         self.classes |= self.arch.fai_classes
 
     def set_version(self, build_id, ci_pipeline_iid):
@@ -310,6 +312,7 @@ class BuildCommand(BaseCommand):
 
         self.env = os.environ.copy()
         self.env.update(self.c.env)
+        self.env['CLOUD_BUILD_INFO'] = json.dumps(self.c.info)
         self.env['CLOUD_BUILD_NAME'] = name
         self.env['CLOUD_BUILD_OUTPUT_DIR'] = path.resolve()
 
