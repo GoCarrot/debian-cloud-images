@@ -37,6 +37,7 @@ class Image:
         self.__path = path
 
     def read_build_manifest(self, data):
+        self.build_info = data['build_info']
         self.build_arch = data['build_info']['arch']
         self.build_release = data['build_info']['release']
         self.build_release_id = data['build_info']['release_id']

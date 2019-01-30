@@ -39,14 +39,12 @@ class ActionAzureResourceGroup(argparse.Action):
 class ImageUploaderAzure:
     storage_cls = storage_driver(StorageProvider.AZURE_BLOBS)
 
-    def __init__(self, storage_group, storage_name, storage_container, image_group, auth, variant, version_override):
+    def __init__(self, storage_group, storage_name, storage_container, image_group, auth):
         self.storage_group = storage_group
         self.storage_name = storage_name
         self.storage_container = storage_container
         self.image_group = image_group
         self.auth = auth
-        self.variant = variant
-        self.version_override = version_override
 
         self.__compute_driver = self.__storage = self.__storage_driver = None
 
@@ -86,12 +84,12 @@ class ImageUploaderAzure:
             )
         return ret
 
-    def __call__(self, image):
+    def __call__(self, image, public_info):
         if image.build_vendor != 'azure':
             logging.warning('Image %s is no Azure image, ignoring', image.name)
             return
 
-        image_name = image.image_name(self.variant, self.version_override)
+        image_name = public_info.vendor_name
         image_path = '/{}/{}.vhd'.format(self.storage_container, image_name)
         image_url = 'https://{}.blob.core.windows.net{}'.format(self.storage_name, image_path)
 
@@ -210,7 +208,7 @@ class UploadAzureCommand(UploadBaseCommand):
             metavar='TENANT:APPLICATION:SECRET',
         )
 
-    def __init__(self, *, group=None, storage_name=None, storage_container=None, auth=None, variant=None, version_override=None, **kw):
+    def __init__(self, *, group=None, storage_name=None, storage_container=None, auth=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
@@ -219,8 +217,6 @@ class UploadAzureCommand(UploadBaseCommand):
             storage_container=storage_container,
             image_group=group,
             auth=auth,
-            variant=variant,
-            version_override=version_override,
         )
 
 
