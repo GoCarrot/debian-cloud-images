@@ -1,0 +1,8 @@
+auto $INTERFACE
+allow-hotplug $INTERFACE
+
+iface $INTERFACE inet dhcp
+
+iface $INTERFACE inet6 manual
+up /usr/local/sbin/inet6-ifup-helper
+down /usr/local/sbin/inet6-ifup-helper
