@@ -1,3 +1,2 @@
-PACKAGES install
-cloud-guest-utils
+PACKAGES install-norec
 google-compute-engine
