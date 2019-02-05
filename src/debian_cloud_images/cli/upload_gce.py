@@ -54,6 +54,7 @@ class ImageUploaderGce:
             logging.warning('Image %s is no GCE image, ignoring', image.name)
             return
 
+        gce_family = public_info.vendor_gce_family
         gce_name = public_info.vendor_gce_name
 
         if self.check_image(image, gce_name):
@@ -61,7 +62,7 @@ class ImageUploaderGce:
             return
 
         gce_file = self.upload_file(image, gce_name)
-        gce_image = self.create_image(image, gce_name, gce_file)
+        gce_image = self.create_image(image, gce_name, gce_family, gce_file)
 
         image.write_vendor_manifest(
             'upload_vendor',
@@ -81,13 +82,14 @@ class ImageUploaderGce:
         except ResourceNotFoundError:
             return False
 
-    def create_image(self, image, gce_name, gce_file):
+    def create_image(self, image, gce_name, gce_family, gce_file):
         """ Create image for Google Compute Engine """
         url = 'https://storage.cloud.google.com/{}/{}'.format(gce_file.container.name, gce_file.name)
         logging.info('Create image %s', gce_name)
 
         return self.compute.ex_create_image(
             name=gce_name,
+            family=gce_family,
             volume=url,
             guest_os_features=(
                 'UEFI_COMPATIBLE',
