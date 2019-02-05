@@ -11,13 +11,14 @@ def test_ImagePublicInfo_field():
     info = {
         'release_id': 'release',
         'arch': 'arch',
+        'build_id': 'buildid',
         'version': 'version',
     }
 
     pdev = ImagePublicInfo(
         public_type=ImagePublicType.dev,
     ).apply(info)
-    assert pdev.vendor_name == 'debian-release-arch-dev-version'
+    assert pdev.vendor_name == 'debian-release-arch-dev-buildid-version'
 
     pdaily = ImagePublicInfo(
         public_type=ImagePublicType.daily,
@@ -34,6 +35,7 @@ def test_ImagePublicInfo_field_override():
     info = {
         'release_id': 'release',
         'arch': 'arch',
+        'build_id': 'buildid',
         'version': 'version',
     }
     override_info = {
@@ -44,7 +46,7 @@ def test_ImagePublicInfo_field_override():
         public_type=ImagePublicType.dev,
         override_info=override_info,
     ).apply(info)
-    assert pdev.vendor_name == 'debian-release-arch-dev-override'
+    assert pdev.vendor_name == 'debian-release-arch-dev-buildid-override'
 
     pdaily = ImagePublicInfo(
         public_type=ImagePublicType.daily,

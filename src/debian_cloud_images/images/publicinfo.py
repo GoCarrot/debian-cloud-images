@@ -4,7 +4,7 @@ import enum
 @enum.unique
 class ImagePublicType(enum.Enum):
     dev = {
-        'vendor_name': 'debian-{release_id}-{arch}-dev-{version}',
+        'vendor_name': 'debian-{release_id}-{arch}-dev-{build_id}-{version}',
         'vendor_description': '',
     }
     daily = {
