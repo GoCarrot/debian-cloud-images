@@ -4,15 +4,15 @@ import enum
 @enum.unique
 class ImagePublicType(enum.Enum):
     dev = {
-        'vendor_name': 'debian-{release_id}-{arch}-dev-{build_id}-{version}',
+        'vendor_family': 'debian-{release_id}-{arch}-dev-{build_id}',
         'vendor_description': '',
     }
     daily = {
-        'vendor_name': 'debian-{release_id}-{arch}-daily-{version}',
+        'vendor_family': 'debian-{release_id}-{arch}-daily',
         'vendor_description': '',
     }
     release = {
-        'vendor_name': 'debian-{release_id}-{arch}-{version}',
+        'vendor_family': 'debian-{release_id}-{arch}',
         'vendor_description': '',
     }
 
@@ -26,6 +26,10 @@ class ImagePublicInfo:
             if not key.startswith('_'):
                 return self.__public_type.value[key].format(**self.__info)
             raise KeyError(key)
+
+        @property
+        def vendor_name(self):
+            return '{}-{}'.format(self.vendor_family, self.__info['version'])
 
     def __init__(
         self,

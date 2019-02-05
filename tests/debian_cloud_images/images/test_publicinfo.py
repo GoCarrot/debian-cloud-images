@@ -18,16 +18,19 @@ def test_ImagePublicInfo_field():
     pdev = ImagePublicInfo(
         public_type=ImagePublicType.dev,
     ).apply(info)
+    assert pdev.vendor_family == 'debian-release-arch-dev-buildid'
     assert pdev.vendor_name == 'debian-release-arch-dev-buildid-version'
 
     pdaily = ImagePublicInfo(
         public_type=ImagePublicType.daily,
     ).apply(info)
+    assert pdaily.vendor_family == 'debian-release-arch-daily'
     assert pdaily.vendor_name == 'debian-release-arch-daily-version'
 
     prelease = ImagePublicInfo(
         public_type=ImagePublicType.release,
     ).apply(info)
+    assert prelease.vendor_family == 'debian-release-arch'
     assert prelease.vendor_name == 'debian-release-arch-version'
 
 
