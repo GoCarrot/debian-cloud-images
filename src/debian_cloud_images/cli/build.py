@@ -43,8 +43,9 @@ class Vendor:
 
 class BuildType:
     def __init__(self, kw):
-        def init(*, fai_classes, require_release=False):
+        def init(*, fai_classes, output, require_release=False):
             self.fai_classes = fai_classes
+            self.output = output
             self.require_release = require_release
         init(**kw)
 
@@ -128,9 +129,11 @@ BuildTypeEnum = enum.Enum(
     {
         'dev': {
             'fai_classes': ('TYPE_DEV', ),
+            'output': 'debian-{release}-{vendor}-{arch}-{build_type}-{version}',
         },
         'official': {
             'fai_classes': (),
+            'output': 'debian-{release}-{vendor}-{arch}-{build_type}-{version}',
             'require_release': True,
         },
     },
@@ -303,7 +306,7 @@ class BuildCommand(BaseCommand):
             self.c.classes.add('LOCALDEBS')
         self.c.check()
 
-        name = override_name or 'debian-{release}-{vendor}-{arch}-{build_type}-{version}'.format(
+        name = override_name or self.c.type.output.format(
             build_type=self.c.type.name,
             release=self.c.release.name,
             vendor=self.c.vendor.name,
