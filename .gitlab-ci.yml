@@ -4,7 +4,7 @@ stages:
   - vendor upload
 
 variables:
-  CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}
+  CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
 
 before_script:
   - apt-get update
