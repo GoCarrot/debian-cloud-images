@@ -54,7 +54,7 @@ class ImageUploaderGce:
             logging.warning('Image %s is no GCE image, ignoring', image.name)
             return
 
-        gce_name = public_info.vendor_name
+        gce_name = public_info.vendor_gce_name
 
         if self.check_image(image, gce_name):
             logging.warning('Image %s already exists, not uploading', gce_name)
