@@ -64,6 +64,7 @@ before_script:
 .build official:
   extends: .build
   only:
+    - schedules@cloud-team/debian-cloud-images
     - triggers@cloud-team/debian-cloud-images
   tags:
     - debian-cloud-images-build
