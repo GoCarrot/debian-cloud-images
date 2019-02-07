@@ -313,6 +313,7 @@ azure upload:
     expire_in: 7 days
     paths:
       - '*.upload_vendor.json'
+  allow_failure: true
 
 ec2 upload:
   stage: vendor upload
@@ -368,6 +369,40 @@ gce upload:
       - $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"
   artifacts:
     name: upload_vendor-gce
+    expire_in: 7 days
+    paths:
+      - '*.upload_vendor.json'
+  allow_failure: true
+
+####
+# Provider uploads for daily builds
+####
+
+azure upload daily:
+  stage: vendor upload
+  image: debian:buster
+  script:
+    # Variables contains secrets!
+    - >
+      ./bin/debian-cloud-images upload-azure-cloudpartner
+      --variant daily
+      ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
+      ${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL:+--publish "${CLOUD_UPLOAD_AZURE_OFFICIAL_NOTIFY_EMAIL}"}
+      "${CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER}"
+      "${CLOUD_UPLOAD_AZURE_DAILY_OFFER}"
+      "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_NAME}"
+      "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_CONTAINER}"
+      "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_SECRET}"
+  dependencies:
+    - azure buster build official
+    - azure sid build official
+  only:
+    refs:
+      - schedules@cloud-team/debian-cloud-images
+    variables:
+      - $CLOUD_UPLOAD_AZURE_DAILY_ENABLED == "1"
+  artifacts:
+    name: upload_vendor-azure
     expire_in: 7 days
     paths:
       - '*.upload_vendor.json'
