@@ -4,15 +4,15 @@ import enum
 @enum.unique
 class ImagePublicType(enum.Enum):
     dev = {
-        'vendor_name': 'debian-{release_id}-{arch}-dev-{version}',
+        'vendor_family': 'debian-{release_id}-{arch}-dev-{build_id}',
         'vendor_description': '',
     }
     daily = {
-        'vendor_name': 'debian-{release_id}-{arch}-daily-{version}',
+        'vendor_family': 'debian-{release_id}-{arch}-daily',
         'vendor_description': '',
     }
     release = {
-        'vendor_name': 'debian-{release_id}-{arch}-{version}',
+        'vendor_family': 'debian-{release_id}-{arch}',
         'vendor_description': '',
     }
 
@@ -26,6 +26,22 @@ class ImagePublicInfo:
             if not key.startswith('_'):
                 return self.__public_type.value[key].format(**self.__info)
             raise KeyError(key)
+
+        @property
+        def vendor_name(self):
+            return '{}-{}'.format(self.vendor_family, self.__info['version'])
+
+        @property
+        def vendor_gce_family(self):
+            " Return vendor family limited to 63 characters for GCE "
+            return self.vendor_family[:63]
+
+        @property
+        def vendor_gce_name(self):
+            " Return vendor name limited to 63 characters for GCE "
+            version = self.__info['version']
+            family = self.vendor_gce_family[:63 - 1 - len(version)]
+            return '{}-{}'.format(family, version)
 
     def __init__(
         self,

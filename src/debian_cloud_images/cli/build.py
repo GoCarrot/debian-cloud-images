@@ -1,3 +1,4 @@
+import argparse
 import collections.abc
 import enum
 import json
@@ -6,6 +7,8 @@ import os
 import pathlib
 import re
 import subprocess
+
+from datetime import datetime
 
 from .base import BaseCommand
 
@@ -43,9 +46,11 @@ class Vendor:
 
 class BuildType:
     def __init__(self, kw):
-        def init(*, fai_classes, require_release=False):
+        def init(*, fai_classes, output_name, output_version, output_version_azure):
             self.fai_classes = fai_classes
-            self.require_release = require_release
+            self.output_name = output_name
+            self.output_version = output_version
+            self.output_version_azure = output_version_azure
         init(**kw)
 
 
@@ -128,10 +133,15 @@ BuildTypeEnum = enum.Enum(
     {
         'dev': {
             'fai_classes': ('TYPE_DEV', ),
+            'output_name': 'debian-{release}-{vendor}-{arch}-{build_type}-{build_id}-{version}',
+            'output_version': '{version}',
+            'output_version_azure': '0.0.{version!s}',
         },
         'official': {
             'fai_classes': (),
-            'require_release': True,
+            'output_name': 'debian-{release}-{vendor}-{arch}-{build_type}-{version}',
+            'output_version': '{date}-{version}',
+            'output_version_azure': '0.{date!s}.{version!s}',
         },
     },
     type=BuildType,
@@ -139,7 +149,7 @@ BuildTypeEnum = enum.Enum(
 
 
 class BuildId:
-    re = re.compile(r"^(?P<release>\d{8})|[a-z][a-z0-9-]+$")
+    re = re.compile(r"^[a-z][a-z0-9-]+$")
 
     def __init__(self, s):
         r = self.re.match(s)
@@ -148,7 +158,6 @@ class BuildId:
             raise ValueError('invalid build id value')
 
         self.id = r.group(0)
-        self.release = r.group('release')
 
 
 class Classes(collections.abc.MutableSet):
@@ -202,14 +211,21 @@ class Check:
         self.info['arch'] = self.arch.name
         self.classes |= self.arch.fai_classes
 
-    def set_version(self, build_id, ci_pipeline_iid):
-        if self.type.require_release and not build_id.release:
-            raise ValueError('need release build id for selected build type')
+    def set_version(self, version, version_date, build_id):
+        self.build_id = self.info['build_id'] = build_id.id
 
-        self.version = '{!s}-{!s}'.format(build_id.id, ci_pipeline_iid)
+        self.version = self.type.output_version.format(
+            version=version,
+            date=version_date.strftime('%Y%m%d'),
+        )
+        self.version_azure = self.type.output_version_azure.format(
+            version=version,
+            date=version_date.strftime('%Y%m%d'),
+        )
+
         self.env['CLOUD_RELEASE_VERSION'] = self.info['version'] = self.version
         if self.vendor.name == 'azure':
-            self.env['CLOUD_RELEASE_VERSION_AZURE'] = self.info['version_azure'] = '0.{!s}.{!s}'.format(build_id.release or 0, ci_pipeline_iid)
+            self.env['CLOUD_RELEASE_VERSION_AZURE'] = self.info['version_azure'] = self.version_azure
 
     def check(self):
         if self.release.supports_linux_image_cloud and self.vendor.use_linux_image_cloud:
@@ -256,13 +272,6 @@ class BuildCommand(BaseCommand):
             type=BuildId,
         )
         parser.add_argument(
-            '--ci-pipeline-iid',
-            action=argparse_ext.ActionEnv,
-            env='CI_PIPELINE_IID',
-            metavar='ID',
-            type=int,
-        )
-        parser.add_argument(
             '--build-type',
             action=argparse_ext.ActionEnum,
             enum=BuildTypeEnum,
@@ -287,8 +296,30 @@ class BuildCommand(BaseCommand):
             '--override-name',
             help='override name of output',
         )
+        parser.add_argument(
+            '--version',
+            action=argparse_ext.ActionEnv,
+            env='CI_PIPELINE_IID',
+            help='version of image',
+            metavar='VERSION',
+            type=int,
+        )
+        parser.add_argument(
+            '--version-date',
+            default=datetime.now(),
+            help='date part of version (default: today)',
+            type=cls._argparse_type_date,
+        )
 
-    def __init__(self, *, release=None, vendor=None, arch=None, build_id=None, ci_pipeline_iid=None, build_type=None, localdebs=False, path=None, noop=False, override_name=None, **kw):
+    @staticmethod
+    def _argparse_type_date(s):
+        try:
+            return datetime.strptime(s, "%Y-%m-%d")
+        except ValueError:
+            msg = "Given date ({0}) is not valid. Expected format: 'YYYY-MM-DD'".format(s)
+            raise argparse.ArgumentTypeError(msg)
+
+    def __init__(self, *, release=None, vendor=None, arch=None, version=None, build_id=None, build_type=None, localdebs=False, path=None, noop=False, override_name=None, version_date=None, **kw):
         super().__init__(**kw)
 
         self.noop = noop
@@ -298,17 +329,18 @@ class BuildCommand(BaseCommand):
         self.c.set_release(release)
         self.c.set_vendor(vendor)
         self.c.set_arch(arch)
-        self.c.set_version(build_id, ci_pipeline_iid)
+        self.c.set_version(version, version_date, build_id)
         if localdebs:
             self.c.classes.add('LOCALDEBS')
         self.c.check()
 
-        name = override_name or 'debian-{release}-{vendor}-{arch}-{build_type}-{version}'.format(
+        name = override_name or self.c.type.output_name.format(
             build_type=self.c.type.name,
             release=self.c.release.name,
             vendor=self.c.vendor.name,
             arch=self.c.arch.name,
             version=self.c.version,
+            build_id=self.c.build_id,
         )
 
         self.env = os.environ.copy()

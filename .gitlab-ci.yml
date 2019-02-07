@@ -4,7 +4,7 @@ stages:
   - vendor upload
 
 variables:
-  CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}
+  CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
 
 before_script:
   - apt-get update
@@ -27,12 +27,13 @@ before_script:
       debian-cloud-images build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
       --build-type ${CLOUD_IMAGE_TYPE}
-      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_OPTIONS}
+      --version ${CI_PIPELINE_IID}
+      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH}
     - >
       ./bin/debian-cloud-images build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
       --build-type ${CLOUD_IMAGE_TYPE}
-      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH} ${CLOUD_OPTIONS}
+      ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH}
     - 'xz -vk5T0 *.tar'
   artifacts:
     name: debian-${CLOUD_RELEASE}-${CLOUD_VENDOR}-${CLOUD_ARCH}
@@ -63,6 +64,7 @@ before_script:
 .build official:
   extends: .build
   only:
+    - schedules@cloud-team/debian-cloud-images
     - triggers@cloud-team/debian-cloud-images
   tags:
     - debian-cloud-images-build

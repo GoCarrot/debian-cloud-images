@@ -8,7 +8,7 @@ help:
 
 _image.raw:
 	umask 022; \
-	sudo ./bin/debian-cloud-images build $(DIST) $(CLOUD) amd64 --build-id manual --ci-pipeline-iid 0 --localdebs --override-name $(CLOUD)-$(DIST)-image
+	sudo ./bin/debian-cloud-images build $(DIST) $(CLOUD) amd64 --build-id manual --version 0 --localdebs --override-name $(CLOUD)-$(DIST)-image
 
 sid-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=sid
