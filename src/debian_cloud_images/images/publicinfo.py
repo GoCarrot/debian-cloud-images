@@ -5,15 +5,15 @@ import enum
 class ImagePublicType(enum.Enum):
     dev = {
         'vendor_family': 'debian-{release_id}-{arch}-dev-{build_id}',
-        'vendor_description': '',
+        'vendor_description': 'Debian {release_id} (development build {build_id}-{version})',
     }
     daily = {
         'vendor_family': 'debian-{release_id}-{arch}-daily',
-        'vendor_description': '',
+        'vendor_description': 'Debian {release_id} (daily build {version})',
     }
     release = {
         'vendor_family': 'debian-{release_id}-{arch}',
-        'vendor_description': '',
+        'vendor_description': 'Debian {release_id} ({version})',
     }
 
 
