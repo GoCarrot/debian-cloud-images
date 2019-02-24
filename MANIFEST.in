@@ -1,1 +1,2 @@
 recursive-include src/debian_cloud_images/build/fai_config *
+recursive-include src/debian_cloud_images/data/system_tests *
