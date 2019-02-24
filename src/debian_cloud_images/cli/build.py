@@ -13,6 +13,7 @@ from datetime import datetime
 from .base import BaseCommand
 
 from ..build import fai_config_path
+from ..data import data_path
 from ..utils import argparse_ext
 
 
@@ -348,6 +349,7 @@ class BuildCommand(BaseCommand):
         self.env['CLOUD_BUILD_INFO'] = json.dumps(self.c.info)
         self.env['CLOUD_BUILD_NAME'] = name
         self.env['CLOUD_BUILD_OUTPUT_DIR'] = path.resolve()
+        self.env['CLOUD_BUILD_DATA'] = data_path
 
         image_raw = path / '{}.raw'.format(name)
         image_tar = path / '{}.tar'.format(name)
