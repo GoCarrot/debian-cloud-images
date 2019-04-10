@@ -17,3 +17,5 @@ touch $target/etc/machine-id
 touch $target/var/lib/dpkg/available
 
 shred --remove $target/etc/ssh/ssh_host_*
+
+fstrim $target
