@@ -6,6 +6,7 @@ ainsl -a /etc/modprobe.d/blacklist.conf 'blacklist floppy'
 rm -f $target/etc/resolv.conf \
       $target/etc/mailname \
       $target/etc/machine-id \
+      $target/usr/bin/qemu-* \
       $target/var/lib/dbus/machine-id
 
 rm -rf $target/var/cache/apt/*
