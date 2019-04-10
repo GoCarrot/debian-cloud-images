@@ -1,11 +1,9 @@
 #! /bin/bash
 
-ainsl -a /etc/modprobe.d/blacklist.conf 'blacklist pcspkr'
-ainsl -a /etc/modprobe.d/blacklist.conf 'blacklist floppy'
-
 rm -f $target/etc/resolv.conf \
       $target/etc/mailname \
       $target/etc/machine-id \
+      $target/usr/bin/qemu-* \
       $target/var/lib/dbus/machine-id
 
 rm -rf $target/var/cache/apt/*
@@ -16,3 +14,5 @@ touch $target/etc/machine-id
 touch $target/var/lib/dpkg/available
 
 shred --remove $target/etc/ssh/ssh_host_*
+
+fstrim $target

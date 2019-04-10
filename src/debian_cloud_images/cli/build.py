@@ -117,7 +117,7 @@ VendorEnum = enum.Enum(
             'use_linux_image_cloud': True,
         },
         'nocloud': {
-            'fai_size': '8G',
+            'fai_size': '2G',
             'fai_classes': ('NOCLOUD', ),
         },
         'openstack': {
