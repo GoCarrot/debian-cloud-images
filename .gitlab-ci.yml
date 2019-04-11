@@ -6,6 +6,7 @@ stages:
 
 variables:
   CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
+  GIT_DEPTH: "1"
 
 before_script:
   - apt-get update
