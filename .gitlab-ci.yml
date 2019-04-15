@@ -90,17 +90,17 @@ test pytest:
 # Different selections when builds will be done
 ####
 
+.build dev manual:
+  extends: .build
+  only:
+    - web
+  variables:
+    CLOUD_IMAGE_TYPE: dev
+
 .build dev pushes:
   extends: .build
   only:
     - pushes
-  variables:
-    CLOUD_IMAGE_TYPE: dev
-
-.build dev web:
-  extends: .build
-  only:
-    - web
   variables:
     CLOUD_IMAGE_TYPE: dev
 
@@ -118,21 +118,21 @@ test pytest:
 ####
 
 azure stretch build: &build-azure-stretch
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: azure
 
 azure stretch-backports build: &build-azure-stretch-backports
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
     CLOUD_VENDOR: azure
 
 azure buster build: &build-azure-buster
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -148,14 +148,14 @@ azure sid build: &build-azure-sid
     CLOUD_VENDOR: azure
 
 ec2 stretch amd64 build: &build-ec2-amd64-stretch
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
 ec2 buster amd64 build: &build-ec2-amd64-buster
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -169,14 +169,14 @@ ec2 sid amd64 build: &build-ec2-amd64-sid
     CLOUD_VENDOR: ec2
 
 ec2 stretch arm64 build: &build-ec2-arm64-stretch
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
 ec2 buster arm64 build: &build-ec2-arm64-buster
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
@@ -190,14 +190,14 @@ ec2 sid arm64 build: &build-ec2-arm64-sid
     CLOUD_VENDOR: ec2
 
 gce stretch build: &build-gce-stretch
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: gce
 
 gce buster build: &build-gce-buster
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -211,7 +211,7 @@ gce sid build: &build-gce-sid
     CLOUD_VENDOR: gce
 
 generic buster amd64 build: &build-generic-buster-amd64
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -225,7 +225,7 @@ generic sid amd64 build: &build-generic-sid-amd64
     CLOUD_VENDOR: generic
 
 genericcloud buster amd64 build: &build-genericcloud-buster-amd64
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -239,14 +239,14 @@ genericcloud sid amd64 build: &build-genericcloud-sid-amd64
     CLOUD_VENDOR: genericcloud
 
 nocloud stretch amd64 build: &build-nocloud-stretch-amd64
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: nocloud
 
 nocloud buster amd64 build: &build-nocloud-buster-amd64
-  extends: .build dev web
+  extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
