@@ -171,7 +171,7 @@ class ImageUploaderAzureCloudpartner:
         plans = {i['planId']: i for i in definition['plans']}
         changed = False
 
-        for image in images.values():
+        for image in self.filter_images(plans, images.values()):
             try:
                 image_name = image_public_info.apply(image.build_info).vendor_name
                 image_description = image_public_info.apply(image.build_info).vendor_description
@@ -183,6 +183,8 @@ class ImageUploaderAzureCloudpartner:
                     sas_start='2018-01-01T00:00:00Z',
                     sas_expiry='2020-01-01T00:00:00Z',
                 )
+
+                logging.info('Uploading image %s', image.name)
 
                 self.upload_file(image, image_path)
 
@@ -269,6 +271,35 @@ class ImageUploaderAzureCloudpartner:
     def save_offer(self, data, etag):
         r = self._offer(data=data, method='PUT', headers={'If-Match': etag})
         return r.parse_body()
+
+    def filter_images(self, plans, images):
+        ret = []
+
+        for image in images:
+            if self.check_image(plans, image):
+                ret.append(image)
+
+        return ret
+
+    def check_image(self, plans, image):
+        if image.build_vendor != 'azure':
+            logging.warning('Image %s is no Azure image, ignoring', image.name)
+            return False
+
+        azure_version = image.build_info['version_azure']
+        release_id = image.build_release_id
+
+        if not release_id in plans:
+            raise ValueError('Release %s does not exist' % release_id)
+
+        plan = plans[release_id]
+        plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
+
+        if azure_version in plan_images:
+            logging.warning('Image %s (%s) already exists for release %s', image_name, azure_version, release_id)
+            return False
+
+        return True
 
     def insert_image(self, plans, image, image_name, image_description, image_url_sas):
         azure_version = image.build_info['version_azure']
