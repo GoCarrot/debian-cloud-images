@@ -166,12 +166,9 @@ class ImageUploaderAzureCloudpartner:
         return ret
 
     def __call__(self, images, image_public_info):
-        offer, etag = self.read_offer()
-        definition = offer['definition']
-        plans = {i['planId']: i for i in definition['plans']}
         changed = False
 
-        for image in self.filter_images(plans, images.values()):
+        for image in self.filter_images(images.values()):
             try:
                 image_name = image_public_info.apply(image.build_info).vendor_name
                 image_description = image_public_info.apply(image.build_info).vendor_description
@@ -188,20 +185,14 @@ class ImageUploaderAzureCloudpartner:
 
                 self.upload_file(image, image_path)
 
-                changed |= self.insert_image(plans, image, image_name, image_description, image_url_sas)
+                changed |= self.insert_image(image, image_name, image_description, image_url_sas)
 
             except Exception:
                 logging.exception('Failed to insert image')
 
-        if changed:
-            logging.info('Saving offer %s/%s', self.publisher_id, self.offer_id)
-            self.save_offer(offer, etag)
-
-            if self.publish:
-                logging.info('Publishing offer %s', self.offer_id)
-                self.publish_offer(self.publish)
-        else:
-            logging.info('Neither saving nor publishing unchanged offer %s/%s', self.publisher_id, self.offer_id)
+        if changed and self.publish:
+            logging.info('Publishing offer %s', self.offer_id)
+            self.publish_offer(self.publish)
 
     def upload_file(self, image, path):
         """ Upload file to Storage """
@@ -272,7 +263,11 @@ class ImageUploaderAzureCloudpartner:
         r = self._offer(data=data, method='PUT', headers={'If-Match': etag})
         return r.parse_body()
 
-    def filter_images(self, plans, images):
+    def filter_images(self, images):
+        offer, etag = self.read_offer()
+        definition = offer['definition']
+        plans = {i['planId']: i for i in definition['plans']}
+
         ret = []
 
         for image in images:
@@ -296,30 +291,36 @@ class ImageUploaderAzureCloudpartner:
         plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
 
         if azure_version in plan_images:
-            logging.warning('Image %s (%s) already exists for release %s', image_name, azure_version, release_id)
+            logging.warning('Image %s (%s) already exists for release %s', image.name, azure_version, release_id)
             return False
 
         return True
 
-    def insert_image(self, plans, image, image_name, image_description, image_url_sas):
+    def insert_image(self, image, image_name, image_description, image_url_sas):
+        offer, etag = self.read_offer()
+        definition = offer['definition']
+        plans = {i['planId']: i for i in definition['plans']}
+
         azure_version = image.build_info['version_azure']
         release_id = image.build_release_id
 
         plan = plans[release_id]
         plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
         if azure_version in plan_images:
-            logging.warning('Image %s (%s) already exists for release %s', image_name, azure_version, release_id)
+            logging.warning('Image %s (%s) already exists for release %s', image.name, azure_version, release_id)
             return False
 
-        else:
-            logging.info('Inserting image %s (%s) for release %s', image_name, azure_version, release_id)
-            plan_images[azure_version] = {
-                'description': image_description,
-                'label': image_name,
-                'mediaName': image_name,
-                'osVhdUrl': str(image_url_sas),
-            }
-            return True
+        logging.info('Inserting image %s (%s) for release %s', image.name, azure_version, release_id)
+        plan_images[azure_version] = {
+            'description': image_description,
+            'label': image_name,
+            'mediaName': image_name,
+            'osVhdUrl': str(image_url_sas),
+        }
+
+        logging.info('Saving offer %s/%s', self.publisher_id, self.offer_id)
+        self.save_offer(offer, etag)
+        return True
 
 
 class UploadAzureCloudpartnerCommand(UploadBaseCommand):
