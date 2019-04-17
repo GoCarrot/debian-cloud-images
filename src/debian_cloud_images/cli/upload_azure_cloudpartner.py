@@ -169,26 +169,22 @@ class ImageUploaderAzureCloudpartner:
         changed = False
 
         for image in self.filter_images(images.values()):
-            try:
-                image_name = image_public_info.apply(image.build_info).vendor_name
-                image_description = image_public_info.apply(image.build_info).vendor_description
-                image_path = '/{}/{}.vhd'.format(self.storage_container, image_name)
-                image_url_sas = UrlSas(
-                    'https://{}.blob.core.windows.net{}'.format(self.storage_name, image_path),
-                    self.storage_secret,
-                    sas_permission='rl',
-                    sas_start='2018-01-01T00:00:00Z',
-                    sas_expiry='2020-01-01T00:00:00Z',
-                )
+            image_name = image_public_info.apply(image.build_info).vendor_name
+            image_description = image_public_info.apply(image.build_info).vendor_description
+            image_path = '/{}/{}.vhd'.format(self.storage_container, image_name)
+            image_url_sas = UrlSas(
+                'https://{}.blob.core.windows.net{}'.format(self.storage_name, image_path),
+                self.storage_secret,
+                sas_permission='rl',
+                sas_start='2018-01-01T00:00:00Z',
+                sas_expiry='2020-01-01T00:00:00Z',
+            )
 
-                logging.info('Uploading image %s', image.name)
+            logging.info('Uploading image %s', image.name)
 
-                self.upload_file(image, image_path)
+            self.upload_file(image, image_path)
 
-                changed |= self.insert_image(image, image_name, image_description, image_url_sas)
-
-            except Exception:
-                logging.exception('Failed to insert image')
+            changed |= self.insert_image(image, image_name, image_description, image_url_sas)
 
         if changed and self.publish:
             logging.info('Publishing offer %s', self.offer_id)
@@ -307,8 +303,7 @@ class ImageUploaderAzureCloudpartner:
         plan = plans[release_id]
         plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
         if azure_version in plan_images:
-            logging.warning('Image %s (%s) already exists for release %s', image.name, azure_version, release_id)
-            return False
+            raise RuntimeError('Image %s already exists', image.name)
 
         logging.info('Inserting image %s (%s) for release %s', image.name, azure_version, release_id)
         plan_images[azure_version] = {
