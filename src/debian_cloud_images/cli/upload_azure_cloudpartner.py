@@ -170,7 +170,6 @@ class ImageUploaderAzureCloudpartner:
 
         for image in self.filter_images(images.values()):
             image_name = image_public_info.apply(image.build_info).vendor_name
-            image_description = image_public_info.apply(image.build_info).vendor_description
             image_path = '/{}/{}.vhd'.format(self.storage_container, image_name)
             image_url_sas = UrlSas(
                 'https://{}.blob.core.windows.net{}'.format(self.storage_name, image_path),
@@ -184,7 +183,7 @@ class ImageUploaderAzureCloudpartner:
 
             self.upload_file(image, image_path)
 
-            changed |= self.insert_image(image, image_name, image_description, image_url_sas)
+            changed |= self.insert_image(image, image_public_info, image_url_sas)
 
         if changed and self.publish:
             logging.info('Publishing offer %s', self.offer_id)
@@ -292,7 +291,11 @@ class ImageUploaderAzureCloudpartner:
 
         return True
 
-    def insert_image(self, image, image_name, image_description, image_url_sas):
+    def insert_image(self, image, image_public_info, image_url_sas):
+        image_name = image_public_info.apply(image.build_info).vendor_name
+        image_family = image_public_info.apply(image.build_info).vendor_family
+        image_description = image_public_info.apply(image.build_info).vendor_description
+
         offer, etag = self.read_offer()
         definition = offer['definition']
         plans = {i['planId']: i for i in definition['plans']}
@@ -308,7 +311,7 @@ class ImageUploaderAzureCloudpartner:
         logging.info('Inserting image %s (%s) for release %s', image.name, azure_version, release_id)
         plan_images[azure_version] = {
             'description': image_description,
-            'label': image_name,
+            'label': image_family,
             'mediaName': image_name,
             'osVhdUrl': str(image_url_sas),
         }
