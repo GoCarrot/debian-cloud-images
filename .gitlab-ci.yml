@@ -320,7 +320,6 @@ azure upload:
       ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
       "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP}"
       "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME}"
-      "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_CONTAINER}"
   dependencies:
     - azure stretch build
     - azure stretch-backports build
