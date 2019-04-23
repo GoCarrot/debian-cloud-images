@@ -1,4 +1,5 @@
-# Install Linux packages including recommends as every upgrade brings them in anyway
+# Install linux packages including it's own recommends
 
-PACKAGES install LINUX_IMAGE_BASE LINUX_IMAGE_CLOUD
+PACKAGES install-norec LINUX_IMAGE_BASE LINUX_IMAGE_CLOUD
 linux-image-arm64
+apparmor
