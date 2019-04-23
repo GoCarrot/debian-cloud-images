@@ -209,7 +209,7 @@ class Check:
 
     def set_vendor(self, vendor):
         self.vendor = vendor
-        self.info['vendor'] = self.vendor.name
+        self.env['CLOUD_RELEASE_ID'] = self.info['vendor'] = self.vendor.name
         self.classes |= self.vendor.fai_classes
 
     def set_arch(self, arch):
