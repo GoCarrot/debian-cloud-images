@@ -116,13 +116,18 @@ VendorEnum = enum.Enum(
             'fai_classes': ('GCE', ),
             'use_linux_image_cloud': True,
         },
+        'generic': {
+            'fai_size': '2G',
+            'fai_classes': ('GENERIC', ),
+        },
+        'genericcloud': {
+            'fai_size': '2G',
+            'fai_classes': ('GENERIC', ),
+            'use_linux_image_cloud': True,
+        },
         'nocloud': {
             'fai_size': '2G',
             'fai_classes': ('NOCLOUD', ),
-        },
-        'openstack': {
-            'fai_size': '2G',
-            'fai_classes': ('OPENSTACK', ),
         },
     },
     type=Vendor,
@@ -204,7 +209,7 @@ class Check:
 
     def set_vendor(self, vendor):
         self.vendor = vendor
-        self.info['vendor'] = self.vendor.name
+        self.env['CLOUD_RELEASE_ID'] = self.info['vendor'] = self.vendor.name
         self.classes |= self.vendor.fai_classes
 
     def set_arch(self, arch):

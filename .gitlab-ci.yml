@@ -170,6 +170,34 @@ gce sid build: &build-gce-sid
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: gce
 
+generic buster amd64 build: &build-generic-buster-amd64
+  extends: .build dev web
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: generic
+
+generic sid amd64 build: &build-generic-sid-amd64
+  extends: .build dev pushes
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: generic
+
+genericcloud buster amd64 build: &build-genericcloud-buster-amd64
+  extends: .build dev web
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: genericcloud
+
+genericcloud sid amd64 build: &build-genericcloud-sid-amd64
+  extends: .build dev pushes
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: genericcloud
+
 nocloud stretch amd64 build: &build-nocloud-stretch-amd64
   extends: .build dev web
   variables:
@@ -206,20 +234,6 @@ nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
     CLOUD_VENDOR: nocloud
   # is just built for test purposes
   allow_failure: true
-
-openstack buster amd64 build: &build-openstack-buster-amd64
-  extends: .build dev web
-  variables:
-    CLOUD_ARCH: amd64
-    CLOUD_RELEASE: buster
-    CLOUD_VENDOR: openstack
-
-openstack sid amd64 build: &build-openstack-sid-amd64
-  extends: .build dev pushes
-  variables:
-    CLOUD_ARCH: amd64
-    CLOUD_RELEASE: sid
-    CLOUD_VENDOR: openstack
 
 ####
 # Official builds done on Debian hardware
@@ -265,6 +279,22 @@ gce sid build official:
   <<: *build-gce-sid
   extends: .build official
 
+generic buster amd64 build official:
+  <<: *build-generic-buster-amd64
+  extends: .build official
+
+generic sid amd64 build official:
+  <<: *build-generic-sid-amd64
+  extends: .build official
+
+genericcloud buster amd64 build official:
+  <<: *build-genericcloud-buster-amd64
+  extends: .build official
+
+genericcloud sid amd64 build official:
+  <<: *build-genericcloud-sid-amd64
+  extends: .build official
+
 nocloud stretch amd64 build official:
   <<: *build-nocloud-stretch-amd64
   extends: .build official
@@ -275,14 +305,6 @@ nocloud buster amd64 build official:
 
 nocloud sid amd64 build official:
   <<: *build-nocloud-sid-amd64
-  extends: .build official
-
-openstack buster amd64 build official:
-  <<: *build-openstack-buster-amd64
-  extends: .build official
-
-openstack sid amd64 build official:
-  <<: *build-openstack-sid-amd64
   extends: .build official
 
 ####
