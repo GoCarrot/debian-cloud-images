@@ -6,6 +6,8 @@ import pathlib
 class TestBase:
     @pytest.mark.parametrize('path', [
         '/tmp',
+        '/var/cache/apt',
+        '/var/lib/apt/lists',
         '/var/tmp',
     ])
     def test_dir_empty(self, image_path, path):
@@ -16,6 +18,8 @@ class TestBase:
         assert len(list(p.glob('*'))) == 0, '{} is not empty'.format(path.as_posix())
 
     @pytest.mark.parametrize('path', [
+        '/etc/mailname',
+        '/etc/resolv.conf',
         '/initrd.img',
         '/vmlinux',
         '/vmlinuz',
