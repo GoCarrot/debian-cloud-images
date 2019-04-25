@@ -15,11 +15,12 @@ class TestBase:
         assert p.is_dir(), '{} is no directory'.format(path.as_posix())
         assert len(list(p.glob('*'))) == 0, '{} is not empty'.format(path.as_posix())
 
-    def test_initrdimg(self, image_path):
-        assert not (image_path / 'initrd.img').exists()
-
-    def test_vmlinux(self, image_path):
-        assert not (image_path / 'vmlinux').exists()
-
-    def test_vmlinuz(self, image_path):
-        assert not (image_path / 'vmlinuz').exists()
+    @pytest.mark.parametrize('path', [
+        '/initrd.img',
+        '/vmlinux',
+        '/vmlinuz',
+    ])
+    def test_file_absent(self, image_path, path):
+        path = pathlib.Path(path)
+        p = (image_path / path.relative_to('/'))
+        assert not p.exists(), '{} exists'.format(path.as_posix())
