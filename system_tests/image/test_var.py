@@ -1,6 +1,3 @@
-import pathlib
-
-
 class TestVar:
     def test_var_log(self, image_path):
         p = image_path / 'var' / 'log'
