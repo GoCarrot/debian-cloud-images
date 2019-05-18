@@ -33,3 +33,12 @@ Description: tool used by the Debian Cloud Team to create official cloud images
   * GCE (amd64)
   * OpenStack (amd64, arm64)
   * helpful for creating images to be used
+
+Package: debian-cloud-images-packages
+Architecture: amd64 arm64 ppc64el
+Depends:
+ ${debian-cloud-images-packages:Depends},
+ ${misc:Depends},
+Description: List of packages the Debian cloud images needs
+ This empty package contains dependencies on all packages the cloud images
+ need.  It helps the release team to make sure those packages are available.
