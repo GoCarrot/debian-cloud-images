@@ -117,21 +117,21 @@ test pytest:
 # Builds for developer uploads pushes
 ####
 
-azure stretch build: &build-azure-stretch
+azure stretch amd64 build: &build-azure-stretch
   extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: azure
 
-azure stretch-backports build: &build-azure-stretch-backports
+azure stretch-backports amd64 build: &build-azure-stretch-backports
   extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
     CLOUD_VENDOR: azure
 
-azure buster build: &build-azure-buster
+azure buster amd64 build: &build-azure-buster
   extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
@@ -140,7 +140,7 @@ azure buster build: &build-azure-buster
   # no waagent in buster
   allow_failure: true
 
-azure sid build: &build-azure-sid
+azure sid amd64 build: &build-azure-sid
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
@@ -189,21 +189,21 @@ ec2 sid arm64 build: &build-ec2-arm64-sid
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: ec2
 
-gce stretch build: &build-gce-stretch
+gce stretch amd64 build: &build-gce-stretch
   extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: gce
 
-gce buster build: &build-gce-buster
+gce buster amd64 build: &build-gce-buster
   extends: .build dev web
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: gce
 
-gce sid build: &build-gce-sid
+gce sid amd64 build: &build-gce-sid
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
@@ -279,19 +279,19 @@ nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
 # Official builds done on Debian hardware
 ####
 
-azure stretch build official:
+azure stretch amd64 build official:
   <<: *build-azure-stretch
   extends: .build official
 
-azure stretch-backports build official:
+azure stretch-backports amd64 build official:
   <<: *build-azure-stretch-backports
   extends: .build official
 
-azure buster build official:
+azure buster amd64 build official:
   <<: *build-azure-buster
   extends: .build official
 
-azure sid build official:
+azure sid amd64 build official:
   <<: *build-azure-sid
   extends: .build official
 
@@ -307,15 +307,15 @@ ec2 sid amd64 build official:
   <<: *build-ec2-amd64-sid
   extends: .build official
 
-gce stretch build official:
+gce stretch amd64 build official:
   <<: *build-gce-stretch
   extends: .build official
 
-gce buster build official:
+gce buster amd64 build official:
   <<: *build-gce-buster
   extends: .build official
 
-gce sid build official:
+gce sid amd64 build official:
   <<: *build-gce-sid
   extends: .build official
 
@@ -361,10 +361,10 @@ azure upload:
       "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP}"
       "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME}"
   dependencies:
-    - azure stretch build
-    - azure stretch-backports build
-    - azure buster build
-    - azure sid build
+    - azure stretch amd64 build
+    - azure stretch-backports amd64 build
+    - azure buster amd64 build
+    - azure sid amd64 build
   only:
     refs:
       - pushes
@@ -421,9 +421,9 @@ gce upload:
       --auth .auth
       "${CLOUD_UPLOAD_GCE_DEV_PROJECT}" "${CLOUD_UPLOAD_GCE_DEV_BUCKET}"
   dependencies:
-    - gce stretch build
-    - gce buster build
-    - gce sid build
+    - gce stretch amd64 build
+    - gce buster amd64 build
+    - gce sid amd64 build
   only:
     refs:
       - pushes
@@ -457,8 +457,8 @@ azure upload daily:
       "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_CONTAINER}"
       "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_SECRET}"
   dependencies:
-    - azure buster build official
-    - azure sid build official
+    - azure buster amd64 build official
+    - azure sid amd64 build official
   only:
     refs:
       - schedules@cloud-team/debian-cloud-images
