@@ -238,6 +238,20 @@ generic sid arm64 build: &build-generic-sid-arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
+generic buster ppc64el build: &build-generic-buster-ppc64el
+  extends: .build dev manual
+  variables:
+    CLOUD_ARCH: ppc64el
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: generic
+
+generic sid ppc64el build: &build-generic-sid-ppc64el
+  extends: .build dev pushes
+  variables:
+    CLOUD_ARCH: ppc64el
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: generic
+
 genericcloud buster amd64 build: &build-genericcloud-buster-amd64
   extends: .build dev manual
   variables:
@@ -347,6 +361,14 @@ generic buster arm64 build official:
 
 generic sid arm64 build official:
   <<: *build-generic-sid-arm64
+  extends: .build official
+
+generic buster ppc64el build official:
+  <<: *build-generic-buster-ppc64el
+  extends: .build official
+
+generic sid ppc64el build official:
+  <<: *build-generic-sid-ppc64el
   extends: .build official
 
 genericcloud buster amd64 build official:
