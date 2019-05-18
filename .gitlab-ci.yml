@@ -1,5 +1,6 @@
 ---
 stages:
+  - source test
   - build
   - vendor upload
 
@@ -14,6 +15,40 @@ before_script:
       # Workaround unsupported SEEK_HOLE in overlayfs (Docker default)
       mount -t tmpfs none /tmp
     fi
+
+test flake8:
+  stage: source test
+  image: debian:buster
+  script:
+    - >
+      apt-get install --no-install-recommends -y
+      python3-flake8
+    - python3 -m flake8
+  only:
+    - pushes
+
+test pytest:
+  stage: source test
+  image: debian:buster
+  script:
+    - >
+      apt-get install --no-install-recommends -y
+      python3-pytest python3-pytest-cov
+    - >
+      PYTHONPATH=src
+      py.test-3
+      -vrxXs
+      --color=yes
+      --cov=src --cov-report=term --cov-report=html:coverage
+      --junit-xml=junit.xml
+      tests
+  artifacts:
+    paths:
+      - coverage/
+    reports:
+      junit: junit.xml
+  only:
+    - pushes
 
 .build:
   stage: build

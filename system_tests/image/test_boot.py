@@ -1,6 +1,7 @@
 import pytest
 import pathlib
 
+
 class TestBootFiles:
     @pytest.mark.parametrize('path', [
         '/boot/initrd.img*',
@@ -11,6 +12,7 @@ class TestBootFiles:
         path = pathlib.Path(path)
         p = (image_path / path.relative_to('/'))
         assert len(list(p.parent.glob(p.name))) > 0, 'No files matching {}'.format(path)
+
 
 class TestBootGce:
     @pytest.fixture(scope="class", autouse=True)

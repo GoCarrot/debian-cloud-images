@@ -279,7 +279,7 @@ class ImageUploaderAzureCloudpartner:
         azure_version = image.build_info['version_azure']
         release_id = image.build_release_id
 
-        if not release_id in plans:
+        if release_id not in plans:
             raise ValueError('Release %s does not exist' % release_id)
 
         plan = plans[release_id]
