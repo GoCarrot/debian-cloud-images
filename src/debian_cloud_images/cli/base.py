@@ -35,7 +35,10 @@ class BaseCommand:
         )
 
     def __init__(self, *, debug=False, **kw):
-        logging.basicConfig(level=debug and logging.DEBUG or logging.INFO)
+        logging.basicConfig(
+            level=debug and logging.DEBUG or logging.INFO,
+            format='%(asctime)s %(levelname)s %(message)s',
+        )
 
     def __call__(self):
         raise NotImplementedError

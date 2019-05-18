@@ -9,6 +9,11 @@ variables:
 before_script:
   - apt-get update
   - apt-get install --no-install-recommends -y python3-libcloud qemu-utils
+  - |
+    if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
+      # Workaround unsupported SEEK_HOLE in overlayfs (Docker default)
+      mount -t tmpfs none /tmp
+    fi
 
 .build:
   stage: build
@@ -320,7 +325,6 @@ azure upload:
       ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
       "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP}"
       "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME}"
-      "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_CONTAINER}"
   dependencies:
     - azure stretch build
     - azure stretch-backports build

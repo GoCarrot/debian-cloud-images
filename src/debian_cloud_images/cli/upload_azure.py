@@ -39,10 +39,9 @@ class ActionAzureResourceGroup(argparse.Action):
 class ImageUploaderAzure:
     storage_cls = storage_driver(StorageProvider.AZURE_BLOBS)
 
-    def __init__(self, storage_group, storage_name, storage_container, image_group, auth):
+    def __init__(self, storage_group, storage_name, image_group, auth):
         self.storage_group = storage_group
         self.storage_name = storage_name
-        self.storage_container = storage_container
         self.image_group = image_group
         self.auth = auth
 
@@ -90,10 +89,11 @@ class ImageUploaderAzure:
             return
 
         image_name = public_info.vendor_name
-        image_path = '/{}/{}.vhd'.format(self.storage_container, image_name)
-        image_url = 'https://{}.blob.core.windows.net{}'.format(self.storage_name, image_path)
+        image_file = '{}/disk.vhd'.format(image_name)
+        image_url = 'https://{}.blob.core.windows.net/{}'.format(self.storage_name, image_file)
 
-        self.upload_file(image, image_path)
+        self.create_container(image_name)
+        self.upload_file(image, image_file)
         self.create_image(image, image_name, image_url)
 
         image.write_vendor_manifest(
@@ -102,7 +102,20 @@ class ImageUploaderAzure:
             },
         )
 
-        self.delete_file(image, image_path)
+        self.delete_container(image_name)
+
+    def create_container(self, container):
+        logging.info('Creating container %s', container)
+
+        r = self.storage.connection.request(
+            container,
+            method='PUT',
+            params={
+                'restype': 'container',
+            },
+        )
+        if r.status != http.client.CREATED:
+            raise RuntimeError('Error creating container: {0.error} ({0.status})'.format(r))
 
     def create_image(self, image, image_name, image_url):
         image_storage = self.storage_driver.get_storage(self.storage_group.resource_group, self.storage_name)
@@ -117,12 +130,15 @@ class ImageUploaderAzure:
             ex_blob=image_url,
         )
 
-    def delete_file(self, image, path):
-        logging.info('Deleting file %ss', path)
+    def delete_container(self, container):
+        logging.info('Deleting container %s', container)
 
         self.storage.connection.request(
-            path,
+            container,
             method='DELETE',
+            params={
+                'restype': 'container',
+            },
         )
 
     def upload_file(self, image, path):
@@ -197,24 +213,18 @@ class UploadAzureCommand(UploadBaseCommand):
             metavar='STORAGE',
         )
         parser.add_argument(
-            'storage_container',
-            help='Azure Storage container',
-            metavar='CONTAINER',
-        )
-        parser.add_argument(
             '--auth',
             action=ActionAzureAuth,
             help='Authentication info for Azure AD application',
             metavar='TENANT:APPLICATION:SECRET',
         )
 
-    def __init__(self, *, group=None, storage_name=None, storage_container=None, auth=None, **kw):
+    def __init__(self, *, group=None, storage_name=None, auth=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
             storage_group=group,
             storage_name=storage_name,
-            storage_container=storage_container,
             image_group=group,
             auth=auth,
         )

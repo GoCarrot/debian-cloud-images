@@ -94,7 +94,6 @@ Uploaders typically need some variables set with credentials or targets.
  * `$CLOUD_UPLOAD_AZURE_DEV_ENABLED`: Set to `1` to upload images during development.
  * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP`: Azure Subscription and Resource group (`SUBSCRIPTION:GROUP`).
  * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME`: Azure Storage name.
- * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_CONTAINER`: Azure Storage container.
 
 #### Uploads for daily builds
 
