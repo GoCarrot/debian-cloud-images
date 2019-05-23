@@ -137,8 +137,6 @@ azure buster build: &build-azure-buster
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: azure
-  # no waagent in buster
-  allow_failure: true
 
 azure sid build: &build-azure-sid
   extends: .build dev pushes
@@ -300,8 +298,6 @@ nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
-  # is just built for test purposes
-  allow_failure: true
 
 ####
 # Official builds done on Debian hardware
