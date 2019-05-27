@@ -7,17 +7,7 @@ import logging
 import os
 import subprocess
 
-
-class ActionEnv(argparse.Action):
-    def __init__(self, env, default=None, required=True, **kw):
-        if env:
-            default = os.environ.get(env, default)
-        if default:
-            required = False
-        super().__init__(default=default, required=required, **kw)
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values)
+from debian_cloud_images.utils import argparse_ext
 
 
 class CloudRelease(collections.OrderedDict):
@@ -43,27 +33,23 @@ class CloudRelease(collections.OrderedDict):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--info',
-        help='(default: $CLOUD_BUILD_INFO)',
-        action=ActionEnv,
+        action=argparse_ext.ActionEnv,
         env='CLOUD_BUILD_INFO',
     )
     parser.add_argument('--name',
-        help='(default: $CLOUD_BUILD_NAME)',
-        action=ActionEnv,
+        action=argparse_ext.ActionEnv,
         env='CLOUD_BUILD_NAME',
     )
     parser.add_argument('--output-dir',
-        help='(default: $CLOUD_BUILD_OUTPUT_DIR)',
-        action=ActionEnv,
+        action=argparse_ext.ActionEnv,
         env='CLOUD_BUILD_OUTPUT_DIR',
     )
     parser.add_argument('--root',
-        help='(default: $FAI_ROOT)',
-        action=ActionEnv,
+        action=argparse_ext.ActionEnv,
         env='FAI_ROOT',
     )
     parser.add_argument('--write',
-        action=ActionEnv,
+        action=argparse_ext.ActionEnv,
         required=False,
         env='FAI_ACTION',
     )
