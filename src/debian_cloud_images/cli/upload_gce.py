@@ -59,12 +59,15 @@ class ImageUploaderGce:
         gce_family = public_info.vendor_gce_family
         gce_name = public_info.vendor_gce_name
 
+        gce_family_url = f'projects/{self.project}/global/images/family/{gce_family}'
+        gce_name_url = f'projects/{self.project}/global/images/{gce_name}'
+
         if self.check_image(image, gce_name):
             logging.warning('Image %s already exists, not uploading', gce_name)
             return
 
         gce_file = self.upload_file(image, gce_name)
-        gce_image = self.create_image(image, gce_name, gce_family, gce_file)
+        self.create_image(image, gce_name, gce_family, gce_file)
 
         metadata = image.build.metadata.copy()
         metadata.labels[label_ucdo_provider] = 'cloud.google.com'
@@ -73,7 +76,8 @@ class ImageUploaderGce:
         manifests = [Upload(
             metadata=metadata,
             provider='googleapis.com',
-            ref=gce_image.extra['selfLink'],
+            ref=gce_name_url,
+            family_ref=gce_family_url,
         )]
 
         image.write_manifests('upload-gce', manifests)
