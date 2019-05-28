@@ -9,7 +9,7 @@ variables:
 
 before_script:
   - apt-get update
-  - apt-get install --no-install-recommends -y python3-libcloud qemu-utils
+  - apt-get install --no-install-recommends -y python3-libcloud python3-marshmallow qemu-utils
   - |
     if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
       # Workaround unsupported SEEK_HOLE in overlayfs (Docker default)
