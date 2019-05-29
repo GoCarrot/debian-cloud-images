@@ -1,5 +1,6 @@
 from collections import namedtuple
 from marshmallow import Schema, fields, pre_dump, post_dump, post_load, ValidationError, validates
+from uuid import uuid4
 
 from ..registry import registry as _registry
 
@@ -53,3 +54,23 @@ class v1_ListSchema(v1_TypeMetaSchema):
     @post_load
     def load_items(self, data):
         return list(data['items'])
+
+
+class ObjectMeta:
+    def __init__(self, labels=None, uid=None):
+        self.labels = labels or {}
+        self.uid = uid or uuid4()
+
+    def copy(self):
+        return self.__class__(
+            labels=self.labels.copy(),
+        )
+
+
+class v1_ObjectMetaSchema(Schema):
+    labels = fields.Dict(keys=fields.Str(), values=fields.Str())
+    uid = fields.UUID(required=True)
+
+    @post_load
+    def make_object(self, data):
+        return ObjectMeta(**data)
