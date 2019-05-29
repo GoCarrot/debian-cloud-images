@@ -2,7 +2,44 @@ import pytest
 
 from marshmallow import ValidationError
 
-from debian_cloud_images.api.meta import TypeMeta, v1_TypeMetaSchema
+from debian_cloud_images.api.meta import TypeMeta, v1_ListSchema, v1_TypeMetaSchema
+
+
+class Test_v1_ListSchema:
+    schema = v1_ListSchema()
+
+    def test_no_items(self):
+        data = {
+            'apiVersion': 'v1',
+            'kind': 'List',
+            'items': [],
+        }
+
+        obj = self.schema.load(data)
+
+        assert isinstance(obj, list)
+        assert len(obj) == 0
+
+        assert data == self.schema.dump(obj)
+
+    def test_items(self):
+        data = {
+            'apiVersion': 'v1',
+            'kind': 'List',
+            'items': [
+                {
+                    'apiVersion': 'unknown/v1',
+                    'kind': 'Unknown',
+                },
+            ],
+        }
+
+        obj = self.schema.load(data)
+
+        assert isinstance(obj, list)
+        assert len(obj) == 1
+
+        assert data == self.schema.dump(obj)
 
 
 class Test_v1_TypeMetaSchema:
