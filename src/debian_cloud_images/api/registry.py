@@ -19,3 +19,6 @@ class TypeMetaRegistry(Mapping):
         self._model[schema.__model__] = schema
         self._typemeta[schema.__typemeta__] = schema
         return schema
+
+
+registry = TypeMetaRegistry()

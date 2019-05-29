@@ -1,6 +1,8 @@
 from collections import namedtuple
 from marshmallow import Schema, fields, pre_dump, post_dump, post_load, ValidationError, validates
 
+from ..registry import registry as _registry
+
 
 TypeMeta = namedtuple('TypeMeta', ['kind', 'api_version'])
 
@@ -33,7 +35,9 @@ class v1_TypeMetaSchema(Schema):
 list_typemeta = TypeMeta('List', 'v1')
 
 
+@_registry.register
 class v1_ListSchema(v1_TypeMetaSchema):
+    __model__ = list
     __typemeta__ = list_typemeta
 
     items = fields.List(fields.Dict())
