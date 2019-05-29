@@ -1,8 +1,63 @@
-from debian_cloud_images.api.meta import TypeMeta
+import pytest
+
+from debian_cloud_images.api.meta import TypeMeta, v1_TypeMetaSchema
 from debian_cloud_images.api.registry import TypeMetaRegistry
 
 
 class TestTypeMetaRegistry:
+    def test_dump(self):
+        registry = TypeMetaRegistry()
+
+        class TestOne:
+            pass
+
+        @registry.register
+        class TestOneSchema(v1_TypeMetaSchema):
+            __model__ = TestOne
+            __typemeta__ = TypeMeta('One', 'v1')
+
+        data = {
+            'apiVersion': 'v1',
+            'kind': 'One',
+        }
+
+        assert registry.dump(TestOne()) == data
+
+    def test_dump_unknown(self):
+        registry = TypeMetaRegistry()
+
+        with pytest.raises(ValueError):
+            registry.dump(object())
+
+    def test_load(self):
+        registry = TypeMetaRegistry()
+
+        class TestOne:
+            pass
+
+        @registry.register
+        class TestOneSchema(v1_TypeMetaSchema):
+            __model__ = TestOne
+            __typemeta__ = TypeMeta('One', 'v1')
+
+        data = {
+            'apiVersion': 'v1',
+            'kind': 'One',
+        }
+
+        registry.load(data)
+
+    def test_load_unknown(self):
+        registry = TypeMetaRegistry()
+
+        data = {
+            'apiVersion': 'v1',
+            'kind': 'One',
+        }
+
+        with pytest.raises(ValueError):
+            registry.load(data)
+
     def test_register(self):
         registry = TypeMetaRegistry()
 
