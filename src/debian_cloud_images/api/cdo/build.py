@@ -5,7 +5,8 @@ from ..registry import registry as _registry
 
 
 class Build:
-    def __init__(self, packages=None, metadata=None):
+    def __init__(self, info=None, packages=None, metadata=None):
+        self.info = info
         self.packages = packages
         self.metadata = metadata or ObjectMeta()
 
@@ -16,6 +17,7 @@ class v1alpha1_BuildDataPackageSchema(Schema):
 
 
 class v1alpha1_BuildDataSchema(Schema):
+    info = fields.Dict(keys=fields.Str(), values=fields.Str())
     packages = fields.Nested(v1alpha1_BuildDataPackageSchema, many=True)
 
 

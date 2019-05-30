@@ -24,23 +24,24 @@ skip_no_qemu_img = pytest.mark.skipif(check_no_qemu_img,
 
 @pytest.fixture
 def images_path(tmp_path):
-    with tmp_path.joinpath("test.json").open('w') as build:
-        json.dump(
-            {
-                '_meta': {
-                    'name': 'test',
-                    'stage': 'build',
-                },
-                'build_info': {
+    with tmp_path.joinpath("test.build.json").open('w') as build:
+        json.dump({
+            'apiVersion': 'cloud.debian.org/v1alpha1',
+            'kind': 'Build',
+            'metadata': {
+                'labels': {},
+                'uid': '00000000-0000-0000-0000-000000000000',
+            },
+            'data': {
+                'info': {
                     'arch': 'amd64',
                     'release': 'sid',
                     'release_id': 'sid',
                     'vendor': 'azure',
+                    'version': '1',
                 },
-                'cloud_release': {},
             },
-            build,
-        )
+        }, build)
 
     return tmp_path
 
