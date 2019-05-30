@@ -123,6 +123,12 @@ class Image:
         else:
             raise RuntimeError
 
+    def write_manifests(self, tool, manifests):
+        """ Write manifests """
+        manifest_file = self.__path.joinpath('{}.{}.json'.format(self.name, tool))
+        with manifest_file.open('w') as f:
+            json.dump(api_registry.dump(manifests), f, indent=4, separators=(',', ': '), sort_keys=True)
+
     def write_vendor_manifest(self, stage, data):
         """ Write upload manifest """
         manifest = {

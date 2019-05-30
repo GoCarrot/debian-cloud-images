@@ -20,11 +20,11 @@ class ImagePublicType(enum.Enum):
 class ImagePublicInfo:
     class ImagePublicInfoApplied:
         def __init__(self, public_type, info):
-            self.__public_type, self.__info = public_type, info
+            self.public_type, self.__info = public_type, info
 
         def __getattr__(self, key):
             if not key.startswith('_'):
-                return self.__public_type.value[key].format(**self.__info)
+                return self.public_type.value[key].format(**self.__info)
             raise KeyError(key)
 
         @property

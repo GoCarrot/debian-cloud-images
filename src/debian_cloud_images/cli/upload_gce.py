@@ -3,6 +3,8 @@ import logging
 import zlib
 
 from .upload_base import UploadBaseCommand
+from ..api.cdo.upload import Upload
+from ..api.wellknown import label_ucdo_provider, label_ucdo_type
 from ..utils import argparse_ext
 
 from libcloud.compute.types import Provider as ComputeProvider
@@ -64,12 +66,17 @@ class ImageUploaderGce:
         gce_file = self.upload_file(image, gce_name)
         gce_image = self.create_image(image, gce_name, gce_family, gce_file)
 
-        image.write_vendor_manifest(
-            'upload_vendor',
-            {
-                'link': gce_image.extra['selfLink'],
-            },
-        )
+        metadata = image.build.metadata.copy()
+        metadata.labels[label_ucdo_provider] = 'cloud.google.com'
+        metadata.labels[label_ucdo_type] = public_info.public_type.name
+
+        manifests = [Upload(
+            metadata=metadata,
+            provider='googleapis.com',
+            ref=gce_image.extra['selfLink'],
+        )]
+
+        image.write_manifests('upload-gce', manifests)
 
         self.delete_file(image, gce_file)
 

@@ -4,6 +4,8 @@ import time
 from libcloud.compute.types import VolumeSnapshotState
 
 from .upload_base import UploadBaseCommand
+from ..api.cdo.upload import Upload
+from ..api.wellknown import label_ucdo_provider, label_ucdo_type
 from ..utils import argparse_ext
 from ..utils.libcloud.compute.ec2 import ExEC2NodeDriver
 from ..utils.libcloud.storage.s3 import S3BucketStorageDriver
@@ -69,12 +71,20 @@ class ImageUploaderEc2:
             ec2_snapshots = self.copy_snapshot(image, name, ec2_snapshot)
             ec2_images = self.create_image(image, name, ec2_snapshots)
 
-            image.write_vendor_manifest(
-                'upload_vendor',
-                {
-                    'amis': {k: v.id for k, v in ec2_images.items()},
-                },
-            )
+            manifests = []
+            for region, ec2_image in ec2_images.items():
+                metadata = image.build.metadata.copy()
+                metadata.labels['aws.amazon.com/region'] = region
+                metadata.labels[label_ucdo_provider] = 'aws.amazon.com'
+                metadata.labels[label_ucdo_type] = public_info.public_type.name
+
+                manifests.append(Upload(
+                    metadata=metadata,
+                    provider=ec2_image.driver.connection.host,
+                    ref=ec2_image.id,
+                ))
+
+            image.write_manifests('upload-ec2', manifests)
 
         finally:
             self.delete_file(image, obj)

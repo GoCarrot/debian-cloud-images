@@ -3,6 +3,8 @@ import http.client
 import logging
 
 from .upload_base import UploadBaseCommand
+from ..api.cdo.upload import Upload
+from ..api.wellknown import label_ucdo_type
 from ..utils.files import ChunkedFile
 from ..utils.libcloud.compute.azure_arm import ExAzureNodeDriver
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
@@ -94,13 +96,18 @@ class ImageUploaderAzure:
 
         self.create_container(image_name)
         self.upload_file(image, image_file)
-        self.create_image(image, image_name, image_url)
+        image_id = self.create_image(image, image_name, image_url)
 
-        image.write_vendor_manifest(
-            'upload_vendor',
-            {
-            },
-        )
+        metadata = image.build.metadata.copy()
+        metadata.labels[label_ucdo_type] = public_info.public_type.name
+
+        manifests = [Upload(
+            metadata=metadata,
+            provider=self.compute_driver.connection.host,
+            ref=image_id,
+        )]
+
+        image.write_manifests('upload-azure', manifests)
 
         self.delete_container(image_name)
 

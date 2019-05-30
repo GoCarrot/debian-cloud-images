@@ -50,6 +50,8 @@ class ExAzureNodeDriver(AzureNodeDriver):
         if wait_for_completion:
             self._wait_create_computeimage(action)
 
+        return action
+
     def _wait_create_computeimage(self, action, timeout=180, interval=1):
         start_time = time.time()
 

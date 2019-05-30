@@ -11,6 +11,8 @@ from libcloud.storage.types import Provider as StorageProvider
 from urllib.parse import urlsplit, urlunsplit, urlencode
 
 from .upload_base import UploadBaseCommand
+from ..api.cdo.upload import Upload
+from ..api.wellknown import label_ucdo_provider, label_ucdo_type
 from ..utils.files import ChunkedFile
 from ..utils.libcloud.storage.azure_blobs import AzureGenericOAuth2Connection
 
@@ -183,7 +185,25 @@ class ImageUploaderAzureCloudpartner:
 
             self.upload_file(image, image_path)
 
-            changed |= self.insert_image(image, image_public_info, image_url_sas)
+            if self.insert_image(image, image_public_info, image_url_sas):
+                changed = True
+
+                azure_version = image.build_info['version_azure']
+                ref = f'{self.publisher_id}:{self.offer_id}:{image.build_release_id}:{azure_version}'
+                family_ref = f'{self.publisher_id}:{self.offer_id}:{image.build_release_id}:latest'
+
+                metadata = image.build.metadata.copy()
+                metadata.labels[label_ucdo_provider] = 'azure.com'
+                metadata.labels[label_ucdo_type] = image_public_info.public_type.name
+
+                manifests = [Upload(
+                    metadata=metadata,
+                    provider=self.cloudpartner.host,
+                    ref=ref,
+                    family_ref=family_ref,
+                )]
+
+                image.write_manifests('upload-azure-cloudpartner', manifests)
 
         if changed and self.publish:
             logging.info('Publishing offer %s', self.offer_id)
