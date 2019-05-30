@@ -3,6 +3,7 @@ from marshmallow import Schema, fields, pre_dump, post_dump, post_load, Validati
 from uuid import uuid4
 
 from ..registry import registry as _registry
+from ...utils.marshmallow import fields_ext
 
 
 TypeMeta = namedtuple('TypeMeta', ['kind', 'api_version'])
@@ -41,7 +42,7 @@ class v1_ListSchema(v1_TypeMetaSchema):
     __model__ = list
     __typemeta__ = list_typemeta
 
-    items = fields.List(fields.Dict())
+    items = fields_ext.NestedRegistry(None, many=True)
 
     @pre_dump
     def dump_items(self, data):

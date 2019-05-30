@@ -21,7 +21,7 @@ class TypeMetaRegistry(Mapping):
             cls = self._model[obj.__class__]
         except KeyError:
             raise ValueError(f'Unable to find schema for class={obj.__class__}')
-        return cls().dump(obj)
+        return cls(context={'registry': self}).dump(obj)
 
     def load(self, value, unknown=RAISE):
         from .meta import TypeMeta, v1_TypeMetaSchema
@@ -32,7 +32,7 @@ class TypeMetaRegistry(Mapping):
             cls = self._typemeta[typemeta]
         except KeyError:
             raise ValueError(f'Unable to find schema for kind={typemeta.kind} and apiVersion={typemeta.api_version}')
-        return cls().load(value, unknown=unknown)
+        return cls(context={'registry': self}).load(value, unknown=unknown)
 
     def register(self, schema):
         self._model[schema.__model__] = schema

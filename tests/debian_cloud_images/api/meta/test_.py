@@ -1,8 +1,11 @@
 import pytest
 
-from marshmallow import ValidationError
+import copy
+
+from marshmallow import post_load, ValidationError
 
 from debian_cloud_images.api.meta import TypeMeta, v1_ListSchema, v1_ObjectMetaSchema, v1_TypeMetaSchema
+from debian_cloud_images.api.registry import registry as api_registry
 
 
 class Test_v1_ListSchema:
@@ -23,23 +26,38 @@ class Test_v1_ListSchema:
         assert data == self.schema.dump(obj)
 
     def test_items(self):
+        registry = copy.deepcopy(api_registry)
+
+        class TestOne:
+            pass
+
+        @registry.register
+        class TestOneSchema(v1_TypeMetaSchema):
+            __model__ = TestOne
+            __typemeta__ = TypeMeta('One', 'v1')
+
+            @post_load
+            def load_obj(self, data):
+                return self.__model__()
+
         data = {
             'apiVersion': 'v1',
             'kind': 'List',
             'items': [
                 {
-                    'apiVersion': 'unknown/v1',
-                    'kind': 'Unknown',
+                    'apiVersion': 'v1',
+                    'kind': 'One',
                 },
             ],
         }
 
-        obj = self.schema.load(data)
+        obj = registry.load(data)
 
+        print(obj)
         assert isinstance(obj, list)
         assert len(obj) == 1
 
-        assert data == self.schema.dump(obj)
+        assert data == registry.dump(obj)
 
 
 class Test_v1_ObjectMetaSchema:
