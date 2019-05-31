@@ -3,7 +3,6 @@ import pytest
 import json
 import pathlib
 
-from ...images import Image
 from ...utils import argparse_ext
 
 
@@ -21,11 +20,8 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(scope="session")
-def image_info(request):
-    build_info = request.config.getoption('mount_build_info')
-    image = Image('default', '')
-    image.build_info = json.loads(build_info)
-    return image
+def image_build_info(request):
+    return json.loads(request.config.getoption('mount_build_info'))
 
 
 @pytest.fixture(scope="session")
