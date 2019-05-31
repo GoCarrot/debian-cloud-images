@@ -1,0 +1,1 @@
+# Debian Cloud images documentation
