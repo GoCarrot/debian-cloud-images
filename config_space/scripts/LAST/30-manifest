@@ -8,6 +8,9 @@ import os
 import subprocess
 
 from debian_cloud_images.utils import argparse_ext
+from debian_cloud_images.api.cdo.build import Build
+from debian_cloud_images.api.registry import registry as api_registry
+from debian_cloud_images.api import wellknown
 
 
 class CloudRelease(collections.OrderedDict):
@@ -57,27 +60,29 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     cloud_release = CloudRelease()
-    package_versions = {}
-    manifest = {
-        '_meta': {
-            'name': args.name,
-            'stage': 'build',
-        },
-        'build_info': json.loads(args.info),
-        'cloud_release': cloud_release,
-        'package_versions': package_versions,
-    }
+    build_info = json.loads(args.info)
 
     with subprocess.Popen(
         ('dpkg-query', '-W', '--admindir', os.path.join(args.root, 'var/lib/dpkg')),
         stdout=subprocess.PIPE,
     ) as f:
+        packages = []
         for l in f.stdout:
             package, version = l.decode().strip().split()
-            package_versions[package] = version
+            packages.append({'name': package, 'version': version})
+
+    manifest = Build(info=build_info, packages=packages)
+    manifest.metadata.labels[wellknown.label_cdo_vendor] = build_info['vendor']
+    manifest.metadata.labels[wellknown.label_cdo_version] = build_info['version']
+    manifest.metadata.labels[wellknown.label_do_arch] = build_info['arch']
+    manifest.metadata.labels[wellknown.label_do_dist] = 'debian'
+    manifest.metadata.labels[wellknown.label_do_release] = build_info['release']
+    if build_info['type'] == 'dev':
+        manifest.metadata.labels[wellknown.label_bcdo_build_id] = build_info['build_id']
+        manifest.metadata.labels[wellknown.label_bcdo_type] = build_info['type']
 
     with open('{}/{}.build.json'.format(args.output_dir, args.name), 'w') as f:
-        json.dump(manifest, f, indent=4, separators=(',', ': '), sort_keys=True)
+        json.dump(api_registry.dump(manifest), f, indent=4, separators=(',', ': '), sort_keys=True)
 
     if args.write:
         with open(os.path.join(args.root, 'etc/cloud-release'), 'w') as f:

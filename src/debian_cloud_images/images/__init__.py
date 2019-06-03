@@ -6,43 +6,39 @@ import subprocess
 import tarfile
 import tempfile
 
+from ..api.registry import registry as api_registry
+
 
 logger = logging.getLogger(__name__)
 
 
 class Images(dict):
     def read_path(self, path):
-        for manifest in path.glob('*.json'):
-            logger.info('Reading manifest %s', manifest.name)
+        for p in path.glob('*.build.json'):
+            name = p.name.rsplit('.', 3)[0]
+            logger.info('Reading build %s', name)
 
             try:
-                with manifest.open() as f:
-                    manifest = json.load(f)
-                    basename = manifest['_meta']['name']
-                    stage = manifest['_meta']['stage']
-                    image = self.setdefault(basename, Image(basename, path))
-
-                    if stage == 'build':
-                        image.read_build_manifest(manifest)
-                    else:
-                        raise RuntimeError('Manifest type {} not supported'.format(stage))
+                with p.open() as f:
+                    d = api_registry.load(json.load(f))
+                    self[name] = Image(name, path, d)
 
             except Exception:
-                logger.exception('Can\'t load manifest')
+                logger.exception('Can\'t load build')
 
 
 class Image:
-    def __init__(self, name, path):
+    def __init__(self, name, path, build):
         self.name = name
         self.__path = path
+        self.build = build
 
-    def read_build_manifest(self, data):
-        self.build_info = data['build_info']
-        self.build_arch = data['build_info']['arch']
-        self.build_release = data['build_info']['release']
-        self.build_release_id = data['build_info']['release_id']
-        self.build_vendor = data['build_info']['vendor']
-        self.build_version = data['cloud_release'].get('version')
+        self.build_info = build.info
+        self.build_arch = build.info['arch']
+        self.build_release = build.info['release']
+        self.build_release_id = build.info['release_id']
+        self.build_vendor = build.info['vendor']
+        self.build_version = build.info['version']
 
     def _convert_image_f(self, format):
         if format == 'qcow2':
@@ -126,6 +122,12 @@ class Image:
             return 'debian-{}-{}-{}'.format(self.build_release_id, self.build_arch, version)
         else:
             raise RuntimeError
+
+    def write_manifests(self, tool, manifests):
+        """ Write manifests """
+        manifest_file = self.__path.joinpath('{}.{}.json'.format(self.name, tool))
+        with manifest_file.open('w') as f:
+            json.dump(api_registry.dump(manifests), f, indent=4, separators=(',', ': '), sort_keys=True)
 
     def write_vendor_manifest(self, stage, data):
         """ Write upload manifest """

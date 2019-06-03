@@ -9,7 +9,7 @@ variables:
 
 before_script:
   - apt-get update
-  - apt-get install --no-install-recommends -y python3-libcloud qemu-utils
+  - apt-get install --no-install-recommends -y python3-libcloud python3-marshmallow qemu-utils
   - |
     if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
       # Workaround unsupported SEEK_HOLE in overlayfs (Docker default)
@@ -372,10 +372,10 @@ azure upload:
     variables:
       - $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1"
   artifacts:
-    name: upload_vendor-azure
+    name: upload-azure
     expire_in: 7 days
     paths:
-      - '*.upload_vendor.json'
+      - '*.upload-azure.json'
   allow_failure: true
 
 ec2 upload:
@@ -405,10 +405,10 @@ ec2 upload:
     variables:
       - $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1"
   artifacts:
-    name: upload_vendor-ec2
+    name: upload-ec2
     expire_in: 7 days
     paths:
-      - '*.upload_vendor.json'
+      - '*.upload-ec2.json'
   allow_failure: true
 
 gce upload:
@@ -431,10 +431,10 @@ gce upload:
     variables:
       - $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"
   artifacts:
-    name: upload_vendor-gce
+    name: upload-gce
     expire_in: 7 days
     paths:
-      - '*.upload_vendor.json'
+      - '*.upload-gce.json'
   allow_failure: true
 
 ####
@@ -465,8 +465,8 @@ azure upload daily:
     variables:
       - $CLOUD_UPLOAD_AZURE_DAILY_ENABLED == "1"
   artifacts:
-    name: upload_vendor-azure
+    name: upload-azure
     expire_in: 7 days
     paths:
-      - '*.upload_vendor.json'
+      - '*.upload-azure-cloudpartner.json'
   allow_failure: true

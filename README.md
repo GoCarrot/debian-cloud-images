@@ -12,7 +12,8 @@ You also need python3-libcloud from Buster or newer.
 ```
   # git clone https://salsa.debian.org/cloud-team/debian-cloud-images.git
   # sudo apt install --no-install-recommends ca-certificates debsums dosfstools \
-    fai-server fai-setup-storage make python3 python3-libcloud qemu-utils udev
+    fai-server fai-setup-storage make python3 python3-libcloud python3-marshmallow \
+    qemu-utils udev
 ```
 
   Call `make help` and follow the instructions
