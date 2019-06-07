@@ -137,8 +137,6 @@ azure buster build: &build-azure-buster
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: azure
-  # no waagent in buster
-  allow_failure: true
 
 azure sid build: &build-azure-sid
   extends: .build dev pushes
@@ -224,6 +222,34 @@ generic sid amd64 build: &build-generic-sid-amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
+generic buster arm64 build: &build-generic-buster-arm64
+  extends: .build dev manual
+  variables:
+    CLOUD_ARCH: arm64
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: generic
+
+generic sid arm64 build: &build-generic-sid-arm64
+  extends: .build dev pushes
+  variables:
+    CLOUD_ARCH: arm64
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: generic
+
+generic buster ppc64el build: &build-generic-buster-ppc64el
+  extends: .build dev manual
+  variables:
+    CLOUD_ARCH: ppc64el
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: generic
+
+generic sid ppc64el build: &build-generic-sid-ppc64el
+  extends: .build dev pushes
+  variables:
+    CLOUD_ARCH: ppc64el
+    CLOUD_RELEASE: sid
+    CLOUD_VENDOR: generic
+
 genericcloud buster amd64 build: &build-genericcloud-buster-amd64
   extends: .build dev manual
   variables:
@@ -272,8 +298,6 @@ nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
-  # is just built for test purposes
-  allow_failure: true
 
 ####
 # Official builds done on Debian hardware
@@ -325,6 +349,22 @@ generic buster amd64 build official:
 
 generic sid amd64 build official:
   <<: *build-generic-sid-amd64
+  extends: .build official
+
+generic buster arm64 build official:
+  <<: *build-generic-buster-arm64
+  extends: .build official
+
+generic sid arm64 build official:
+  <<: *build-generic-sid-arm64
+  extends: .build official
+
+generic buster ppc64el build official:
+  <<: *build-generic-buster-ppc64el
+  extends: .build official
+
+generic sid ppc64el build official:
+  <<: *build-generic-sid-ppc64el
   extends: .build official
 
 genericcloud buster amd64 build official:
