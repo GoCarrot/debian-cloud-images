@@ -5,6 +5,7 @@ import http.client
 import logging
 
 from base64 import b64encode, b64decode
+from libcloud.common.exceptions import BaseHTTPError
 from libcloud.storage.drivers.azure_blobs import AzureBlobLease
 from libcloud.storage.providers import get_driver as storage_driver
 from libcloud.storage.types import Provider as StorageProvider
@@ -286,7 +287,10 @@ class ImageUploaderAzureCloudpartner:
                 'notification-emails': email,
             },
         }
-        self.cloudpartner.request(self.offer + '/publish', data=data, method='POST')
+        try:
+            self.cloudpartner.request(self.offer + '/publish', data=data, method='POST')
+        except BaseHTTPError as e:
+            logging.error(f'Unable to publish offer: {e.message}')
 
     def save_offer(self, data, etag):
         r = self._offer(data=data, method='PUT', headers={'If-Match': etag})
