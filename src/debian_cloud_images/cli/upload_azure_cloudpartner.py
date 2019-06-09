@@ -172,9 +172,10 @@ class ImageUploaderAzureCloudpartner:
 
         for image in self.filter_images(images.values()):
             image_name = image_public_info.apply(image.build_info).vendor_name
-            image_path = '/{}/{}.vhd'.format(self.storage_container, image_name)
+            image_file = '{}/disk.vhd'.format(image_name)
+            image_url = 'https://{}.blob.core.windows.net/{}'.format(self.storage_name, image_file)
             image_url_sas = UrlSas(
-                'https://{}.blob.core.windows.net{}'.format(self.storage_name, image_path),
+                image_url,
                 self.storage_secret,
                 sas_permission='rl',
                 sas_start='2018-01-01T00:00:00Z',
@@ -183,7 +184,8 @@ class ImageUploaderAzureCloudpartner:
 
             logging.info('Uploading image %s', image.name)
 
-            self.upload_file(image, image_path)
+            self.create_container(image_name)
+            self.upload_file(image, image_file)
 
             if self.insert_image(image, image_public_info, image_url_sas):
                 changed = True
@@ -208,6 +210,19 @@ class ImageUploaderAzureCloudpartner:
         if changed and self.publish:
             logging.info('Publishing offer %s', self.offer_id)
             self.publish_offer(self.publish)
+
+    def create_container(self, container):
+        logging.info('Creating container %s', container)
+
+        r = self.storage.connection.request(
+            container,
+            method='PUT',
+            params={
+                'restype': 'container',
+            },
+        )
+        if r.status != http.client.CREATED:
+            raise RuntimeError('Error creating container: {0.error} ({0.status})'.format(r))
 
     def upload_file(self, image, path):
         """ Upload file to Storage """
