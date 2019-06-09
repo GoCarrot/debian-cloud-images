@@ -131,11 +131,10 @@ class UrlSas:
 class ImageUploaderAzureCloudpartner:
     storage_cls = storage_driver(StorageProvider.AZURE_BLOBS)
 
-    def __init__(self, publisher_id, offer_id, storage_name, storage_container, storage_secret, auth, publish):
+    def __init__(self, publisher_id, offer_id, storage_name, storage_secret, auth, publish):
         self.publisher_id = publisher_id
         self.offer_id = offer_id
         self.storage_name = storage_name
-        self.storage_container = storage_container
         self.storage_secret = storage_secret
         self.auth = auth
         self.publish = publish
@@ -359,7 +358,7 @@ class ImageUploaderAzureCloudpartner:
 class UploadAzureCloudpartnerCommand(UploadBaseCommand):
     argparser_name = 'upload-azure-cloudpartner'
     argparser_help = 'upload Debian images for publishing via Azure Cloud Partner interface'
-    argparser_usage = '%(prog)s PUBLISHER OFFER STORAGE_NAME STORAGE_CONTAINER STORAGE_SECRET'
+    argparser_usage = '%(prog)s PUBLISHER OFFER STORAGE_NAME STORAGE_SECRET'
 
     @classmethod
     def _argparse_register(cls, parser):
@@ -379,11 +378,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             'storage_name',
             help='Azure Storage name',
             metavar='STORAGE_NAME',
-        )
-        parser.add_argument(
-            'storage_container',
-            help='Azure Storage container',
-            metavar='STORAGE_CONTAINER',
         )
         parser.add_argument(
             'storage_secret',
@@ -409,7 +403,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             publisher_id,
             offer_id,
             storage_name,
-            storage_container,
             storage_secret,
             auth=None,
             publish=None,
@@ -421,7 +414,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             publisher_id=publisher_id,
             offer_id=offer_id,
             storage_name=storage_name,
-            storage_container=storage_container,
             storage_secret=storage_secret,
             auth=auth,
             publish=publish,

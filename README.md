@@ -104,5 +104,4 @@ Uploaders typically need some variables set with credentials or targets.
  * `$CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER`: Azure Publisher ID.
  * `$CLOUD_UPLOAD_AZURE_DAILY_OFFER`: Azure Offer name.
  * `$CLOUD_UPLOAD_AZURE_DAILY_STORAGE_NAME`: Azure Storage name.
- * `$CLOUD_UPLOAD_AZURE_DAILY_STORAGE_CONTAINER`: Azure Storage container.
  * `$CLOUD_UPLOAD_AZURE_DAILY_STORAGE_SECRET`: Azure Storage secret key.
