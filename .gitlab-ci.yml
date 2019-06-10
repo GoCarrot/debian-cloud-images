@@ -494,7 +494,6 @@ azure upload daily:
       "${CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER}"
       "${CLOUD_UPLOAD_AZURE_DAILY_OFFER}"
       "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_NAME}"
-      "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_CONTAINER}"
       "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_SECRET}"
   dependencies:
     - azure buster build official

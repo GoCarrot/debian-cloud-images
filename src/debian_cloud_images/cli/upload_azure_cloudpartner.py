@@ -5,6 +5,7 @@ import http.client
 import logging
 
 from base64 import b64encode, b64decode
+from libcloud.common.exceptions import BaseHTTPError
 from libcloud.storage.drivers.azure_blobs import AzureBlobLease
 from libcloud.storage.providers import get_driver as storage_driver
 from libcloud.storage.types import Provider as StorageProvider
@@ -131,11 +132,10 @@ class UrlSas:
 class ImageUploaderAzureCloudpartner:
     storage_cls = storage_driver(StorageProvider.AZURE_BLOBS)
 
-    def __init__(self, publisher_id, offer_id, storage_name, storage_container, storage_secret, auth, publish):
+    def __init__(self, publisher_id, offer_id, storage_name, storage_secret, auth, publish):
         self.publisher_id = publisher_id
         self.offer_id = offer_id
         self.storage_name = storage_name
-        self.storage_container = storage_container
         self.storage_secret = storage_secret
         self.auth = auth
         self.publish = publish
@@ -172,9 +172,10 @@ class ImageUploaderAzureCloudpartner:
 
         for image in self.filter_images(images.values()):
             image_name = image_public_info.apply(image.build_info).vendor_name
-            image_path = '/{}/{}.vhd'.format(self.storage_container, image_name)
+            image_file = '{}/disk.vhd'.format(image_name)
+            image_url = 'https://{}.blob.core.windows.net/{}'.format(self.storage_name, image_file)
             image_url_sas = UrlSas(
-                'https://{}.blob.core.windows.net{}'.format(self.storage_name, image_path),
+                image_url,
                 self.storage_secret,
                 sas_permission='rl',
                 sas_start='2018-01-01T00:00:00Z',
@@ -183,7 +184,8 @@ class ImageUploaderAzureCloudpartner:
 
             logging.info('Uploading image %s', image.name)
 
-            self.upload_file(image, image_path)
+            self.create_container(image_name)
+            self.upload_file(image, image_file)
 
             if self.insert_image(image, image_public_info, image_url_sas):
                 changed = True
@@ -208,6 +210,19 @@ class ImageUploaderAzureCloudpartner:
         if changed and self.publish:
             logging.info('Publishing offer %s', self.offer_id)
             self.publish_offer(self.publish)
+
+    def create_container(self, container):
+        logging.info('Creating container %s', container)
+
+        r = self.storage.connection.request(
+            container,
+            method='PUT',
+            params={
+                'restype': 'container',
+            },
+        )
+        if r.status != http.client.CREATED:
+            raise RuntimeError('Error creating container: {0.error} ({0.status})'.format(r))
 
     def upload_file(self, image, path):
         """ Upload file to Storage """
@@ -272,7 +287,10 @@ class ImageUploaderAzureCloudpartner:
                 'notification-emails': email,
             },
         }
-        self.cloudpartner.request(self.offer + '/publish', data=data, method='POST')
+        try:
+            self.cloudpartner.request(self.offer + '/publish', data=data, method='POST')
+        except BaseHTTPError as e:
+            logging.error(f'Unable to publish offer: {e.message}')
 
     def save_offer(self, data, etag):
         r = self._offer(data=data, method='PUT', headers={'If-Match': etag})
@@ -344,7 +362,7 @@ class ImageUploaderAzureCloudpartner:
 class UploadAzureCloudpartnerCommand(UploadBaseCommand):
     argparser_name = 'upload-azure-cloudpartner'
     argparser_help = 'upload Debian images for publishing via Azure Cloud Partner interface'
-    argparser_usage = '%(prog)s PUBLISHER OFFER STORAGE_NAME STORAGE_CONTAINER STORAGE_SECRET'
+    argparser_usage = '%(prog)s PUBLISHER OFFER STORAGE_NAME STORAGE_SECRET'
 
     @classmethod
     def _argparse_register(cls, parser):
@@ -364,11 +382,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             'storage_name',
             help='Azure Storage name',
             metavar='STORAGE_NAME',
-        )
-        parser.add_argument(
-            'storage_container',
-            help='Azure Storage container',
-            metavar='STORAGE_CONTAINER',
         )
         parser.add_argument(
             'storage_secret',
@@ -394,7 +407,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             publisher_id,
             offer_id,
             storage_name,
-            storage_container,
             storage_secret,
             auth=None,
             publish=None,
@@ -406,7 +418,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             publisher_id=publisher_id,
             offer_id=offer_id,
             storage_name=storage_name,
-            storage_container=storage_container,
             storage_secret=storage_secret,
             auth=auth,
             publish=publish,
