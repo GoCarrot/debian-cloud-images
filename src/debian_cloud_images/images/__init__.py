@@ -13,18 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 class Images(dict):
-    def read_path(self, path):
-        for p in path.glob('*.build.json'):
-            name = p.name.rsplit('.', 3)[0]
-            logger.info('Reading build %s', name)
+    def read(self, manifest):
+        if not manifest.name.endswith('.build.json'):
+            return
 
-            try:
-                with p.open() as f:
-                    d = api_registry.load(json.load(f))
-                    self[name] = Image(name, path, d)
+        name = manifest.name.rsplit('.', 3)[0]
+        logger.info('Reading build %s', name)
 
-            except Exception:
-                logger.exception('Can\'t load build')
+        try:
+            with manifest.open() as f:
+                d = api_registry.load(json.load(f))
+                self[name] = Image(name, manifest.parent, d)
+
+        except Exception:
+            logger.exception('Can\'t load build')
 
 
 class Image:

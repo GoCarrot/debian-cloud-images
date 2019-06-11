@@ -218,16 +218,16 @@ class ImageUploaderEc2:
 class UploadEc2Command(UploadBaseCommand):
     argparser_name = 'upload-ec2'
     argparser_help = 'upload Debian images to Amazon EC2'
-    argparser_usage = '%(prog)s PROJECT BUCKET'
 
     @classmethod
     def _argparse_register(cls, parser):
         super()._argparse_register(parser)
 
         parser.add_argument(
-            'bucket',
+            '--bucket',
             help='create temporary image file in this S3 bucket',
             metavar='BUCKET',
+            required=True,
         )
         parser.add_argument(
             '--access-key-id',

@@ -70,13 +70,13 @@ def images_path_tar_xz(images_path):
 
 def test_Images(images_path):
     images = Images()
-    images.read_path(images_path)
+    images.read(images_path / 'test.build.json')
     assert len(images) == 1
 
 
 def test_Image(images_path):
     images = Images()
-    images.read_path(images_path)
+    images.read(images_path / 'test.build.json')
     image = images['test']
     assert image.build_arch == 'amd64'
 
@@ -87,7 +87,7 @@ def test_Image(images_path):
 @skip_no_qemu_img
 def test_Image_open_image(images_path_tar):
     images = Images()
-    images.read_path(images_path_tar)
+    images.read(images_path_tar / 'test.build.json')
     image = images['test']
 
     with image.open_image('qcow2') as f:
@@ -104,7 +104,7 @@ def test_Image_open_image(images_path_tar):
 
 def test_Image_open_tar(images_path_tar):
     images = Images()
-    images.read_path(images_path_tar)
+    images.read(images_path_tar / 'test.build.json')
     image = images['test']
     with image.open_tar() as f:
         assert f
@@ -112,7 +112,7 @@ def test_Image_open_tar(images_path_tar):
 
 def test_Image_open_tar_xz(images_path_tar_xz):
     images = Images()
-    images.read_path(images_path_tar_xz)
+    images.read(images_path_tar_xz / 'test.build.json')
     image = images['test']
     with image.open_tar() as f:
         assert f

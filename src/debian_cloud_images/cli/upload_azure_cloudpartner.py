@@ -362,33 +362,38 @@ class ImageUploaderAzureCloudpartner:
 class UploadAzureCloudpartnerCommand(UploadBaseCommand):
     argparser_name = 'upload-azure-cloudpartner'
     argparser_help = 'upload Debian images for publishing via Azure Cloud Partner interface'
-    argparser_usage = '%(prog)s PUBLISHER OFFER STORAGE_NAME STORAGE_SECRET'
 
     @classmethod
     def _argparse_register(cls, parser):
         super()._argparse_register(parser)
 
         parser.add_argument(
-            'publisher_id',
+            '--publisher',
+            dest='publisher_id',
             help='Azure publisher',
             metavar='PUBLISHER',
+            required=True,
         )
         parser.add_argument(
-            'offer_id',
+            '--offer',
+            dest='offer_id',
             help='Azure offer',
             metavar='OFFER',
+            required=True,
         )
         parser.add_argument(
-            'storage_name',
+            '--storage-name',
+            dest='storage_name',
             help='Azure Storage name',
             metavar='STORAGE_NAME',
+            required=True,
         )
         parser.add_argument(
-            'storage_secret',
+            '--storage-secret',
             help='Azure Storage access key',
             metavar='STORAGE_SECRET',
+            required=True,
         )
-
         parser.add_argument(
             '--auth',
             action=ActionAzureAuth,

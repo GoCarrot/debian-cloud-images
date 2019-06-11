@@ -202,28 +202,30 @@ class ImageUploaderAzure:
 class UploadAzureCommand(UploadBaseCommand):
     argparser_name = 'upload-azure'
     argparser_help = 'upload Debian images to Azure'
-    argparser_usage = '%(prog)s STORAGE CONTAINER'
 
     @classmethod
     def _argparse_register(cls, parser):
         super()._argparse_register(parser)
 
         parser.add_argument(
-            'group',
+            '--group',
             action=ActionAzureResourceGroup,
             help='Azure Subscription and Resource group',
             metavar='SUBSCRIPTION:GROUP',
+            required=True,
         )
         parser.add_argument(
-            'storage_name',
+            '--storage-name',
             help='Azure Storage name',
             metavar='STORAGE',
+            required=True,
         )
         parser.add_argument(
             '--auth',
             action=ActionAzureAuth,
             help='Authentication info for Azure AD application',
             metavar='TENANT:APPLICATION:SECRET',
+            required=True,
         )
 
     def __init__(self, *, group=None, storage_name=None, auth=None, **kw):
