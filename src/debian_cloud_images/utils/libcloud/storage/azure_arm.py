@@ -1,4 +1,5 @@
 from libcloud.common.base import BaseDriver
+from urllib.parse import urlparse
 
 from ..common.azure import AzureGenericOAuth2Connection
 from .azure_blobs import AzureBlobsOAuth2StorageDriver
@@ -37,10 +38,13 @@ class AzureResourceManagementStorageDriver(BaseDriver):
 
         r = self.connection.request(action, params={'api-version': '2018-07-01'})
 
+        endpoint = urlparse(r.object['properties']['primaryEndpoints']['blob'])
+
         return AzureBlobsOAuth2StorageDriver(
             name,
             client_id=self.client_id,
             client_secret=self.client_secret,
             tenant_id=self.tenant_id,
+            host=endpoint.netloc,
             extra=r.object,
         )
