@@ -1,14 +1,7 @@
 from libcloud.common.base import BaseDriver
 
 from ..common.azure import AzureGenericOAuth2Connection
-
-
-class AzureResourceManagementStorage:
-    def __init__(self, resource_group, name, extra, driver):
-        self.resource_group = resource_group
-        self.name = name
-        self.extra = extra
-        self.driver = driver
+from .azure_blobs import AzureBlobsOAuth2StorageDriver
 
 
 class AzureResourceManagementStorageDriver(BaseDriver):
@@ -44,4 +37,10 @@ class AzureResourceManagementStorageDriver(BaseDriver):
 
         r = self.connection.request(action, params={'api-version': '2018-07-01'})
 
-        return AzureResourceManagementStorage(resource_group, name, r.object, self)
+        return AzureBlobsOAuth2StorageDriver(
+            name,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            tenant_id=self.tenant_id,
+            extra=r.object,
+        )

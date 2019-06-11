@@ -23,10 +23,11 @@ class AzureBlobsOAuth2StorageDriver(AzureBlobsStorageDriver):
     name = 'Microsoft Azure (blobs with OAuth2)'
     connectionCls = AzureStorageOAuth2Connection
 
-    def __init__(self, key, *, client_id, client_secret, tenant_id):
+    def __init__(self, key, *, client_id, client_secret, tenant_id, extra=None):
         self.client_id = client_id
         self.client_secret = client_secret
         self.tenant_id = tenant_id
+        self.extra = extra or {}
 
         super().__init__(key=key, secret='')
 
