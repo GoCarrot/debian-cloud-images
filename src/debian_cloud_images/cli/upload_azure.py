@@ -9,8 +9,6 @@ from ..utils.files import ChunkedFile
 from ..utils.libcloud.compute.azure_arm import ExAzureNodeDriver
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
-from libcloud.storage.types import Provider as StorageProvider
-from libcloud.storage.providers import get_driver as storage_driver
 from libcloud.storage.drivers.azure_blobs import AzureBlobLease
 
 
@@ -38,11 +36,10 @@ class ActionAzureResourceGroup(argparse.Action):
 
 
 class ImageUploaderAzure:
-    storage_cls = storage_driver(StorageProvider.AZURE_BLOBS)
-
-    def __init__(self, storage_group, storage_name, image_group, auth):
+    def __init__(self, storage_group, storage_name, storage_id, image_group, auth):
         self.storage_group = storage_group
         self.storage_name = storage_name
+        self.storage_id = storage_id
         self.image_group = image_group
         self.auth = auth
 
@@ -65,8 +62,9 @@ class ImageUploaderAzure:
         ret = self.__storage
         if ret is None:
             ret = self.__storage = self.storage_driver.get_storage(
-                self.storage_group.resource_group,
-                self.storage_name,
+                resource_group=self.storage_group.resource_group,
+                name=self.storage_name,
+                _id=self.storage_id,
             )
         return ret
 
@@ -210,12 +208,23 @@ class UploadAzureCommand(UploadBaseCommand):
             metavar='SUBSCRIPTION:GROUP',
             required=True,
         )
-        parser.add_argument(
-            '--storage-name',
-            help='Azure Storage name',
-            metavar='STORAGE',
-            required=True,
+
+        storage_group = parser.add_argument_group(
+            'storage arguments',
+            'only name or id must be specified',
         )
+        storage_group = storage_group.add_mutually_exclusive_group(required=True)
+        storage_group.add_argument(
+            '--storage-name',
+            help='Name of Azure storage in given subscription and resource group',
+            metavar='NAME',
+        )
+        storage_group.add_argument(
+            '--storage-id',
+            help='ID of Azure storage',
+            metavar='ID',
+        )
+
         parser.add_argument(
             '--auth',
             action=ActionAzureAuth,
@@ -224,12 +233,13 @@ class UploadAzureCommand(UploadBaseCommand):
             required=True,
         )
 
-    def __init__(self, *, group=None, storage_name=None, auth=None, **kw):
+    def __init__(self, *, group=None, storage_name=None, storage_id=None, auth=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
             storage_group=group,
             storage_name=storage_name,
+            storage_id=storage_id,
             image_group=group,
             auth=auth,
         )

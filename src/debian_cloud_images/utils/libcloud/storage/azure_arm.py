@@ -29,14 +29,15 @@ class AzureResourceManagementStorageDriver(BaseDriver):
         })
         return ret
 
-    def get_storage(self, resource_group, name):
-        action = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}'.format(
-            self.subscription_id,
-            resource_group,
-            name,
-        )
+    def get_storage(self, resource_group=None, name=None, _id=None):
+        if not _id:
+            _id = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}'.format(
+                self.subscription_id,
+                resource_group,
+                name,
+            )
 
-        r = self.connection.request(action, params={'api-version': '2018-07-01'})
+        r = self.connection.request(_id, params={'api-version': '2018-07-01'})
 
         endpoint = urlparse(r.object['properties']['primaryEndpoints']['blob'])
 
