@@ -8,7 +8,6 @@ from ..api.wellknown import label_ucdo_type
 from ..utils.files import ChunkedFile
 from ..utils.libcloud.compute.azure_arm import ExAzureNodeDriver
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
-from ..utils.libcloud.storage.azure_blobs import AzureBlobsOAuth2StorageDriver
 
 from libcloud.storage.types import Provider as StorageProvider
 from libcloud.storage.providers import get_driver as storage_driver
@@ -65,11 +64,9 @@ class ImageUploaderAzure:
     def storage(self):
         ret = self.__storage
         if ret is None:
-            ret = self.__storage = AzureBlobsOAuth2StorageDriver(
-                key=self.storage_name,
-                tenant_id=self.auth.tenant_id,
-                client_id=self.auth.client_id,
-                client_secret=self.auth.client_secret,
+            ret = self.__storage = self.storage_driver.get_storage(
+                self.storage_group.resource_group,
+                self.storage_name,
             )
         return ret
 
@@ -125,8 +122,7 @@ class ImageUploaderAzure:
             raise RuntimeError('Error creating container: {0.error} ({0.status})'.format(r))
 
     def create_image(self, image, image_name, image_url):
-        image_storage = self.storage_driver.get_storage(self.storage_group.resource_group, self.storage_name)
-        image_location = image_storage.extra['location']
+        image_location = self.storage.extra['location']
 
         logging.info('Create image %s/%s in %s', self.image_group.resource_group, image_name, image_location)
 
