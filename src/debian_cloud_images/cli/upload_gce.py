@@ -152,7 +152,6 @@ class ImageUploaderGce:
 class UploadGceCommand(UploadBaseCommand):
     argparser_name = 'upload-gce'
     argparser_help = 'upload Debian images to GCE'
-    argparser_usage = '%(prog)s'
 
     @classmethod
     def _argparse_register(cls, parser):

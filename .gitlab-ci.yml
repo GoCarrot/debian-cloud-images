@@ -400,6 +400,7 @@ azure upload:
       ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
       --group "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP}"
       --storage-name "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME}"
+      *.build.json
   dependencies:
     - azure stretch build
     - azure stretch-backports build
@@ -427,10 +428,12 @@ ec2 upload:
       debian-cloud-images upload-ec2
       --regions "'${CLOUD_UPLOAD_EC2_DEV_REGIONS}'"
       --bucket "'${CLOUD_UPLOAD_EC2_DEV_BUCKET}'"
+      *.build.json
     - >
       ./bin/debian-cloud-images upload-ec2
       --regions "${CLOUD_UPLOAD_EC2_DEV_REGIONS}"
       --bucket "${CLOUD_UPLOAD_EC2_DEV_BUCKET}"
+      *.build.json
   dependencies:
     - ec2 stretch amd64 build
     - ec2 buster amd64 build
@@ -461,6 +464,7 @@ gce upload:
       --auth .auth
       --project "${CLOUD_UPLOAD_GCE_DEV_PROJECT}"
       --bucket "${CLOUD_UPLOAD_GCE_DEV_BUCKET}"
+      *.build.json
   dependencies:
     - gce stretch build
     - gce buster build
@@ -496,6 +500,7 @@ azure upload daily:
       --offer "${CLOUD_UPLOAD_AZURE_DAILY_OFFER}"
       --storage-name "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_NAME}"
       --storage-secret "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_SECRET}"
+      *.build.json
   dependencies:
     - azure buster build official
     - azure sid build official

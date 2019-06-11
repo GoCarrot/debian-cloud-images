@@ -202,7 +202,6 @@ class ImageUploaderAzure:
 class UploadAzureCommand(UploadBaseCommand):
     argparser_name = 'upload-azure'
     argparser_help = 'upload Debian images to Azure'
-    argparser_usage = '%(prog)s'
 
     @classmethod
     def _argparse_register(cls, parser):

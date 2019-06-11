@@ -218,7 +218,6 @@ class ImageUploaderEc2:
 class UploadEc2Command(UploadBaseCommand):
     argparser_name = 'upload-ec2'
     argparser_help = 'upload Debian images to Amazon EC2'
-    argparser_usage = '%(prog)s'
 
     @classmethod
     def _argparse_register(cls, parser):

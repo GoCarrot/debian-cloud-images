@@ -362,7 +362,6 @@ class ImageUploaderAzureCloudpartner:
 class UploadAzureCloudpartnerCommand(UploadBaseCommand):
     argparser_name = 'upload-azure-cloudpartner'
     argparser_help = 'upload Debian images for publishing via Azure Cloud Partner interface'
-    argparser_usage = '%(prog)s'
 
     @classmethod
     def _argparse_register(cls, parser):
