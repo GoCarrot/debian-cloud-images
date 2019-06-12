@@ -129,15 +129,14 @@ class UrlSas:
 
 
 class ImageUploaderAzureCloudpartner:
-    def __init__(self, publisher_id, offer_id, storage_id, storage_secret, auth, publish):
+    def __init__(self, publisher_id, offer_id, storage_id, auth, publish):
         self.publisher_id = publisher_id
         self.offer_id = offer_id
         self.storage_id = storage_id
-        self.storage_secret = storage_secret
         self.auth = auth
         self.publish = publish
 
-        self.__cloudpartner = self.__storage = self.__storage_driver = None
+        self.__cloudpartner = self.__storage = self.__storage_driver = self.__storage_secret = None
 
         self.offer = '/api/publishers/{}/offers/{}'.format(publisher_id, offer_id)
 
@@ -173,6 +172,15 @@ class ImageUploaderAzureCloudpartner:
                 client_id=self.auth.client_id,
                 client_secret=self.auth.client_secret,
             )
+        return ret
+
+    @property
+    def storage_secret(self):
+        ret = self.__storage_secret
+        if ret is None:
+            ret = self.__storage_secret = self.storage_driver.get_storagekeys(
+                _id=self.storage_id,
+            )[0]
         return ret
 
     def __call__(self, images, image_public_info):
@@ -397,12 +405,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             required=True,
         )
         parser.add_argument(
-            '--storage-secret',
-            help='Azure Storage access key',
-            metavar='STORAGE_SECRET',
-            required=True,
-        )
-        parser.add_argument(
             '--auth',
             action=ActionAzureAuth,
             help='Authentication info for Azure AD application',
@@ -420,7 +422,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             publisher_id,
             offer_id,
             storage_id,
-            storage_secret,
             auth=None,
             publish=None,
             **kw,
@@ -431,7 +432,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             publisher_id=publisher_id,
             offer_id=offer_id,
             storage_id=storage_id,
-            storage_secret=storage_secret,
             auth=auth,
             publish=publish,
         )

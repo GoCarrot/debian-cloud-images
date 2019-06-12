@@ -49,3 +49,15 @@ class AzureResourceManagementStorageDriver(BaseDriver):
             host=endpoint.netloc,
             extra=r.object,
         )
+
+    def get_storagekeys(self, resource_group=None, name=None, _id=None):
+        if not _id:
+            _id = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}'.format(
+                self.subscription_id,
+                resource_group,
+                name,
+            )
+
+        r = self.connection.request(_id + '/listKeys', method='POST', params={'api-version': '2019-04-01'})
+
+        return [i['value'] for i in r.object['keys']]

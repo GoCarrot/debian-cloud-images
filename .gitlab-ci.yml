@@ -500,7 +500,6 @@ azure upload daily:
       --publisher "${CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER}"
       --offer "${CLOUD_UPLOAD_AZURE_DAILY_OFFER}"
       --storage-id "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_ID}"
-      --storage-secret "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_SECRET}"
       *.build.json
   dependencies:
     - azure buster build official
