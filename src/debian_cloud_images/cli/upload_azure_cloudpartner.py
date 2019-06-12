@@ -7,8 +7,6 @@ import logging
 from base64 import b64encode, b64decode
 from libcloud.common.exceptions import BaseHTTPError
 from libcloud.storage.drivers.azure_blobs import AzureBlobLease
-from libcloud.storage.providers import get_driver as storage_driver
-from libcloud.storage.types import Provider as StorageProvider
 from urllib.parse import urlsplit, urlunsplit, urlencode
 
 from .upload_base import UploadBaseCommand
@@ -16,6 +14,7 @@ from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
 from ..utils.files import ChunkedFile
 from ..utils.libcloud.storage.azure_blobs import AzureGenericOAuth2Connection
+from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
 
 class AzureAuth:
@@ -130,17 +129,14 @@ class UrlSas:
 
 
 class ImageUploaderAzureCloudpartner:
-    storage_cls = storage_driver(StorageProvider.AZURE_BLOBS)
-
-    def __init__(self, publisher_id, offer_id, storage_name, storage_secret, auth, publish):
+    def __init__(self, publisher_id, offer_id, storage_id, auth, publish):
         self.publisher_id = publisher_id
         self.offer_id = offer_id
-        self.storage_name = storage_name
-        self.storage_secret = storage_secret
+        self.storage_id = storage_id
         self.auth = auth
         self.publish = publish
 
-        self.__cloudpartner = self.__storage = None
+        self.__cloudpartner = self.__storage = self.__storage_driver = self.__storage_secret = None
 
         self.offer = '/api/publishers/{}/offers/{}'.format(publisher_id, offer_id)
 
@@ -161,10 +157,30 @@ class ImageUploaderAzureCloudpartner:
     def storage(self):
         ret = self.__storage
         if ret is None:
-            ret = self.__storage = self.storage_cls(
-                key=self.storage_name,
-                secret=self.storage_secret,
+            ret = self.__storage = self.storage_driver.get_storage(
+                _id=self.storage_id,
             )
+        return ret
+
+    @property
+    def storage_driver(self):
+        ret = self.__storage_driver
+        if ret is None:
+            ret = self.__storage_driver = AzureResourceManagementStorageDriver(
+                tenant_id=self.auth.tenant_id,
+                subscription_id=None,
+                client_id=self.auth.client_id,
+                client_secret=self.auth.client_secret,
+            )
+        return ret
+
+    @property
+    def storage_secret(self):
+        ret = self.__storage_secret
+        if ret is None:
+            ret = self.__storage_secret = self.storage_driver.get_storagekeys(
+                _id=self.storage_id,
+            )[0]
         return ret
 
     def __call__(self, images, image_public_info):
@@ -173,7 +189,7 @@ class ImageUploaderAzureCloudpartner:
         for image in self.filter_images(images.values()):
             image_name = image_public_info.apply(image.build_info).vendor_name
             image_file = '{}/disk.vhd'.format(image_name)
-            image_url = 'https://{}.blob.core.windows.net/{}'.format(self.storage_name, image_file)
+            image_url = 'https://{}/{}'.format(self.storage.connection.host, image_file)
             image_url_sas = UrlSas(
                 image_url,
                 self.storage_secret,
@@ -382,16 +398,10 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             required=True,
         )
         parser.add_argument(
-            '--storage-name',
-            dest='storage_name',
-            help='Azure Storage name',
-            metavar='STORAGE_NAME',
-            required=True,
-        )
-        parser.add_argument(
-            '--storage-secret',
-            help='Azure Storage access key',
-            metavar='STORAGE_SECRET',
+            '--storage-id',
+            dest='storage_id',
+            help='Azure Storage id',
+            metavar='ID',
             required=True,
         )
         parser.add_argument(
@@ -411,8 +421,7 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             self, *,
             publisher_id,
             offer_id,
-            storage_name,
-            storage_secret,
+            storage_id,
             auth=None,
             publish=None,
             **kw,
@@ -422,8 +431,7 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
         self.uploader = ImageUploaderAzureCloudpartner(
             publisher_id=publisher_id,
             offer_id=offer_id,
-            storage_name=storage_name,
-            storage_secret=storage_secret,
+            storage_id=storage_id,
             auth=auth,
             publish=publish,
         )

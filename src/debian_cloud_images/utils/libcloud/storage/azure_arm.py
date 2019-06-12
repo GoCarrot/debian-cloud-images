@@ -1,14 +1,8 @@
 from libcloud.common.base import BaseDriver
+from urllib.parse import urlparse
 
 from ..common.azure import AzureGenericOAuth2Connection
-
-
-class AzureResourceManagementStorage:
-    def __init__(self, resource_group, name, extra, driver):
-        self.resource_group = resource_group
-        self.name = name
-        self.extra = extra
-        self.driver = driver
+from .azure_blobs import AzureBlobsOAuth2StorageDriver
 
 
 class AzureResourceManagementStorageDriver(BaseDriver):
@@ -35,13 +29,35 @@ class AzureResourceManagementStorageDriver(BaseDriver):
         })
         return ret
 
-    def get_storage(self, resource_group, name):
-        action = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}'.format(
-            self.subscription_id,
-            resource_group,
+    def get_storage(self, resource_group=None, name=None, _id=None):
+        if not _id:
+            _id = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}'.format(
+                self.subscription_id,
+                resource_group,
+                name,
+            )
+
+        r = self.connection.request(_id, params={'api-version': '2018-07-01'})
+
+        endpoint = urlparse(r.object['properties']['primaryEndpoints']['blob'])
+
+        return AzureBlobsOAuth2StorageDriver(
             name,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            tenant_id=self.tenant_id,
+            host=endpoint.netloc,
+            extra=r.object,
         )
 
-        r = self.connection.request(action, params={'api-version': '2018-07-01'})
+    def get_storagekeys(self, resource_group=None, name=None, _id=None):
+        if not _id:
+            _id = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}'.format(
+                self.subscription_id,
+                resource_group,
+                name,
+            )
 
-        return AzureResourceManagementStorage(resource_group, name, r.object, self)
+        r = self.connection.request(_id + '/listKeys', method='POST', params={'api-version': '2019-04-01'})
+
+        return [i['value'] for i in r.object['keys']]

@@ -399,7 +399,8 @@ azure upload:
       ./bin/debian-cloud-images upload-azure
       ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
       --group "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP}"
-      --storage-name "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME}"
+      ${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME+--storage-name "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME}"}
+      ${CLOUD_UPLOAD_AZURE_DEV_STORAGE_ID+--storage-id "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_ID}"}
       *.build.json
   dependencies:
     - azure stretch build
@@ -498,8 +499,7 @@ azure upload daily:
       ${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL:+--publish "${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL}"}
       --publisher "${CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER}"
       --offer "${CLOUD_UPLOAD_AZURE_DAILY_OFFER}"
-      --storage-name "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_NAME}"
-      --storage-secret "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_SECRET}"
+      --storage-id "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE_ID}"
       *.build.json
   dependencies:
     - azure buster build official
