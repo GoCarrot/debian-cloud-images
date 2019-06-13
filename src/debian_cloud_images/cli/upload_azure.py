@@ -5,6 +5,7 @@ import logging
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_type
+from ..utils import argparse_ext
 from ..utils.files import ChunkedFile
 from ..utils.libcloud.compute.azure_arm import ExAzureNodeDriver
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
@@ -12,22 +13,10 @@ from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDri
 from libcloud.storage.drivers.azure_blobs import AzureBlobLease
 
 
-class AzureAuth:
-    def __init__(self, tenant_id, client_id, client_secret):
-        self.tenant_id = tenant_id
-        self.client_id = client_id
-        self.client_secret = client_secret
-
-
 class AzureResourceGroup:
     def __init__(self, subscription_id, resource_group):
         self.subscription_id = subscription_id
         self.resource_group = resource_group
-
-
-class ActionAzureAuth(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
-        setattr(namespace, self.dest, AzureAuth(*value.split(':')))
 
 
 class ActionAzureResourceGroup(argparse.Action):
@@ -227,9 +216,7 @@ class UploadAzureCommand(UploadBaseCommand):
 
         parser.add_argument(
             '--auth',
-            action=ActionAzureAuth,
-            help='Authentication info for Azure AD application',
-            metavar='TENANT:APPLICATION:SECRET',
+            action=argparse_ext.ActionAzureAuth,
             required=True,
         )
 
