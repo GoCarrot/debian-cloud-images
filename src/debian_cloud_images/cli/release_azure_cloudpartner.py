@@ -5,7 +5,7 @@ import sys
 from libcloud.common.exceptions import BaseHTTPError
 
 from .base import BaseCommand
-from ..utils.libcloud.storage.azure_blobs import AzureGenericOAuth2Connection
+from ..utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Connection
 
 
 class AzureAuth:
@@ -18,25 +18,6 @@ class AzureAuth:
 class ActionAzureAuth(argparse.Action):
     def __call__(self, parser, namespace, value, option_string=None):
         setattr(namespace, self.dest, AzureAuth(*value.split(':')))
-
-
-class AzureCloudpartnerOAuth2Connection(AzureGenericOAuth2Connection):
-    """ OAuth 2 authenticated connection for Azure Cloud Partner interface """
-    def __init__(self, *, tenant_id, client_id, client_secret):
-        super().__init__(
-            host='cloudpartner.azure.com',
-            tenant_id=tenant_id,
-            client_id=client_id,
-            client_secret=client_secret,
-            login_host='login.microsoftonline.com',
-            login_resource='https://cloudpartner.azure.com',
-        )
-
-    def add_default_params(self, params):
-        params.update({
-            'api-version': '2017-10-31',
-        })
-        return params
 
 
 class ReleaseAzureCloudpartnerCommand(BaseCommand):
