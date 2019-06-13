@@ -1,4 +1,3 @@
-import argparse
 import hashlib
 import hmac
 import http.client
@@ -12,21 +11,10 @@ from urllib.parse import urlsplit, urlunsplit, urlencode
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
+from ..utils import argparse_ext
 from ..utils.files import ChunkedFile
 from ..utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Connection
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
-
-
-class AzureAuth:
-    def __init__(self, tenant_id, client_id, client_secret):
-        self.tenant_id = tenant_id
-        self.client_id = client_id
-        self.client_secret = client_secret
-
-
-class ActionAzureAuth(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
-        setattr(namespace, self.dest, AzureAuth(*value.split(':')))
 
 
 class UrlSas:
@@ -387,9 +375,7 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
         )
         parser.add_argument(
             '--auth',
-            action=ActionAzureAuth,
-            help='Authentication info for Azure AD application',
-            metavar='TENANT:APPLICATION:SECRET',
+            action=argparse_ext.ActionAzureAuth,
             required=True,
         )
         parser.add_argument(

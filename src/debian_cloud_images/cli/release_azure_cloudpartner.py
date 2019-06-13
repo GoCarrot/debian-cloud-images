@@ -1,23 +1,11 @@
-import argparse
 import logging
 import sys
 
 from libcloud.common.exceptions import BaseHTTPError
 
 from .base import BaseCommand
+from ..utils import argparse_ext
 from ..utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Connection
-
-
-class AzureAuth:
-    def __init__(self, tenant_id, client_id, client_secret):
-        self.tenant_id = tenant_id
-        self.client_id = client_id
-        self.client_secret = client_secret
-
-
-class ActionAzureAuth(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
-        setattr(namespace, self.dest, AzureAuth(*value.split(':')))
 
 
 class ReleaseAzureCloudpartnerCommand(BaseCommand):
@@ -44,9 +32,7 @@ class ReleaseAzureCloudpartnerCommand(BaseCommand):
         )
         parser.add_argument(
             '--auth',
-            action=ActionAzureAuth,
-            help='Authentication info for Azure AD application',
-            metavar='TENANT:APPLICATION:SECRET',
+            action=argparse_ext.ActionAzureAuth,
             required=True,
         )
 
