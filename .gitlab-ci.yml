@@ -28,6 +28,19 @@ test flake8:
   only:
     - pushes
 
+test package:
+  stage: source test
+  image: debian:buster
+  script:
+    - apt-get build-dep -y ./
+    - >
+      apt-get install --no-install-recommends -y
+      lintian
+    - DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -us -uc
+    - lintian ../*.changes
+  only:
+    - pushes
+
 test pytest:
   stage: source test
   image: debian:buster
