@@ -1,0 +1,38 @@
+#!/usr/bin/python3
+
+import pathlib
+import sys
+
+exclude = (
+    'AZURE',  # (Azure specific) waagent and cloud-init conflicts
+    'DEVEL',
+    'EXTRAS',
+    'GCE_SDK',
+)
+
+modifier = {
+    'AMD64': '{} [amd64]',
+    'ARM64': '{} [arm64]',
+    'PPC64EL': '{} [ppc64el]',
+}
+
+arch = sys.argv[0]
+
+packages = set()
+
+for i in pathlib.Path('config_space/package_config').glob('*'):
+    if '.' in i.name or i.name in exclude:
+        continue
+    m = modifier.get(i.name, '{}')
+    with i.open() as f:
+        for l in f.readlines():
+            # Ignore empty lines, comments and section header
+            if not l or l.startswith('#') or l.startswith('PACKAGES'):
+                continue
+            for i in l.split():
+                # Ignore to be removed packages
+                if i.endswith('-'):
+                    continue
+                packages.add(m.format(i))
+
+print(', '.join(sorted(packages)))
