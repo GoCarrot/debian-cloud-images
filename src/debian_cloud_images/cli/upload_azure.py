@@ -216,6 +216,4 @@ class UploadAzureCommand(UploadBaseCommand):
 
 
 if __name__ == '__main__':
-    parser = UploadAzureCommand._argparse_init_base()
-    args = parser.parse_args()
-    UploadAzureCommand(**vars(args))()
+    UploadAzureCommand._main()

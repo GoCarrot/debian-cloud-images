@@ -386,7 +386,4 @@ class BuildCommand(BaseCommand):
 
 
 if __name__ == '__main__':
-    parser = BuildCommand._argparse_init_base()
-
-    args = parser.parse_args()
-    BuildCommand(**vars(args))()
+    BuildCommand._main()

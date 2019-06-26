@@ -253,6 +253,4 @@ class UploadEc2Command(UploadBaseCommand):
 
 
 if __name__ == '__main__':
-    parser = UploadEc2Command._argparse_init_base()
-    args = parser.parse_args()
-    UploadEc2Command(**vars(args))()
+    UploadEc2Command._main()

@@ -34,6 +34,12 @@ class BaseCommand:
             help='enable debug output',
         )
 
+    @classmethod
+    def _main(cls):
+        parser = cls._argparse_init_base()
+        args = parser.parse_args()
+        return cls(**vars(args))()
+
     def __init__(self, *, debug=False, **kw):
         logging.basicConfig(
             level=debug and logging.DEBUG or logging.INFO,

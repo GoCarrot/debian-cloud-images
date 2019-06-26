@@ -408,6 +408,4 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
 
 
 if __name__ == '__main__':
-    parser = UploadAzureCloudpartnerCommand._argparse_init_base()
-    args = parser.parse_args()
-    UploadAzureCloudpartnerCommand(**vars(args))()
+    UploadAzureCloudpartnerCommand._main()

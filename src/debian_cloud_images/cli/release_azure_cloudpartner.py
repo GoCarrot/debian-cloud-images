@@ -77,6 +77,4 @@ class ReleaseAzureCloudpartnerCommand(BaseCommand):
 
 
 if __name__ == '__main__':
-    parser = ReleaseAzureCloudpartnerCommand._argparse_init_base()
-    args = parser.parse_args()
-    ReleaseAzureCloudpartnerCommand(**vars(args))()
+    ReleaseAzureCloudpartnerCommand._main()
