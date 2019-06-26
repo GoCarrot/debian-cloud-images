@@ -10,7 +10,10 @@ from .upload_ec2 import UploadEc2Command
 from .upload_gce import UploadGceCommand
 
 
-parser = argparse.ArgumentParser(prog='debian-cloud-images')
+parser = argparse.ArgumentParser(
+    prog='debian-cloud-images',
+    formatter_class=argparse.RawTextHelpFormatter,
+)
 subparsers = parser.add_subparsers(help='sub-command help')
 
 BuildCommand._argparse_init_sub(subparsers)

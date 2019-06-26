@@ -10,6 +10,7 @@ class BaseCommand:
     @classmethod
     def _argparse_init_sub(cls, subparsers):
         parser = subparsers.add_parser(
+            formatter_class=argparse.RawTextHelpFormatter,
             name=cls.argparser_name,
             help=cls.argparser_help,
             usage=cls.argparser_usage,
@@ -29,6 +30,7 @@ class BaseCommand:
     @classmethod
     def _main(cls):
         parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawTextHelpFormatter,
             usage=cls.argparser_usage,
         )
         cls._argparse_register(parser)
