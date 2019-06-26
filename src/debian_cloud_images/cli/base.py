@@ -1,5 +1,8 @@
 import argparse
+import configparser
 import logging
+import os
+import pathlib
 
 
 class BaseCommand:
@@ -26,6 +29,21 @@ class BaseCommand:
             action='store_true',
             help='enable debug output',
         )
+
+    @staticmethod
+    def _config_files():
+        path = os.getenv('XDG_CONFIG_DIRS', '/etc/xdg')
+        for p in path.split(os.pathsep):
+            yield pathlib.Path(p).expanduser() / 'debian-cloud-images' / 'config'
+        path = os.getenv('XDG_CONFIG_HOME', os.path.expanduser("~/.config"))
+        for p in path.split(os.pathsep):
+            yield pathlib.Path(p).expanduser() / 'debian-cloud-images' / 'config'
+
+    @classmethod
+    def _config_read(cls):
+        config = configparser.ConfigParser()
+        config.read(cls._config_files())
+        return config
 
     @classmethod
     def _main(cls):
