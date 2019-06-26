@@ -1,4 +1,3 @@
-import argparse
 import http.client
 import logging
 
@@ -18,10 +17,9 @@ class AzureResourceGroup:
         self.subscription_id = subscription_id
         self.resource_group = resource_group
 
-
-class ActionAzureResourceGroup(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
-        setattr(namespace, self.dest, AzureResourceGroup(*value.split(':')))
+    @classmethod
+    def create(cls, value):
+        return cls(*value.split(':'))
 
 
 class ImageUploaderAzure:
@@ -187,10 +185,13 @@ class UploadAzureCommand(UploadBaseCommand):
 
         parser.add_argument(
             '--group',
-            action=ActionAzureResourceGroup,
+            action=argparse_ext.ConfigStoreAction,
+            config=config,
+            config_key='azure-group',
             help='Azure Subscription and Resource group',
             metavar='SUBSCRIPTION:GROUP',
             required=True,
+            type=AzureResourceGroup.create,
         )
         parser.add_argument(
             '--storage',
@@ -201,7 +202,8 @@ class UploadAzureCommand(UploadBaseCommand):
         )
         parser.add_argument(
             '--auth',
-            action=argparse_ext.ActionAzureAuth,
+            action=argparse_ext.ConfigStoreAzureAuthAction,
+            config=config,
             required=True,
         )
 

@@ -156,12 +156,18 @@ class UploadGceCommand(UploadBaseCommand):
 
         parser.add_argument(
             '--project',
+            action=argparse_ext.ConfigStoreAction,
+            config=config,
+            config_key='gce-project',
             help='create images in this Google Cloud project',
             metavar='PROJECT',
             required=True,
         )
         parser.add_argument(
             '--bucket',
+            action=argparse_ext.ConfigStoreAction,
+            config=config,
+            config_key='gce-bucket',
             help='create temporary image file in this Google Storage bucket',
             metavar='BUCKET',
             required=True,

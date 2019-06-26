@@ -87,7 +87,8 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
         )
         parser.add_argument(
             '--auth',
-            action=argparse_ext.ActionAzureAuth,
+            action=argparse_ext.ConfigStoreAzureAuthAction,
+            config=config,
             required=True,
         )
         parser.add_argument(
