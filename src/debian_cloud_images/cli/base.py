@@ -8,14 +8,6 @@ class BaseCommand:
     argparser_usage = None
 
     @classmethod
-    def _argparse_init_base(cls):
-        parser = argparse.ArgumentParser(
-            usage=cls.argparser_usage,
-        )
-        cls._argparse_register(parser)
-        return parser
-
-    @classmethod
     def _argparse_init_sub(cls, subparsers):
         parser = subparsers.add_parser(
             name=cls.argparser_name,
@@ -36,7 +28,10 @@ class BaseCommand:
 
     @classmethod
     def _main(cls):
-        parser = cls._argparse_init_base()
+        parser = argparse.ArgumentParser(
+            usage=cls.argparser_usage,
+        )
+        cls._argparse_register(parser)
         args = parser.parse_args()
         return cls(**vars(args))()
 
