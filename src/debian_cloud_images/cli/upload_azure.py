@@ -182,8 +182,8 @@ class UploadAzureCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images to Azure'
 
     @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
+    def _argparse_register(cls, parser, config):
+        super()._argparse_register(parser, config)
 
         parser.add_argument(
             '--group',

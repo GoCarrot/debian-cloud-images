@@ -11,18 +11,22 @@ class BaseCommand:
     argparser_usage = None
 
     @classmethod
-    def _argparse_init_sub(cls, subparsers):
+    def _argparse_init_sub(cls, subparsers, config):
         parser = subparsers.add_parser(
             formatter_class=argparse.RawTextHelpFormatter,
             name=cls.argparser_name,
             help=cls.argparser_help,
             usage=cls.argparser_usage,
         )
-        cls._argparse_register(parser)
+        try:
+            section = config[cls.argparser_name]
+        except KeyError:
+            section = config.defaults()
+        cls._argparse_register(parser, section)
         return parser
 
     @classmethod
-    def _argparse_register(cls, parser):
+    def _argparse_register(cls, parser, config):
         parser.set_defaults(cls=cls)
         parser.add_argument(
             '--debug',
@@ -47,11 +51,16 @@ class BaseCommand:
 
     @classmethod
     def _main(cls):
+        config = cls._config_read()
         parser = argparse.ArgumentParser(
             formatter_class=argparse.RawTextHelpFormatter,
             usage=cls.argparser_usage,
         )
-        cls._argparse_register(parser)
+        try:
+            section = config[cls.argparser_name]
+        except KeyError:
+            section = config.defaults()
+        cls._argparse_register(parser, section)
         args = parser.parse_args()
         return cls(**vars(args))()
 

@@ -10,8 +10,8 @@ class UploadBaseCommand(BaseCommand):
     argparser_usage = '%(prog)s [MANIFEST]...'
 
     @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
+    def _argparse_register(cls, parser, config):
+        super()._argparse_register(parser, config)
 
         parser.add_argument(
             'manifests',
