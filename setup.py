@@ -8,7 +8,7 @@ setuptools.setup(
     include_package_data=True,
     zip_safe=False,
     entry_points={
-        'console_scripts': ['debian-cloud-images=debian_cloud_images.cli.all:main'],
+        'console_scripts': ['debian-cloud-images=debian_cloud_images.cli.__main__:main'],
     },
     classifiers=[
         "Programming Language :: Python :: 3",
