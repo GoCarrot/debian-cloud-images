@@ -127,7 +127,7 @@ class ImageUploaderAzureCloudpartner:
         ret = self.__storage
         if ret is None:
             ret = self.__storage = self.storage_driver.get_storage(
-                _id=self.storage_id,
+                self.storage_id,
             )
         return ret
 
@@ -148,7 +148,7 @@ class ImageUploaderAzureCloudpartner:
         ret = self.__storage_secret
         if ret is None:
             ret = self.__storage_secret = self.storage_driver.get_storagekeys(
-                _id=self.storage_id,
+                self.storage_id,
             )[0]
         return ret
 
@@ -367,9 +367,9 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             required=True,
         )
         parser.add_argument(
-            '--storage-id',
+            '--storage',
             dest='storage_id',
-            help='Azure Storage id',
+            help='Name or ID of Azure storage',
             metavar='ID',
             required=True,
         )

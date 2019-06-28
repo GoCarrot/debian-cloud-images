@@ -25,9 +25,8 @@ class ActionAzureResourceGroup(argparse.Action):
 
 
 class ImageUploaderAzure:
-    def __init__(self, storage_group, storage_name, storage_id, image_group, auth):
+    def __init__(self, storage_group, storage_id, image_group, auth):
         self.storage_group = storage_group
-        self.storage_name = storage_name
         self.storage_id = storage_id
         self.image_group = image_group
         self.auth = auth
@@ -51,9 +50,8 @@ class ImageUploaderAzure:
         ret = self.__storage
         if ret is None:
             ret = self.__storage = self.storage_driver.get_storage(
+                self.storage_id,
                 resource_group=self.storage_group.resource_group,
-                name=self.storage_name,
-                _id=self.storage_id,
             )
         return ret
 
@@ -76,7 +74,7 @@ class ImageUploaderAzure:
 
         image_name = public_info.vendor_name
         image_file = '{}/disk.vhd'.format(image_name)
-        image_url = 'https://{}.blob.core.windows.net/{}'.format(self.storage_name, image_file)
+        image_url = 'https://{}/{}'.format(self.storage.connection.host, image_file)
 
         self.create_container(image_name)
         self.upload_file(image, image_file)
@@ -197,35 +195,24 @@ class UploadAzureCommand(UploadBaseCommand):
             metavar='SUBSCRIPTION:GROUP',
             required=True,
         )
-
-        storage_group = parser.add_argument_group(
-            'storage arguments',
-            'only name or id must be specified',
-        )
-        storage_group = storage_group.add_mutually_exclusive_group(required=True)
-        storage_group.add_argument(
-            '--storage-name',
-            help='Name of Azure storage in given subscription and resource group',
-            metavar='NAME',
-        )
-        storage_group.add_argument(
-            '--storage-id',
-            help='ID of Azure storage',
+        parser.add_argument(
+            '--storage',
+            dest='storage_id',
+            help='Name or ID of Azure storage',
             metavar='ID',
+            required=True,
         )
-
         parser.add_argument(
             '--auth',
             action=argparse_ext.ActionAzureAuth,
             required=True,
         )
 
-    def __init__(self, *, group=None, storage_name=None, storage_id=None, auth=None, **kw):
+    def __init__(self, *, group=None, storage_id=None, auth=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
             storage_group=group,
-            storage_name=storage_name,
             storage_id=storage_id,
             image_group=group,
             auth=auth,

@@ -29,8 +29,10 @@ class AzureResourceManagementStorageDriver(BaseDriver):
         })
         return ret
 
-    def get_storage(self, resource_group=None, name=None, _id=None):
-        if not _id:
+    def get_storage(self, name=True, resource_group=None):
+        if name.startswith('/'):
+            _id = name
+        else:
             _id = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}'.format(
                 self.subscription_id,
                 resource_group,
@@ -50,8 +52,10 @@ class AzureResourceManagementStorageDriver(BaseDriver):
             extra=r.object,
         )
 
-    def get_storagekeys(self, resource_group=None, name=None, _id=None):
-        if not _id:
+    def get_storagekeys(self, name=True, resource_group=None):
+        if name.startswith('/'):
+            _id = name
+        else:
             _id = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Storage/storageAccounts/{}'.format(
                 self.subscription_id,
                 resource_group,

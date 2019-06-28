@@ -116,7 +116,7 @@ Uploaders typically need some variables set with credentials or targets.
  * `$CLOUD_UPLOAD_AZURE_AUTH`: Azure OAuth credentials (`TENANT:APPLICATION:SECRET`).
  * `$CLOUD_UPLOAD_AZURE_DEV_ENABLED`: Set to `1` to upload images during development.
  * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP`: Azure Subscription and Resource group (`SUBSCRIPTION:GROUP`).
- * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_NAME`: Azure Storage name.
+ * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE`: Azure Storage ID or name.
 
 #### Uploads for daily builds
 
@@ -125,4 +125,4 @@ Uploaders typically need some variables set with credentials or targets.
  * `$CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL`: Run publish process and send report to given e-mail address.
  * `$CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER`: Azure Publisher ID.
  * `$CLOUD_UPLOAD_AZURE_DAILY_OFFER`: Azure Offer name.
- * `$CLOUD_UPLOAD_AZURE_DAILY_STORAGE_ID`: Azure Storage ID.
+ * `$CLOUD_UPLOAD_AZURE_DAILY_STORAGE`: Azure Storage ID or name.
