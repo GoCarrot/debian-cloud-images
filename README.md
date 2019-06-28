@@ -57,6 +57,28 @@ boot sequence to start:
     # kvm -m1000 -hda openstack-image-buster.raw
 ```
 
+## Supported image types
+
+As shown above, various types of images can be built for different use
+cases. Each type of image can be built with the following command:
+
+```
+    # make <suite>-image-<type>
+```
+
+where `<suite>` is one of `stretch`, `buster`, or `sid`. `<type>` can
+be any of the following:
+
+ * `azure`: Optimized for Microsoft's cloud computing platform Azure
+ * `ec2`: Optimized for the Amazon Elastic Compute Cloud (EC2)
+ * `gce`: Optimized for the Google Cloud Engine
+ * `generic`: Should run in any environment
+ * `genericcloud`: Should run in any virtualised environment. Is
+   smaller than `generic` by excluding drivers for physical hardware.
+ * `nocloud`: Mostly useful for testing the build process
+   itself. Doesn't have cloud-init installed, but instead allows root
+   login without a password.
+
 ## Documentation
 
  * https://fai-project.org/fai-guide/
