@@ -52,10 +52,6 @@ class ImageUploaderGce:
         )
 
     def __call__(self, image, public_info):
-        if image.build_vendor != 'gce':
-            logging.warning('Image %s is no GCE image, ignoring', image.name)
-            return
-
         gce_family = public_info.vendor_gce_family
         gce_name = public_info.vendor_gce_name
 
