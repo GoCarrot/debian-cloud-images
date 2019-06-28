@@ -58,10 +58,6 @@ class ImageUploaderEc2:
         return ret
 
     def __call__(self, image, public_info):
-        if image.build_vendor != 'ec2':
-            logging.warning('Image %s is no ec2 image, ignoring', image.name)
-            return
-
         name = public_info.vendor_name
 
         obj = self.upload_file(image, name)
