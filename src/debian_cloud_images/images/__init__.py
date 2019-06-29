@@ -177,6 +177,11 @@ class Image:
         with manifest_file.open('w') as f:
             json.dump(api_registry.dump(manifests), f, indent=4, separators=(',', ': '), sort_keys=True)
 
+    def write_merged_manifests(self, f, manifests):
+        """ Write manifests """
+        manifests = self.__builds + self.__uploads + manifests
+        json.dump(api_registry.dump(manifests), f, indent=4, separators=(',', ': '), sort_keys=True)
+
     def write_vendor_manifest(self, stage, data):
         """ Write upload manifest """
         manifest = {

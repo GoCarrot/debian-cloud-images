@@ -2,6 +2,7 @@ import argparse
 
 from .build import BuildCommand
 from .release_azure_cloudpartner import ReleaseAzureCloudpartnerCommand
+from .upload import UploadCommand
 from .upload_azure import UploadAzureCommand
 from .upload_azure_cloudpartner import UploadAzureCloudpartnerCommand
 from .upload_ec2 import UploadEc2Command
@@ -13,6 +14,7 @@ subparsers = parser.add_subparsers(help='sub-command help')
 
 BuildCommand._argparse_init_sub(subparsers)
 ReleaseAzureCloudpartnerCommand._argparse_init_sub(subparsers)
+UploadCommand._argparse_init_sub(subparsers)
 UploadAzureCommand._argparse_init_sub(subparsers)
 UploadAzureCloudpartnerCommand._argparse_init_sub(subparsers)
 UploadEc2Command._argparse_init_sub(subparsers)
