@@ -3,6 +3,7 @@ stages:
   - source test
   - build
   - vendor upload
+  - upload
 
 variables:
   CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
@@ -536,4 +537,32 @@ azure upload daily:
     expire_in: 7 days
     paths:
       - '*.upload-azure-cloudpartner.json'
+  allow_failure: true
+
+####
+# Own upload for daily builds
+####
+
+upload daily:
+  stage: upload
+  image: debian:buster
+  script:
+    - >
+      ./bin/debian-cloud-images upload
+      --variant daily
+      --provider cloud.debian.org
+      --storage "${CLOUD_UPLOAD_DAILY_STORAGE}"
+      *.json
+  only:
+    refs:
+      - schedules@cloud-team/debian-cloud-images
+    variables:
+      - $CLOUD_UPLOAD_DAILY_ENABLED == "1"
+  tags:
+    - debian-cloud-images-upload
+  artifacts:
+    name: upload
+    expire_in: 7 days
+    paths:
+      - '*.upload.json'
   allow_failure: true
