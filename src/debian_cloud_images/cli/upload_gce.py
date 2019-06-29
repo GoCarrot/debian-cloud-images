@@ -188,6 +188,4 @@ class UploadGceCommand(UploadBaseCommand):
 
 
 if __name__ == '__main__':
-    parser = UploadGceCommand._argparse_init_base()
-    args = parser.parse_args()
-    UploadGceCommand(**vars(args))()
+    UploadGceCommand._main()
