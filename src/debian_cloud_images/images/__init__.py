@@ -33,14 +33,35 @@ class Image:
     def __init__(self, name, path, build):
         self.name = name
         self.__path = path
-        self.build = build
+        self.__build = build
 
-        self.build_info = build.info
-        self.build_arch = build.info['arch']
-        self.build_release = build.info['release']
-        self.build_release_id = build.info['release_id']
-        self.build_vendor = build.info['vendor']
-        self.build_version = build.info['version']
+    @property
+    def build(self):
+        return self.__build
+
+    @property
+    def build_info(self):
+        return self.build.info
+
+    @property
+    def build_arch(self):
+        return self.build.info['arch']
+
+    @property
+    def build_release(self):
+        return self.build.info['release']
+
+    @property
+    def build_release_id(self):
+        return self.build.info['release_id']
+
+    @property
+    def build_vendor(self):
+        return self.build.info['vendor']
+
+    @property
+    def build_version(self):
+        return self.build.info['version']
 
     def _convert_image_f(self, format):
         if format == 'qcow2':
