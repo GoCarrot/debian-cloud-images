@@ -126,10 +126,15 @@ class Image:
                     yield fout_converted
 
     def open_tar(self):
+        return tarfile.open(fileobj=self.open_tar_raw(), mode='r:*')
+
+    def open_tar_raw(self):
         for ext in ('.tar', '.tar.xz'):
             file_in = self.__path.joinpath(self.name + ext)
             if file_in.exists():
-                return tarfile.open(file_in, 'r:*')
+                f_in = open(file_in, 'rb')
+                setattr(f_in, 'extension', ext)
+                return f_in
 
         raise RuntimeError('Unable to find image tar file for {} in {}'.format(self.name, self.__path.as_posix()))
 
