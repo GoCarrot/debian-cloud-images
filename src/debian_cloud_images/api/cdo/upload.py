@@ -13,7 +13,7 @@ class Upload:
 
 
 class v1alpha1_UploadDataSchema(Schema):
-    family_ref = fields.Str(data_key='familyRef')
+    family_ref = fields.Str(data_key='familyRef', allow_none=True)
     provider = fields.Str(required=True)
     ref = fields.Str(required=True)
 
