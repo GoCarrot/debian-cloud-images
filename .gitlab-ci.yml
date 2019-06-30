@@ -64,6 +64,16 @@ test pytest:
   only:
     - pushes
 
+test pytest latest:
+  stage: source test
+  image: python:slim
+  before_script:
+    - pip install -e .
+  script:
+    - python3 ./setup.py pytest
+  only:
+    - pushes
+
 .build:
   stage: build
   image: debian:buster
