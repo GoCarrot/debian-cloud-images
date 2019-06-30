@@ -37,7 +37,7 @@ class Test_v1_ListSchema:
             __typemeta__ = TypeMeta('One', 'v1')
 
             @post_load
-            def load_obj(self, data):
+            def load_obj(self, data, **kw):
                 return self.__model__()
 
         data = {

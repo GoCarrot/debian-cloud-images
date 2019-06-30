@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from marshmallow import EXCLUDE, RAISE
+from marshmallow import EXCLUDE
 
 
 class TypeMetaRegistry(Mapping):
@@ -23,7 +23,7 @@ class TypeMetaRegistry(Mapping):
             raise ValueError(f'Unable to find schema for class={obj.__class__}')
         return cls(context={'registry': self}).dump(obj)
 
-    def load(self, value, unknown=RAISE):
+    def load(self, value, **kw):
         from .meta import TypeMeta, v1_TypeMetaSchema
 
         base = v1_TypeMetaSchema().load(value, unknown=EXCLUDE)
@@ -32,7 +32,7 @@ class TypeMetaRegistry(Mapping):
             cls = self._typemeta[typemeta]
         except KeyError:
             raise ValueError(f'Unable to find schema for kind={typemeta.kind} and apiVersion={typemeta.api_version}')
-        return cls(context={'registry': self}).load(value, unknown=unknown)
+        return cls(context={'registry': self}).load(value, **kw)
 
     def register(self, schema):
         self._model[schema.__model__] = schema

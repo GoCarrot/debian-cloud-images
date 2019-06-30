@@ -27,9 +27,9 @@ class v1alpha1_UploadSchema(v1_TypeMetaSchema):
     data = fields.Nested(v1alpha1_UploadDataSchema)
 
     @pre_dump
-    def dump_items(self, data):
+    def dump_items(self, data, **kw):
         return {'metadata': data.metadata, 'data': data}
 
     @post_load
-    def load_obj(self, data):
+    def load_obj(self, data, **kw):
         return self.__model__(metadata=data['metadata'], **data['data'])

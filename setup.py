@@ -3,6 +3,16 @@ import setuptools
 setuptools.setup(
     name='debian_cloud_images',
     version='0',
+    setup_requires=[
+        'pytest-runner',
+    ],
+    install_requires=[
+        'apache-libcloud',
+        'marshmallow>=3.0.0b14',
+    ],
+    tests_require=[
+        'pytest',
+    ],
     packages=setuptools.find_namespace_packages(where="src"),
     package_dir={"": "src"},
     include_package_data=True,
