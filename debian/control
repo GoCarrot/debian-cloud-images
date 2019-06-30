@@ -11,6 +11,7 @@ Build-Depends:
  python3-libcloud,
  python3-marshmallow,
  python3-pytest,
+ python3-pytest-runner,
  python3-setuptools,
  qemu-utils,
 Standards-Version: 4.2.0
