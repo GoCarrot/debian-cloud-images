@@ -6,6 +6,8 @@ import subprocess
 import tarfile
 import tempfile
 
+from ..api.cdo.build import Build
+from ..api.cdo.upload import Upload
 from ..api.registry import registry as api_registry
 
 
@@ -14,33 +16,53 @@ logger = logging.getLogger(__name__)
 
 class Images(dict):
     def read(self, manifest):
-        if not manifest.name.endswith('.build.json'):
-            return
-
-        name = manifest.name.rsplit('.', 3)[0]
-        logger.info('Reading build %s', name)
-
         try:
-            with manifest.open() as f:
-                d = api_registry.load(json.load(f))
-                self[name] = Image(name, manifest.parent, d)
+            name = manifest.name.rsplit('.', 3)[0]
+            image = self.setdefault(name, Image(name, manifest.parent))
+            image.read_manifests(manifest)
 
         except Exception:
-            logger.exception('Can\'t load build')
+            logger.exception(f'Unable to load manifest {manifest.name}')
 
 
 class Image:
-    def __init__(self, name, path, build):
+    def __init__(self, name, path):
         self.name = name
         self.__path = path
-        self.build = build
+        self.__builds = []
+        self.__uploads = []
 
-        self.build_info = build.info
-        self.build_arch = build.info['arch']
-        self.build_release = build.info['release']
-        self.build_release_id = build.info['release_id']
-        self.build_vendor = build.info['vendor']
-        self.build_version = build.info['version']
+    @property
+    def build(self):
+        return self.__builds[0]
+
+    @property
+    def build_info(self):
+        return self.build.info
+
+    @property
+    def build_arch(self):
+        return self.build.info['arch']
+
+    @property
+    def build_release(self):
+        return self.build.info['release']
+
+    @property
+    def build_release_id(self):
+        return self.build.info['release_id']
+
+    @property
+    def build_vendor(self):
+        return self.build.info['vendor']
+
+    @property
+    def build_version(self):
+        return self.build.info['version']
+
+    @property
+    def uploads(self):
+        return self.__uploads
 
     def _convert_image_f(self, format):
         if format == 'qcow2':
@@ -104,10 +126,15 @@ class Image:
                     yield fout_converted
 
     def open_tar(self):
+        return tarfile.open(fileobj=self.open_tar_raw(), mode='r:*')
+
+    def open_tar_raw(self):
         for ext in ('.tar', '.tar.xz'):
             file_in = self.__path.joinpath(self.name + ext)
             if file_in.exists():
-                return tarfile.open(file_in, 'r:*')
+                f_in = open(file_in, 'rb')
+                setattr(f_in, 'extension', ext)
+                return f_in
 
         raise RuntimeError('Unable to find image tar file for {} in {}'.format(self.name, self.__path.as_posix()))
 
@@ -125,11 +152,35 @@ class Image:
         else:
             raise RuntimeError
 
+    def read_manifests(self, manifest_file):
+        logging.info(f'Read manifests from {manifest_file.name}')
+
+        with manifest_file.open() as f:
+            manifests = api_registry.load(json.load(f))
+
+        if not isinstance(manifests, list):
+            manifests = [manifests]
+
+        for manifest in manifests:
+            if isinstance(manifest, Build):
+                logging.debug('Found Build manifest')
+                self.__builds.append(manifest)
+            elif isinstance(manifest, Upload):
+                logging.debug('Found Upload manifest')
+                self.__uploads.append(manifest)
+            else:
+                logging.info('Found unknown manifest')
+
     def write_manifests(self, tool, manifests):
         """ Write manifests """
         manifest_file = self.__path.joinpath('{}.{}.json'.format(self.name, tool))
         with manifest_file.open('w') as f:
             json.dump(api_registry.dump(manifests), f, indent=4, separators=(',', ': '), sort_keys=True)
+
+    def write_merged_manifests(self, f, manifests):
+        """ Write manifests """
+        manifests = self.__builds + self.__uploads + manifests
+        json.dump(api_registry.dump(manifests), f, indent=4, separators=(',', ': '), sort_keys=True)
 
     def write_vendor_manifest(self, stage, data):
         """ Write upload manifest """

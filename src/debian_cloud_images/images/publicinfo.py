@@ -4,14 +4,17 @@ import enum
 @enum.unique
 class ImagePublicType(enum.Enum):
     dev = {
+        'path': '{release}/dev/{build_id}/debian-{release_id}-{vendor}-{arch}-dev-{build_id}-{version}',
         'vendor_family': 'debian-{release_id}-{arch}-dev-{build_id}',
         'vendor_description': 'Debian {release_id} (development build {build_id}-{version})',
     }
     daily = {
+        'path': '{release}/daily/{version}/debian-{release_id}-{vendor}-{arch}-daily-{version}',
         'vendor_family': 'debian-{release_id}-{arch}-daily',
         'vendor_description': 'Debian {release_id} (daily build {version})',
     }
     release = {
+        'path': '{release}/{version}/debian-{release_id}-{vendor}-{arch}-{version}',
         'vendor_family': 'debian-{release_id}-{arch}',
         'vendor_description': 'Debian {release_id} ({version})',
     }

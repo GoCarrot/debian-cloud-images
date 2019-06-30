@@ -7,7 +7,7 @@ import pytest
 import shutil
 import tarfile
 
-from debian_cloud_images.images import Images
+from debian_cloud_images.images import Images, Image
 
 
 if pkg_resources.parse_version(pytest.__version__) < pkg_resources.parse_version('3.9'):
@@ -24,12 +24,11 @@ skip_no_qemu_img = pytest.mark.skipif(check_no_qemu_img,
 
 @pytest.fixture
 def images_path(tmp_path):
-    with tmp_path.joinpath("test.build.json").open('w') as build:
+    with tmp_path.joinpath("test.build.json").open('w') as f:
         json.dump({
             'apiVersion': 'cloud.debian.org/v1alpha1',
             'kind': 'Build',
             'metadata': {
-                'labels': {},
                 'uid': '00000000-0000-0000-0000-000000000000',
             },
             'data': {
@@ -41,7 +40,20 @@ def images_path(tmp_path):
                     'version': '1',
                 },
             },
-        }, build)
+        }, f)
+
+    with tmp_path.joinpath("test.upload.json").open('w') as f:
+        json.dump({
+            'apiVersion': 'cloud.debian.org/v1alpha1',
+            'kind': 'Upload',
+            'metadata': {
+                'uid': '00000000-0000-0000-0000-000000000001',
+            },
+            'data': {
+                'provider': '',
+                'ref': '',
+            },
+        }, f)
 
     return tmp_path
 
@@ -71,13 +83,14 @@ def images_path_tar_xz(images_path):
 def test_Images(images_path):
     images = Images()
     images.read(images_path / 'test.build.json')
+    images.read(images_path / 'test.upload.json')
     assert len(images) == 1
 
 
 def test_Image(images_path):
-    images = Images()
-    images.read(images_path / 'test.build.json')
-    image = images['test']
+    image = Image('test', images_path)
+    image.read_manifests(images_path / 'test.build.json')
+    image.read_manifests(images_path / 'test.upload.json')
     assert image.build_arch == 'amd64'
 
     with pytest.raises(RuntimeError):
