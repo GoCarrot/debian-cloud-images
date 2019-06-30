@@ -17,7 +17,7 @@ class v1_TypeMetaSchema(Schema):
     kind = fields.Str(required=True)
 
     @post_dump
-    def dump_typemeta(self, data):
+    def dump_typemeta(self, data, **kw):
         if self.__typemeta__:
             data['apiVersion'] = self.__typemeta__.api_version
             data['kind'] = self.__typemeta__.kind
@@ -45,7 +45,7 @@ class v1_ListSchema(v1_TypeMetaSchema):
     items = fields_ext.NestedRegistry(None, many=True)
 
     @pre_dump
-    def dump_items(self, data):
+    def dump_items(self, data, **kw):
         return {
             'api_version': self.__typemeta__.api_version,
             'kind': self.__typemeta__.kind,
@@ -53,7 +53,7 @@ class v1_ListSchema(v1_TypeMetaSchema):
         }
 
     @post_load
-    def load_items(self, data):
+    def load_items(self, data, **kw):
         return list(data['items'])
 
 
@@ -73,5 +73,5 @@ class v1_ObjectMetaSchema(Schema):
     uid = fields.UUID(required=True)
 
     @post_load
-    def make_object(self, data):
+    def make_object(self, data, **kw):
         return ObjectMeta(**data)
