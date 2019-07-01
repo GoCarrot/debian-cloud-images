@@ -28,7 +28,7 @@ class ImageUploader:
         finally:
             with base_path.with_suffix('.json').open('w') as f:
                 image.write_merged_manifests(f, manifests)
-            image.write_manifests('upload', manifests)
+            image.write_manifests('upload', manifests, output=self.output)
 
     def copy(self, image, public_info, base_path, base_ref):
         with image.open_tar_raw() as f_in:

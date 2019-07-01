@@ -25,7 +25,8 @@ class ActionAzureResourceGroup(argparse.Action):
 
 
 class ImageUploaderAzure:
-    def __init__(self, storage_group, storage_id, image_group, auth):
+    def __init__(self, output, storage_group, storage_id, image_group, auth):
+        self.output = output
         self.storage_group = storage_group
         self.storage_id = storage_id
         self.image_group = image_group
@@ -85,7 +86,7 @@ class ImageUploaderAzure:
             ref=image_id,
         )]
 
-        image.write_manifests('upload-azure', manifests)
+        image.write_manifests('upload-azure', manifests, output=self.output)
 
         self.delete_container(image_name)
 
@@ -204,10 +205,11 @@ class UploadAzureCommand(UploadBaseCommand):
             required=True,
         )
 
-    def __init__(self, *, group=None, storage_id=None, auth=None, **kw):
+    def __init__(self, *, output=None, group=None, storage_id=None, auth=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
+            output=output,
             storage_group=group,
             storage_id=storage_id,
             image_group=group,

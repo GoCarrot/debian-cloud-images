@@ -171,9 +171,10 @@ class Image:
             else:
                 logging.info('Found unknown manifest')
 
-    def write_manifests(self, tool, manifests):
+    def write_manifests(self, tool, manifests, output):
         """ Write manifests """
-        manifest_file = self.__path.joinpath('{}.{}.json'.format(self.name, tool))
+        output.mkdir(parents=True, exist_ok=True)
+        manifest_file = output.joinpath('{}.{}.json'.format(self.name, tool))
         with manifest_file.open('w') as f:
             json.dump(api_registry.dump(manifests), f, indent=4, separators=(',', ': '), sort_keys=True)
 
