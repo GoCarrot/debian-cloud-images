@@ -292,10 +292,10 @@ class BuildCommand(BaseCommand):
             help='Read extra debs from localdebs directory',
         )
         parser.add_argument(
-            '--path',
+            '--output',
             default='.',
             help='write manifests and images to (default: .)',
-            metavar='PATH',
+            metavar='DIR',
             type=pathlib.Path
         )
         parser.add_argument(
@@ -325,7 +325,7 @@ class BuildCommand(BaseCommand):
             msg = "Given date ({0}) is not valid. Expected format: 'YYYY-MM-DD'".format(s)
             raise argparse.ArgumentTypeError(msg)
 
-    def __init__(self, *, release=None, vendor=None, arch=None, version=None, build_id=None, build_type=None, localdebs=False, path=None, noop=False, override_name=None, version_date=None, **kw):
+    def __init__(self, *, release=None, vendor=None, arch=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
         super().__init__(**kw)
 
         self.noop = noop
@@ -353,11 +353,13 @@ class BuildCommand(BaseCommand):
         self.env.update(self.c.env)
         self.env['CLOUD_BUILD_INFO'] = json.dumps(self.c.info)
         self.env['CLOUD_BUILD_NAME'] = name
-        self.env['CLOUD_BUILD_OUTPUT_DIR'] = path.resolve()
+        self.env['CLOUD_BUILD_OUTPUT_DIR'] = output.resolve()
         self.env['CLOUD_BUILD_DATA'] = data_path
 
-        image_raw = path / '{}.raw'.format(name)
-        image_tar = path / '{}.tar'.format(name)
+        output.mkdir(parents=True, exist_ok=True)
+
+        image_raw = output / '{}.raw'.format(name)
+        image_tar = output / '{}.tar'.format(name)
 
         self.cmd = (
             'fai-diskimage',
