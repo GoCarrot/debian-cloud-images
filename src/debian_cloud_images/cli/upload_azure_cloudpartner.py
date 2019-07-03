@@ -17,6 +17,40 @@ from ..utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Con
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
 
+class AzureCloudPartnerOffer:
+    def __init__(self, driver, publisher_id, offer_id):
+        self.driver = driver
+        self.publisher_id = publisher_id
+        self.offer_id = offer_id
+
+        self.offer_path = '/api/publishers/{}/offers/{}'.format(publisher_id, offer_id)
+
+        self.read()
+
+    def _request(self, params=None, headers=None, data=None, method='GET'):
+        return self.driver.request(self.offer_path, headers=headers, params=params, data=data, method=method)
+
+    def publish(self, email):
+        data = {
+            'metadata': {
+                'notification-emails': email,
+            },
+        }
+        try:
+            self.driver.request(self.offer_path + '/publish', data=data, method='POST')
+        except BaseHTTPError as e:
+            logging.error(f'Unable to publish offer: {e.message}')
+
+    def read(self):
+        r = self._request()
+        self.data, self.etag = r.parse_body(), r.headers['etag']
+        self.plans = {i['planId']: i for i in self.data['definition']['plans']}
+
+    def save(self):
+        r = self._request(data=self.data, method='PUT', headers={'If-Match': self.etag})
+        return r.parse_body()
+
+
 class UrlSas:
     """ URL for Azure storage with shared access signature (only supported for container) """
     def __init__(self, url, storage_secret, *, sas_permission='r', sas_start=None, sas_expiry=None):
@@ -108,8 +142,6 @@ class ImageUploaderAzureCloudpartner:
 
         self.__cloudpartner = self.__storage = self.__storage_driver = self.__storage_secret = None
 
-        self.offer = '/api/publishers/{}/offers/{}'.format(publisher_id, offer_id)
-
     @property
     def cloudpartner(self):
         ret = self.__cloudpartner
@@ -195,7 +227,7 @@ class ImageUploaderAzureCloudpartner:
 
         if changed and self.publish:
             logging.info('Publishing offer %s', self.offer_id)
-            self.publish_offer(self.publish)
+            AzureCloudPartnerOffer(self.cloudpartner, self.publisher_id, self.offer_id).publish(self.publish)
 
     def create_container(self, container):
         logging.info('Creating container %s', container)
@@ -260,37 +292,13 @@ class ImageUploaderAzureCloudpartner:
         if r.status != http.client.CREATED:
             raise RuntimeError('Error uploading file block: {0.error} ({0.status})'.format(r))
 
-    def _offer(self, params=None, headers=None, data=None, method='GET'):
-        return self.cloudpartner.request(self.offer, headers=headers, params=params, data=data, method=method)
-
-    def read_offer(self):
-        r = self._offer()
-        return r.parse_body(), r.headers['etag']
-
-    def publish_offer(self, email):
-        data = {
-            'metadata': {
-                'notification-emails': email,
-            },
-        }
-        try:
-            self.cloudpartner.request(self.offer + '/publish', data=data, method='POST')
-        except BaseHTTPError as e:
-            logging.error(f'Unable to publish offer: {e.message}')
-
-    def save_offer(self, data, etag):
-        r = self._offer(data=data, method='PUT', headers={'If-Match': etag})
-        return r.parse_body()
-
     def filter_images(self, images):
-        offer, etag = self.read_offer()
-        definition = offer['definition']
-        plans = {i['planId']: i for i in definition['plans']}
+        offer = AzureCloudPartnerOffer(self.cloudpartner, self.publisher_id, self.offer_id)
 
         ret = []
 
         for image in images:
-            if self.check_image(plans, image):
+            if self.check_image(offer, image):
                 ret.append(image)
 
         return ret
@@ -322,14 +330,12 @@ class ImageUploaderAzureCloudpartner:
         image_family = image_public_info.apply(image.build_info).vendor_family
         image_description = image_public_info.apply(image.build_info).vendor_description
 
-        offer, etag = self.read_offer()
-        definition = offer['definition']
-        plans = {i['planId']: i for i in definition['plans']}
+        offer = AzureCloudPartnerOffer(self.cloudpartner, self.publisher_id, self.offer_id)
 
         azure_version = image.build_info['version_azure']
         release_id = image.build_release_id
 
-        plan = plans[release_id]
+        plan = offer.plans[release_id]
         plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
         if azure_version in plan_images:
             raise RuntimeError('Image %s already exists', image.name)
@@ -343,7 +349,7 @@ class ImageUploaderAzureCloudpartner:
         }
 
         logging.info('Saving offer %s/%s', self.publisher_id, self.offer_id)
-        self.save_offer(offer, etag)
+        offer.save()
         return True
 
 
