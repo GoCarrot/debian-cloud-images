@@ -40,7 +40,7 @@ class BaseCommand:
         args = parser.parse_args()
         return cls(**vars(args))()
 
-    def __init__(self, *, debug=False, **kw):
+    def __init__(self, *, cls=None, debug=False):
         logging.basicConfig(
             level=debug and logging.DEBUG or logging.INFO,
             format='%(asctime)s %(levelname)s %(message)s',

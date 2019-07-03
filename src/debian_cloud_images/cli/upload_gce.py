@@ -17,7 +17,8 @@ class ImageUploaderGce:
     storage_cls = storage_driver(StorageProvider.GOOGLE_STORAGE)
     compute_cls = compute_driver(ComputeProvider.GCE)
 
-    def __init__(self, project, bucket, auth):
+    def __init__(self, output, project, bucket, auth):
+        self.output = output
         self.project = project
         self.bucket = bucket
         self.auth = auth
@@ -76,7 +77,7 @@ class ImageUploaderGce:
             family_ref=gce_family_url,
         )]
 
-        image.write_manifests('upload-gce', manifests)
+        image.write_manifests('upload-gce', manifests, output=self.output)
 
         self.delete_file(image, gce_file)
 
@@ -173,7 +174,7 @@ class UploadGceCommand(UploadBaseCommand):
             metavar='FILE',
         )
 
-    def __init__(self, *, project=None, bucket=None, auth=None, **kw):
+    def __init__(self, *, output=None, project=None, bucket=None, auth=None, **kw):
         super().__init__(**kw)
 
         if auth:
@@ -181,6 +182,7 @@ class UploadGceCommand(UploadBaseCommand):
                 auth = json.load(f)
 
         self.uploader = ImageUploaderGce(
+            output=output,
             project=project,
             bucket=bucket,
             auth=auth,

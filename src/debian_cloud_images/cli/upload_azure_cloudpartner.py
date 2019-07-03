@@ -98,7 +98,8 @@ class UrlSas:
 
 
 class ImageUploaderAzureCloudpartner:
-    def __init__(self, publisher_id, offer_id, storage_id, auth, publish):
+    def __init__(self, output, publisher_id, offer_id, storage_id, auth, publish):
+        self.output = output
         self.publisher_id = publisher_id
         self.offer_id = offer_id
         self.storage_id = storage_id
@@ -190,7 +191,7 @@ class ImageUploaderAzureCloudpartner:
                     family_ref=family_ref,
                 )]
 
-                image.write_manifests('upload-azure-cloudpartner', manifests)
+                image.write_manifests('upload-azure-cloudpartner', manifests, output=self.output)
 
         if changed and self.publish:
             logging.info('Publishing offer %s', self.offer_id)
@@ -389,6 +390,7 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             publisher_id,
             offer_id,
             storage_id,
+            output=None,
             auth=None,
             publish=None,
             **kw,
@@ -396,6 +398,7 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzureCloudpartner(
+            output=output,
             publisher_id=publisher_id,
             offer_id=offer_id,
             storage_id=storage_id,

@@ -20,7 +20,8 @@ class ImageUploaderEc2:
         'arm64': 'arm64',
     }
 
-    def __init__(self, bucket, key, secret, regions):
+    def __init__(self, output, bucket, key, secret, regions):
+        self.output = output
         self.bucket = bucket
         self.key = key
         self.secret = secret
@@ -80,7 +81,7 @@ class ImageUploaderEc2:
                     ref=ec2_image.id,
                 ))
 
-            image.write_manifests('upload-ec2', manifests)
+            image.write_manifests('upload-ec2', manifests, output=self.output)
 
         finally:
             self.delete_file(image, obj)
@@ -241,10 +242,11 @@ class UploadEc2Command(UploadBaseCommand):
             help='Regions to copy snapshot and image to or "all" (default: region of bucket)',
         )
 
-    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], **kw):
+    def __init__(self, *, output=None, bucket=None, access_key_id=None, access_secret_key=None, regions=[], **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderEc2(
+            output=output,
             bucket=bucket,
             key=access_key_id,
             secret=access_secret_key,

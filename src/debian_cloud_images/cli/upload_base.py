@@ -21,6 +21,13 @@ class UploadBaseCommand(BaseCommand):
             type=pathlib.Path
         )
         parser.add_argument(
+            '--output',
+            default='.',
+            help='write manifests to (default: .)',
+            metavar='DIR',
+            type=pathlib.Path
+        )
+        parser.add_argument(
             '--variant',
             action=argparse_ext.ActionEnum,
             default='dev',
