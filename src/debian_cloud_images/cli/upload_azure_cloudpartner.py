@@ -303,10 +303,12 @@ class ImageUploaderAzureCloudpartner:
         azure_version = image.build_info['version_azure']
         release_id = image.build_release_id
 
-        if release_id not in plans:
-            raise ValueError('Release %s does not exist' % release_id)
+        plan = plans.get(release_id, None)
 
-        plan = plans[release_id]
+        if not plan:
+            logging.warning('Release %s does not exist', release_id)
+            return False
+
         plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
 
         if azure_version in plan_images:
