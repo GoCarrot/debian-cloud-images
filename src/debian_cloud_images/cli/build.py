@@ -29,8 +29,9 @@ class Arch:
 
 class Release:
     def __init__(self, kw):
-        def init(*, id, fai_classes, supports_linux_image_cloud=False):
+        def init(*, id, baseid, fai_classes, supports_linux_image_cloud=False):
             self.id = id
+            self.baseid = baseid
             self.fai_classes = fai_classes
             self.supports_linux_image_cloud = supports_linux_image_cloud
         init(**kw)
@@ -77,25 +78,30 @@ ReleaseEnum = enum.Enum(
     {
         'stretch': {
             'id': '9',
+            'baseid': '9',
             'fai_classes': ('STRETCH', 'BACKPORTS'),
         },
         'stretch-backports': {
             'id': '9-backports',
+            'baseid': '9',
             'fai_classes': ('STRETCH', 'BACKPORTS', 'BACKPORTS_LINUX'),
             'supports_linux_image_cloud': True,
         },
         'buster': {
             'id': '10',
+            'baseid': '10',
             'fai_classes': ('BUSTER', 'BACKPORTS'),
             'supports_linux_image_cloud': True,
         },
         'buster-backports': {
             'id': '10-backports',
+            'baseid': '10',
             'fai_classes': ('BUSTER', 'BACKPORTS', 'BACKPORTS_LINUX'),
             'supports_linux_image_cloud': True,
         },
         'sid': {
             'id': 'sid',
+            'baseid': 'sid',
             'fai_classes': ('SID', ),
             'supports_linux_image_cloud': True,
         },
@@ -210,6 +216,7 @@ class Check:
         self.release = release
         self.info['release'] = self.release.name
         self.info['release_id'] = self.release.id
+        self.info['release_baseid'] = self.release.baseid
         self.classes |= self.release.fai_classes
 
     def set_vendor(self, vendor):
