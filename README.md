@@ -124,5 +124,4 @@ Uploaders typically need some variables set with credentials or targets.
  * `$CLOUD_UPLOAD_AZURE_DAILY_ENABLED`: Set to `1` to upload images.
  * `$CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL`: Run publish process and send report to given e-mail address.
  * `$CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER`: Azure Publisher ID.
- * `$CLOUD_UPLOAD_AZURE_DAILY_OFFER`: Azure Offer name.
  * `$CLOUD_UPLOAD_AZURE_DAILY_STORAGE`: Azure Storage ID or name.

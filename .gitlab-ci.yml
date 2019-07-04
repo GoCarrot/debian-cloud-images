@@ -533,7 +533,6 @@ azure upload daily:
       ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
       ${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL:+--publish "${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL}"}
       --publisher "${CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER}"
-      --offer "${CLOUD_UPLOAD_AZURE_DAILY_OFFER}"
       --storage "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE}"
       *.build.json
   dependencies:
