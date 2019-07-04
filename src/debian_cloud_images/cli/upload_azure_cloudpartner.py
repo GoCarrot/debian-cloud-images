@@ -51,6 +51,34 @@ class AzureCloudPartnerOffer:
         return r.parse_body()
 
 
+class UploadOffer(AzureCloudPartnerOffer):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.images = []
+
+    def check_image(self, image):
+        if image.build_vendor != 'azure':
+            logging.warning('Image %s is no Azure image, ignoring', image.name)
+            return
+
+        azure_version = image.build_info['version_azure']
+        release_id = image.build_release_id
+
+        plan = self.plans.get(release_id, None)
+
+        if not plan:
+            logging.warning('Release %s does not exist', release_id)
+            return
+
+        plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
+
+        if azure_version in plan_images:
+            logging.warning('Image %s (%s) already exists for release %s', image.name, azure_version, release_id)
+            return
+
+        self.images.append(image)
+
+
 class UrlSas:
     """ URL for Azure storage with shared access signature (only supported for container) """
     def __init__(self, url, storage_secret, *, sas_permission='r', sas_start=None, sas_expiry=None):
@@ -186,48 +214,49 @@ class ImageUploaderAzureCloudpartner:
         return ret
 
     def __call__(self, images, image_public_info):
-        changed = False
+        for offer in self.filter_images(images.values(), image_public_info).values():
+            changed = False
 
-        for image in self.filter_images(images.values()):
-            image_name = image_public_info.apply(image.build_info).vendor_name
-            image_file = '{}/disk.vhd'.format(image_name)
-            image_url = 'https://{}/{}'.format(self.storage.connection.host, image_file)
-            image_url_sas = UrlSas(
-                image_url,
-                self.storage_secret,
-                sas_permission='rl',
-                sas_start='2018-01-01T00:00:00Z',
-                sas_expiry='2020-01-01T00:00:00Z',
-            )
+            for image in offer.images:
+                image_name = image_public_info.apply(image.build_info).vendor_name
+                image_file = '{}/disk.vhd'.format(image_name)
+                image_url = 'https://{}/{}'.format(self.storage.connection.host, image_file)
+                image_url_sas = UrlSas(
+                    image_url,
+                    self.storage_secret,
+                    sas_permission='rl',
+                    sas_start='2018-01-01T00:00:00Z',
+                    sas_expiry='2020-01-01T00:00:00Z',
+                )
 
-            logging.info('Uploading image %s', image.name)
+                logging.info('Uploading image %s', image.name)
 
-            self.create_container(image_name)
-            self.upload_file(image, image_file)
+                self.create_container(image_name)
+                self.upload_file(image, image_file)
 
-            if self.insert_image(image, image_public_info, image_url_sas):
-                changed = True
+                if self.insert_image(offer, image, image_public_info, image_url_sas):
+                    changed = True
 
-                azure_version = image.build_info['version_azure']
-                ref = f'{self.publisher_id}:{self.offer_id}:{image.build_release_id}:{azure_version}'
-                family_ref = f'{self.publisher_id}:{self.offer_id}:{image.build_release_id}:latest'
+                    azure_version = image.build_info['version_azure']
+                    ref = f'{offer.publisher_id}:{offer.offer_id}:{image.build_release_id}:{azure_version}'
+                    family_ref = f'{offer.publisher_id}:{offer.offer_id}:{image.build_release_id}:latest'
 
-                metadata = image.build.metadata.copy()
-                metadata.labels[label_ucdo_provider] = 'azure.com'
-                metadata.labels[label_ucdo_type] = image_public_info.public_type.name
+                    metadata = image.build.metadata.copy()
+                    metadata.labels[label_ucdo_provider] = 'azure.com'
+                    metadata.labels[label_ucdo_type] = image_public_info.public_type.name
 
-                manifests = [Upload(
-                    metadata=metadata,
-                    provider=self.cloudpartner.host,
-                    ref=ref,
-                    family_ref=family_ref,
-                )]
+                    manifests = [Upload(
+                        metadata=metadata,
+                        provider=self.cloudpartner.host,
+                        ref=ref,
+                        family_ref=family_ref,
+                    )]
 
-                image.write_manifests('upload-azure-cloudpartner', manifests, output=self.output)
+                    image.write_manifests('upload-azure-cloudpartner', manifests, output=self.output)
 
-        if changed and self.publish:
-            logging.info('Publishing offer %s', self.offer_id)
-            AzureCloudPartnerOffer(self.cloudpartner, self.publisher_id, self.offer_id).publish(self.publish)
+            if changed and self.publish:
+                logging.info('Publishing offer %s', offer.offer_id)
+                offer.publish(self.publish)
 
     def create_container(self, container):
         logging.info('Creating container %s', container)
@@ -292,49 +321,29 @@ class ImageUploaderAzureCloudpartner:
         if r.status != http.client.CREATED:
             raise RuntimeError('Error uploading file block: {0.error} ({0.status})'.format(r))
 
-    def filter_images(self, images):
-        offer = AzureCloudPartnerOffer(self.cloudpartner, self.publisher_id, self.offer_id)
-
-        ret = []
+    def filter_images(self, images, image_public_info):
+        offers = {}
 
         for image in images:
-            if self.check_image(offer, image):
-                ret.append(image)
+            image_info = image_public_info.apply(image.build_info)
+            offer_id = image_info.azure_offer
+            if offer_id not in offers:
+                offer = offers.setdefault(offer_id, UploadOffer(self.cloudpartner, self.publisher_id, offer_id))
+            else:
+                offer = offers[offer_id]
+            offer.check_image(image)
 
-        return ret
+        return offers
 
-    def check_image(self, plans, image):
-        if image.build_vendor != 'azure':
-            logging.warning('Image %s is no Azure image, ignoring', image.name)
-            return False
-
-        azure_version = image.build_info['version_azure']
-        release_id = image.build_release_id
-
-        plan = plans.get(release_id, None)
-
-        if not plan:
-            logging.warning('Release %s does not exist', release_id)
-            return False
-
-        plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
-
-        if azure_version in plan_images:
-            logging.warning('Image %s (%s) already exists for release %s', image.name, azure_version, release_id)
-            return False
-
-        return True
-
-    def insert_image(self, image, image_public_info, image_url_sas):
+    def insert_image(self, offer, image, image_public_info, image_url_sas):
         image_name = image_public_info.apply(image.build_info).vendor_name
         image_family = image_public_info.apply(image.build_info).vendor_family
         image_description = image_public_info.apply(image.build_info).vendor_description
 
-        offer = AzureCloudPartnerOffer(self.cloudpartner, self.publisher_id, self.offer_id)
-
         azure_version = image.build_info['version_azure']
         release_id = image.build_release_id
 
+        offer.read()
         plan = offer.plans[release_id]
         plan_images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
         if azure_version in plan_images:
@@ -348,7 +357,7 @@ class ImageUploaderAzureCloudpartner:
             'osVhdUrl': str(image_url_sas),
         }
 
-        logging.info('Saving offer %s/%s', self.publisher_id, self.offer_id)
+        logging.info('Saving offer %s/%s', offer.publisher_id, offer.offer_id)
         offer.save()
         return True
 
