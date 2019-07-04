@@ -86,7 +86,12 @@ ReleaseEnum = enum.Enum(
         },
         'buster': {
             'id': '10',
-            'fai_classes': ('BUSTER', ),
+            'fai_classes': ('BUSTER', 'BACKPORTS'),
+            'supports_linux_image_cloud': True,
+        },
+        'buster-backports': {
+            'id': '10-backports',
+            'fai_classes': ('BUSTER', 'BACKPORTS', 'BACKPORTS_LINUX'),
             'supports_linux_image_cloud': True,
         },
         'sid': {

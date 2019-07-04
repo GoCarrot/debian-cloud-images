@@ -162,6 +162,13 @@ azure buster build: &build-azure-buster
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: azure
 
+azure buster-backports build: &build-azure-buster-backports
+  extends: .build dev manual
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster-backports
+    CLOUD_VENDOR: azure
+
 azure sid build: &build-azure-sid
   extends: .build dev pushes
   variables:
@@ -339,6 +346,10 @@ azure buster build official:
   <<: *build-azure-buster
   extends: .build official
 
+azure buster-backports build official:
+  <<: *build-azure-buster-backports
+  extends: .build official
+
 azure sid build official:
   <<: *build-azure-sid
   extends: .build official
@@ -429,6 +440,7 @@ azure upload:
     - azure stretch build
     - azure stretch-backports build
     - azure buster build
+    - azure buster-backports build
     - azure sid build
   only:
     refs:
@@ -526,6 +538,7 @@ azure upload daily:
       *.build.json
   dependencies:
     - azure buster build official
+    - azure buster-backports build official
     - azure sid build official
   only:
     refs:
