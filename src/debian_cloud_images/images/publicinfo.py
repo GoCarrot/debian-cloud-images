@@ -41,6 +41,11 @@ class ImagePublicInfo:
             return '{}-{}'.format(self.vendor_family, self.__info['version'])
 
         @property
+        def vendor_azure_family(self):
+            " Return vendor family limited to 50 characters for Azure"
+            return self.vendor_family[:50]
+
+        @property
         def vendor_gce_family(self):
             " Return vendor family limited to 63 characters for GCE "
             return self.vendor_family[:63]

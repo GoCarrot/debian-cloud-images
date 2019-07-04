@@ -336,7 +336,7 @@ class ImageUploaderAzureCloudpartner:
 
     def insert_image(self, offer, image, image_public_info, image_url_sas):
         image_name = image_public_info.apply(image.build_info).vendor_name
-        image_family = image_public_info.apply(image.build_info).vendor_family
+        image_family = image_public_info.apply(image.build_info).vendor_azure_family
         image_description = image_public_info.apply(image.build_info).vendor_description
 
         azure_version = image.build_info['version_azure']
