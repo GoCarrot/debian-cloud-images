@@ -39,8 +39,10 @@ class UploadBaseCommand(BaseCommand):
             dest='override_version',
         )
 
-    def __init__(self, *, manifests=[], public_type=None, override_version=None, **kw):
+    def __init__(self, *, manifests=[], output=None, public_type=None, override_version=None, **kw):
         super().__init__(**kw)
+
+        self.output = output
 
         override_info = {}
         if override_version:

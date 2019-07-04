@@ -174,7 +174,7 @@ class UploadGceCommand(UploadBaseCommand):
             metavar='FILE',
         )
 
-    def __init__(self, *, output=None, project=None, bucket=None, auth=None, **kw):
+    def __init__(self, *, project=None, bucket=None, auth=None, **kw):
         super().__init__(**kw)
 
         if auth:
@@ -182,7 +182,7 @@ class UploadGceCommand(UploadBaseCommand):
                 auth = json.load(f)
 
         self.uploader = ImageUploaderGce(
-            output=output,
+            output=self.output,
             project=project,
             bucket=bucket,
             auth=auth,

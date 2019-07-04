@@ -205,11 +205,11 @@ class UploadAzureCommand(UploadBaseCommand):
             required=True,
         )
 
-    def __init__(self, *, output=None, group=None, storage_id=None, auth=None, **kw):
+    def __init__(self, *, group=None, storage_id=None, auth=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
-            output=output,
+            output=self.output,
             storage_group=group,
             storage_id=storage_id,
             image_group=group,
