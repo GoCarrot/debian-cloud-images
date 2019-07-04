@@ -228,7 +228,7 @@ class ImageUploaderAzureCloudpartner:
                     sas_expiry='2020-01-01T00:00:00Z',
                 )
 
-                logging.info('Uploading image %s', image.name)
+                logging.info('Uploading image %s to %s/%s', image.name, offer.publisher_id, offer.offer_id)
 
                 self.create_container(image_name)
                 self.upload_file(image, image_file)
