@@ -160,10 +160,9 @@ class UrlSas:
 
 
 class ImageUploaderAzureCloudpartner:
-    def __init__(self, output, publisher_id, offer_id, storage_id, auth, publish):
+    def __init__(self, output, publisher_id, storage_id, auth, publish):
         self.output = output
         self.publisher_id = publisher_id
-        self.offer_id = offer_id
         self.storage_id = storage_id
         self.auth = auth
         self.publish = publish
@@ -378,13 +377,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             required=True,
         )
         parser.add_argument(
-            '--offer',
-            dest='offer_id',
-            help='Azure offer',
-            metavar='OFFER',
-            required=True,
-        )
-        parser.add_argument(
             '--storage',
             dest='storage_id',
             help='Name or ID of Azure storage',
@@ -405,7 +397,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
     def __init__(
             self, *,
             publisher_id,
-            offer_id,
             storage_id,
             auth=None,
             publish=None,
@@ -416,7 +407,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
         self.uploader = ImageUploaderAzureCloudpartner(
             output=self.output,
             publisher_id=publisher_id,
-            offer_id=offer_id,
             storage_id=storage_id,
             auth=auth,
             publish=publish,
