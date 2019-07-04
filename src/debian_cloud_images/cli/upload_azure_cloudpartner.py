@@ -392,7 +392,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
             publisher_id,
             offer_id,
             storage_id,
-            output=None,
             auth=None,
             publish=None,
             **kw,
@@ -400,7 +399,7 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzureCloudpartner(
-            output=output,
+            output=self.output,
             publisher_id=publisher_id,
             offer_id=offer_id,
             storage_id=storage_id,
