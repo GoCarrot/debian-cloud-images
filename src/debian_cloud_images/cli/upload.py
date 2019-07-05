@@ -8,7 +8,8 @@ from ..api.wellknown import label_ucdo_image_format, label_ucdo_type
 
 
 class ImageUploader:
-    def __init__(self, provider, storage):
+    def __init__(self, output, provider, storage):
+        self.output = output
         self.provider = provider
         self.storage = storage
 
@@ -87,6 +88,7 @@ class UploadCommand(UploadBaseCommand):
         super().__init__(**kw)
 
         self.uploader = ImageUploader(
+            output=self.output,
             provider=provider,
             storage=storage,
         )
