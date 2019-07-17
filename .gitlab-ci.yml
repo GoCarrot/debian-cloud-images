@@ -559,11 +559,19 @@ upload daily:
   stage: upload
   image: debian:buster
   script:
+    - apt-get install --no-install-recommends -y sshfs
+    - chmod 600 ${CLOUD_UPLOAD_DAILY_SSH_KEY}
+    - >
+      sshfs
+      -o IdentityFile=${CLOUD_UPLOAD_DAILY_SSH_KEY}
+      -o VerifyHostKeyDNS=yes
+      "${CLOUD_UPLOAD_DAILY_SSH_REMOTE}"
+      /mnt
     - >
       ./bin/debian-cloud-images upload
       --variant daily
       --provider cloud.debian.org
-      --storage "${CLOUD_UPLOAD_DAILY_STORAGE}"
+      --storage /mnt
       *.json
   only:
     refs:
