@@ -1,6 +1,7 @@
 import argparse
 
 from .build import BuildCommand
+from .delete_azure_cloudpartner import DeleteAzureCloudpartnerCommand
 from .release_azure_cloudpartner import ReleaseAzureCloudpartnerCommand
 from .upload import UploadCommand
 from .upload_azure import UploadAzureCommand
@@ -13,6 +14,7 @@ parser = argparse.ArgumentParser(prog='debian-cloud-images')
 subparsers = parser.add_subparsers(help='sub-command help')
 
 BuildCommand._argparse_init_sub(subparsers)
+DeleteAzureCloudpartnerCommand._argparse_init_sub(subparsers)
 ReleaseAzureCloudpartnerCommand._argparse_init_sub(subparsers)
 UploadCommand._argparse_init_sub(subparsers)
 UploadAzureCommand._argparse_init_sub(subparsers)
