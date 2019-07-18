@@ -11,17 +11,20 @@ class BaseCommand:
     argparser_usage = None
 
     @classmethod
-    def _argparse_init_sub(cls, subparsers, config):
+    def _argparse_init_sub(cls, subparsers, config, config_section):
         parser = subparsers.add_parser(
             formatter_class=argparse.RawTextHelpFormatter,
             name=cls.argparser_name,
             help=cls.argparser_help,
             usage=cls.argparser_usage,
         )
-        try:
-            section = config[cls.argparser_name]
-        except KeyError:
-            section = config.defaults()
+        if config_section:
+            section = config[config_section]
+        else:
+            try:
+                section = config[cls.argparser_name]
+            except KeyError:
+                section = config.defaults()
         cls._argparse_register_config(parser)
         cls._argparse_register(parser, section)
         return parser
@@ -41,6 +44,11 @@ class BaseCommand:
             '--config-file',
             help='Use config file',
             metavar='FILE',
+        )
+        parser.add_argument(
+            '--config-section',
+            help='Use section from config file',
+            metavar='SECTION',
         )
 
     @staticmethod
@@ -78,16 +86,19 @@ class BaseCommand:
             formatter_class=argparse.RawTextHelpFormatter,
             usage=cls.argparser_usage,
         )
-        try:
-            section = config[cls.argparser_name]
-        except KeyError:
-            section = config.defaults()
+        if early_args.config_section:
+            section = config[early_args.config_section]
+        else:
+            try:
+                section = config[cls.argparser_name]
+            except KeyError:
+                section = config.defaults()
         cls._argparse_register_config(parser)
         cls._argparse_register(parser, section)
         args = parser.parse_args(remainder_argv)
         return cls(**vars(args))()
 
-    def __init__(self, *, cls=None, config_file=None, debug=False):
+    def __init__(self, *, cls=None, config_file=None, config_section=None, debug=False):
         logging.basicConfig(
             level=debug and logging.DEBUG or logging.INFO,
             format='%(asctime)s %(levelname)s %(message)s',
