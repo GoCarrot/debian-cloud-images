@@ -22,6 +22,7 @@ class BaseCommand:
             section = config[cls.argparser_name]
         except KeyError:
             section = config.defaults()
+        cls._argparse_register_config(parser)
         cls._argparse_register(parser, section)
         return parser
 
@@ -34,6 +35,14 @@ class BaseCommand:
             help='enable debug output',
         )
 
+    @classmethod
+    def _argparse_register_config(cls, parser):
+        parser.add_argument(
+            '--config-file',
+            help='Use config file',
+            metavar='FILE',
+        )
+
     @staticmethod
     def _config_files():
         path = os.getenv('XDG_CONFIG_DIRS', '/etc/xdg')
@@ -44,15 +53,28 @@ class BaseCommand:
             yield pathlib.Path(p).expanduser() / 'debian-cloud-images' / 'config'
 
     @classmethod
-    def _config_read(cls):
+    def _config_read(cls, config_file):
         config = configparser.ConfigParser()
-        config.read(cls._config_files())
+        if config_file:
+            with open(config_file) as f:
+                config.read_file(f)
+        else:
+            config.read(cls._config_files())
         return config
 
     @classmethod
     def _main(cls):
-        config = cls._config_read()
+        early_parser = argparse.ArgumentParser(
+            add_help=False,
+            allow_abbrev=False,
+            formatter_class=argparse.RawTextHelpFormatter,
+        )
+        cls._argparse_register_config(early_parser)
+        early_args, remainder_argv = early_parser.parse_known_args()
+
+        config = cls._config_read(early_args.config_file)
         parser = argparse.ArgumentParser(
+            allow_abbrev=False,
             formatter_class=argparse.RawTextHelpFormatter,
             usage=cls.argparser_usage,
         )
@@ -60,11 +82,12 @@ class BaseCommand:
             section = config[cls.argparser_name]
         except KeyError:
             section = config.defaults()
+        cls._argparse_register_config(parser)
         cls._argparse_register(parser, section)
-        args = parser.parse_args()
+        args = parser.parse_args(remainder_argv)
         return cls(**vars(args))()
 
-    def __init__(self, *, cls=None, debug=False):
+    def __init__(self, *, cls=None, config_file=None, debug=False):
         logging.basicConfig(
             level=debug and logging.DEBUG or logging.INFO,
             format='%(asctime)s %(levelname)s %(message)s',
