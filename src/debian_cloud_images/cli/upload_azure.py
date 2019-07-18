@@ -195,6 +195,9 @@ class UploadAzureCommand(UploadBaseCommand):
         )
         parser.add_argument(
             '--storage',
+            action=argparse_ext.ConfigStoreAction,
+            config=config,
+            config_key='azure-storage',
             dest='storage_id',
             help='Name or ID of Azure storage',
             metavar='ID',

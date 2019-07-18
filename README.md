@@ -96,6 +96,8 @@ for a cloud image.
 
 Uploaders typically need some variables set with credentials or targets.
 
+ * `$CLOUD_UPLOAD_DEV_CONFIG`: File variable containing a config file.
+
 ### Amazon EC2
 
  * `$CLOUD_UPLOAD_EC2_DEV_ENABLED`: Set to `1` to upload and create images during development.
@@ -113,10 +115,16 @@ Uploaders typically need some variables set with credentials or targets.
 
 ### Microsoft Azure
 
- * `$CLOUD_UPLOAD_AZURE_AUTH`: Azure OAuth credentials (`TENANT:APPLICATION:SECRET`).
  * `$CLOUD_UPLOAD_AZURE_DEV_ENABLED`: Set to `1` to upload images during development.
- * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP`: Azure Subscription and Resource group (`SUBSCRIPTION:GROUP`).
- * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE`: Azure Storage ID or name.
+
+#### Config file example
+
+```
+[DEFAULT]
+azure-auth = TENANT:OBJECT:SECRET
+azure-group = SUBSCRIPTION:GROUP
+azure-storage = STORAGE
+```
 
 #### Uploads for daily builds
 

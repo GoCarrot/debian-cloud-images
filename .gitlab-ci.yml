@@ -432,9 +432,7 @@ azure upload:
   script:
     - >
       ./bin/debian-cloud-images upload-azure
-      ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
-      --group "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP}"
-      ${CLOUD_UPLOAD_AZURE_DEV_STORAGE+--storage "${CLOUD_UPLOAD_AZURE_DEV_STORAGE}"}
+      --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
   dependencies:
     - azure stretch build
