@@ -25,8 +25,9 @@ class ReleaseAzureCloudpartnerCommand(BaseCommand):
         )
         parser.add_argument(
             '--offer',
-            dest='offer_id',
-            help='Azure offer',
+            action='append',
+            dest='offer_ids',
+            help='Azure offer, can be specified multiple times',
             metavar='OFFER',
             required=True,
         )
@@ -39,14 +40,14 @@ class ReleaseAzureCloudpartnerCommand(BaseCommand):
     def __init__(
             self, *,
             publisher_id,
-            offer_id,
+            offer_ids,
             auth=None,
             **kw,
     ):
         super().__init__(**kw)
 
         self.publisher_id = publisher_id
-        self.offer_id = offer_id
+        self.offer_ids = offer_ids or []
         self.auth = auth
 
         self.__cloudpartner = None
@@ -65,10 +66,22 @@ class ReleaseAzureCloudpartnerCommand(BaseCommand):
         return ret
 
     def __call__(self):
+        failed = False
+
+        for offer_id in self.offer_ids:
+            try:
+                self.golive_offer(offer_id)
+            except SystemExit:
+                failed = True
+
+        if failed:
+            sys.exit(1)
+
+    def golive_offer(self, offer_id):
+        logging.info(f'Releasing offer {offer_id} of publisher {self.publisher_id}')
         try:
-            logging.info(f'Releasing {self.publisher_id}:{self.offer_id}')
             self.cloudpartner.request(
-                f'/api/publishers/{self.publisher_id}/offers/{self.offer_id}/golive',
+                f'/api/publishers/{self.publisher_id}/offers/{offer_id}/golive',
                 method='POST',
             )
         except BaseHTTPError as e:
