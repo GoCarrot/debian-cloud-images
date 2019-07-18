@@ -110,7 +110,7 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
         super().__init__(**kw)
 
         self.publisher_id = publisher_id
-        self.offer_ids = offer_ids
+        self.offer_ids = offer_ids or []
         self.storage_id = storage_id
         self.auth = auth
         self.no_op = no_op
