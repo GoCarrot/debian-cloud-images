@@ -108,10 +108,16 @@ Uploaders typically need some variables set with credentials or targets.
 
 ### Google Compute Engine
 
- * `$CLOUD_UPLOAD_GCE_AUTH`: JSON string of service account credentials.
+ * `$GOOGLE_APPLICATION_CREDENTIALS`: File variable containing service account credentials.
  * `$CLOUD_UPLOAD_GCE_DEV_ENABLED`: Set to `1` to upload and create images during development.
- * `$CLOUD_UPLOAD_GCE_DEV_PROJECT`: Google Cloud project to create images during development.
- * `$CLOUD_UPLOAD_GCE_DEV_BUCKET`: Google Storage bucket to create temporary files during development.
+
+#### Config file example
+
+```
+[DEFAULT]
+gce-bucket = bucket
+gce-project = project
+```
 
 ### Microsoft Azure
 
