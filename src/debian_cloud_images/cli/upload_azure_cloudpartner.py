@@ -371,6 +371,9 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
 
         parser.add_argument(
             '--publisher',
+            action=argparse_ext.ConfigStoreAction,
+            config=config,
+            config_key='azure-publisher',
             dest='publisher_id',
             help='Azure publisher',
             metavar='PUBLISHER',
@@ -378,6 +381,9 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
         )
         parser.add_argument(
             '--storage',
+            action=argparse_ext.ConfigStoreAction,
+            config=config,
+            config_key='azure-storage',
             dest='storage_id',
             help='Name or ID of Azure storage',
             metavar='ID',
