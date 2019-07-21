@@ -517,11 +517,9 @@ azure upload daily:
     # Variables contains secrets!
     - >
       ./bin/debian-cloud-images upload-azure-cloudpartner
+      --config-file "${CLOUD_UPLOAD_DAILY_CONFIG}"
       --variant daily
-      ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
       ${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL:+--publish "${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL}"}
-      --publisher "${CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER}"
-      --storage "${CLOUD_UPLOAD_AZURE_DAILY_STORAGE}"
       *.build.json
   dependencies:
     - azure buster build official

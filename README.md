@@ -134,12 +134,12 @@ gce-project = project
 azure-auth = TENANT:OBJECT:SECRET
 azure-group = SUBSCRIPTION:GROUP
 azure-storage = STORAGE
+
+# For daily uploads only
+azure-publisher = debian
 ```
 
 #### Uploads for daily builds
 
- * `$CLOUD_UPLOAD_AZURE_AUTH`: Azure OAuth credentials (`TENANT:APPLICATION:SECRET`).
  * `$CLOUD_UPLOAD_AZURE_DAILY_ENABLED`: Set to `1` to upload images.
  * `$CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL`: Run publish process and send report to given e-mail address.
- * `$CLOUD_UPLOAD_AZURE_DAILY_PUBLISHER`: Azure Publisher ID.
- * `$CLOUD_UPLOAD_AZURE_DAILY_STORAGE`: Azure Storage ID or name.
