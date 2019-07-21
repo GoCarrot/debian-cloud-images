@@ -432,9 +432,7 @@ azure upload:
   script:
     - >
       ./bin/debian-cloud-images upload-azure
-      ${CLOUD_UPLOAD_AZURE_AUTH:+--auth "${CLOUD_UPLOAD_AZURE_AUTH}"}
-      --group "${CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP}"
-      ${CLOUD_UPLOAD_AZURE_DEV_STORAGE+--storage "${CLOUD_UPLOAD_AZURE_DEV_STORAGE}"}
+      --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
   dependencies:
     - azure stretch build
@@ -494,12 +492,9 @@ gce upload:
   stage: vendor upload
   image: debian:buster
   script:
-    - echo "${CLOUD_UPLOAD_GCE_AUTH}" > .auth
     - >
       ./bin/debian-cloud-images upload-gce
-      --auth .auth
-      --project "${CLOUD_UPLOAD_GCE_DEV_PROJECT}"
-      --bucket "${CLOUD_UPLOAD_GCE_DEV_BUCKET}"
+      --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
   dependencies:
     - gce stretch build

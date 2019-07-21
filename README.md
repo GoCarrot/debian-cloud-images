@@ -96,6 +96,8 @@ for a cloud image.
 
 Uploaders typically need some variables set with credentials or targets.
 
+ * `$CLOUD_UPLOAD_DEV_CONFIG`: File variable containing a config file.
+
 ### Amazon EC2
 
  * `$CLOUD_UPLOAD_EC2_DEV_ENABLED`: Set to `1` to upload and create images during development.
@@ -106,17 +108,29 @@ Uploaders typically need some variables set with credentials or targets.
 
 ### Google Compute Engine
 
- * `$CLOUD_UPLOAD_GCE_AUTH`: JSON string of service account credentials.
+ * `$GOOGLE_APPLICATION_CREDENTIALS`: File variable containing service account credentials.
  * `$CLOUD_UPLOAD_GCE_DEV_ENABLED`: Set to `1` to upload and create images during development.
- * `$CLOUD_UPLOAD_GCE_DEV_PROJECT`: Google Cloud project to create images during development.
- * `$CLOUD_UPLOAD_GCE_DEV_BUCKET`: Google Storage bucket to create temporary files during development.
+
+#### Config file example
+
+```
+[DEFAULT]
+gce-bucket = bucket
+gce-project = project
+```
 
 ### Microsoft Azure
 
- * `$CLOUD_UPLOAD_AZURE_AUTH`: Azure OAuth credentials (`TENANT:APPLICATION:SECRET`).
  * `$CLOUD_UPLOAD_AZURE_DEV_ENABLED`: Set to `1` to upload images during development.
- * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE_GROUP`: Azure Subscription and Resource group (`SUBSCRIPTION:GROUP`).
- * `$CLOUD_UPLOAD_AZURE_DEV_STORAGE`: Azure Storage ID or name.
+
+#### Config file example
+
+```
+[DEFAULT]
+azure-auth = TENANT:OBJECT:SECRET
+azure-group = SUBSCRIPTION:GROUP
+azure-storage = STORAGE
+```
 
 #### Uploads for daily builds
 
