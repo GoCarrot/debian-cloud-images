@@ -222,8 +222,10 @@ class UploadEc2Command(UploadBaseCommand):
 
         parser.add_argument(
             '--bucket',
+            action=argparse_ext.ConfigStoreAction,
+            config=config,
+            config_key='ec2-bucket',
             help='create temporary image file in this S3 bucket',
-            metavar='BUCKET',
             required=True,
         )
         parser.add_argument(
@@ -237,9 +239,13 @@ class UploadEc2Command(UploadBaseCommand):
             env='AWS_SECRET_ACCESS_KEY',
         )
         parser.add_argument(
-            '--regions',
-            action=argparse_ext.ActionCommaSeparated,
-            help='Regions to copy snapshot and image to or "all" (default: region of bucket)',
+            '--region',
+            action=argparse_ext.ConfigAppendAction,
+            config=config,
+            config_key='ec2-regions',
+            dest='regions',
+            help='Regions to copy snapshot and image to or "all"\n    (default: region of bucket)',
+            nargs='+',
         )
 
     def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], **kw):

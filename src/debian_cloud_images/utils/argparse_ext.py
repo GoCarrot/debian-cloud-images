@@ -2,12 +2,6 @@ import argparse
 import os
 
 
-class ActionCommaSeparated(argparse.Action):
-    def __call__(self, parser, namespace, value, option_string=None):
-        values = [i for i in value.split(',') if i]
-        setattr(namespace, self.dest, values)
-
-
 class ActionEnum(argparse.Action):
     def __init__(self, enum, help='', **kw):
         self.enum = enum
@@ -67,6 +61,37 @@ class ConfigStoreAction(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, values)
+
+
+class ConfigAppendAction(argparse.Action):
+    def __init__(
+        self,
+        *,
+        config,
+        config_key,
+        default=None,
+        help='',
+        required=False,
+        **kw,
+    ):
+        if default:
+            help += f'\n    (default: {default})'
+        help += f'\n    (config key: {config_key})'
+        config_default = config.get(config_key, default)
+        if config_default:
+            config_default = config_default.split(' ')
+            required = False
+        super().__init__(
+            default=config_default,
+            help=help,
+            required=required,
+            **kw,
+        )
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest, [])
+        items = items[:] + values
+        setattr(namespace, self.dest, items)
 
 
 class ConfigStoreAzureAuthAction(ConfigStoreAction):
