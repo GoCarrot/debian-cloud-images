@@ -537,6 +537,31 @@ azure upload daily:
       - '*.upload-azure-cloudpartner.json'
   allow_failure: true
 
+ec2 upload daily:
+  stage: vendor upload
+  image: debian:buster
+  script:
+    - >
+      ./bin/debian-cloud-images upload-ec2
+      --config-file "${CLOUD_UPLOAD_DAILY_CONFIG}"
+      *.build.json
+  dependencies:
+    - ec2 buster amd64 build
+    - ec2 sid amd64 build
+    - ec2 buster arm64 build
+    - ec2 sid arm64 build
+  only:
+    refs:
+      - schedules@cloud-team/debian-cloud-images
+    variables:
+      - $CLOUD_UPLOAD_EC2_DAILY_ENABLED == "1"
+  artifacts:
+    name: upload-ec2
+    expire_in: 7 days
+    paths:
+      - '*.upload-ec2.json'
+  allow_failure: true
+
 ####
 # Own upload for daily builds
 ####
