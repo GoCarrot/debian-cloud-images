@@ -458,15 +458,8 @@ ec2 upload:
   image: debian:buster
   script:
     - >
-      echo
-      debian-cloud-images upload-ec2
-      --regions "'${CLOUD_UPLOAD_EC2_DEV_REGIONS}'"
-      --bucket "'${CLOUD_UPLOAD_EC2_DEV_BUCKET}'"
-      *.build.json
-    - >
       ./bin/debian-cloud-images upload-ec2
-      --regions "${CLOUD_UPLOAD_EC2_DEV_REGIONS}"
-      --bucket "${CLOUD_UPLOAD_EC2_DEV_BUCKET}"
+      --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
   dependencies:
     - ec2 stretch amd64 build

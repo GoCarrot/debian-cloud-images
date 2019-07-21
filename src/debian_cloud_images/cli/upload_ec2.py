@@ -222,8 +222,10 @@ class UploadEc2Command(UploadBaseCommand):
 
         parser.add_argument(
             '--bucket',
+            action=argparse_ext.ConfigStoreAction,
+            config=config,
+            config_key='ec2-bucket',
             help='create temporary image file in this S3 bucket',
-            metavar='BUCKET',
             required=True,
         )
         parser.add_argument(
