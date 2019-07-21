@@ -1,5 +1,6 @@
 import argparse
 
+from .base import BaseCommand
 from .build import BuildCommand
 from .delete_azure_cloudpartner import DeleteAzureCloudpartnerCommand
 from .release_azure_cloudpartner import ReleaseAzureCloudpartnerCommand
@@ -10,21 +11,32 @@ from .upload_ec2 import UploadEc2Command
 from .upload_gce import UploadGceCommand
 
 
-parser = argparse.ArgumentParser(prog='debian-cloud-images')
-subparsers = parser.add_subparsers(help='sub-command help')
-
-BuildCommand._argparse_init_sub(subparsers)
-DeleteAzureCloudpartnerCommand._argparse_init_sub(subparsers)
-ReleaseAzureCloudpartnerCommand._argparse_init_sub(subparsers)
-UploadCommand._argparse_init_sub(subparsers)
-UploadAzureCommand._argparse_init_sub(subparsers)
-UploadAzureCloudpartnerCommand._argparse_init_sub(subparsers)
-UploadEc2Command._argparse_init_sub(subparsers)
-UploadGceCommand._argparse_init_sub(subparsers)
-
-
 def main():
-    args = parser.parse_args()
+    early_parser = argparse.ArgumentParser(
+        add_help=False,
+        allow_abbrev=False,
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    BaseCommand._argparse_register_config(early_parser)
+    early_args, remainder_argv = early_parser.parse_known_args()
+
+    config = BaseCommand._config_read(early_args.config_file)
+    parser = argparse.ArgumentParser(
+        prog='debian-cloud-images',
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    subparsers = parser.add_subparsers(help='sub-command help')
+
+    BuildCommand._argparse_init_sub(subparsers, config, early_args.config_section)
+    DeleteAzureCloudpartnerCommand._argparse_init_sub(subparsers, config, early_args.config_section)
+    ReleaseAzureCloudpartnerCommand._argparse_init_sub(subparsers, config, early_args.config_section)
+    UploadCommand._argparse_init_sub(subparsers, config, early_args.config_section)
+    UploadAzureCommand._argparse_init_sub(subparsers, config, early_args.config_section)
+    UploadAzureCloudpartnerCommand._argparse_init_sub(subparsers, config, early_args.config_section)
+    UploadEc2Command._argparse_init_sub(subparsers, config, early_args.config_section)
+    UploadGceCommand._argparse_init_sub(subparsers, config, early_args.config_section)
+
+    args = parser.parse_args(remainder_argv)
     args.cls(**vars(args))()
 
 

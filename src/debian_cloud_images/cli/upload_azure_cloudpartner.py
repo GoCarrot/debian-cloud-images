@@ -366,8 +366,8 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images for publishing via Azure Cloud Partner interface'
 
     @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
+    def _argparse_register(cls, parser, config):
+        super()._argparse_register(parser, config)
 
         parser.add_argument(
             '--publisher',
@@ -385,7 +385,8 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
         )
         parser.add_argument(
             '--auth',
-            action=argparse_ext.ActionAzureAuth,
+            action=argparse_ext.ConfigStoreAzureAuthAction,
+            config=config,
             required=True,
         )
         parser.add_argument(

@@ -259,8 +259,8 @@ class BuildCommand(BaseCommand):
     argparser_usage = '%(prog)s'
 
     @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
+    def _argparse_register(cls, parser, config):
+        super()._argparse_register(parser, config)
 
         parser.add_argument(
             'release',

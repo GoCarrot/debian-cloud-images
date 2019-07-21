@@ -49,8 +49,8 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
     argparser_help = 'delete Debian images published via Azure Cloud Partner interface'
 
     @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
+    def _argparse_register(cls, parser, config):
+        super()._argparse_register(parser, config)
 
         parser.add_argument(
             '--publisher',
@@ -87,7 +87,8 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
         )
         parser.add_argument(
             '--auth',
-            action=argparse_ext.ActionAzureAuth,
+            action=argparse_ext.ConfigStoreAzureAuthAction,
+            config=config,
             required=True,
         )
         parser.add_argument(
