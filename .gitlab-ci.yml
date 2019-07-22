@@ -366,6 +366,18 @@ ec2 sid amd64 build official:
   <<: *build-ec2-amd64-sid
   extends: .build official
 
+ec2 stretch arm64 build official:
+  <<: *build-ec2-arm64-stretch
+  extends: .build official
+
+ec2 buster arm64 build official:
+  <<: *build-ec2-arm64-buster
+  extends: .build official
+
+ec2 sid arm64 build official:
+  <<: *build-ec2-arm64-sid
+  extends: .build official
+
 gce stretch build official:
   <<: *build-gce-stretch
   extends: .build official
