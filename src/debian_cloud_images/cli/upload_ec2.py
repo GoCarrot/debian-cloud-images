@@ -20,13 +20,14 @@ class ImageUploaderEc2:
         'arm64': 'arm64',
     }
 
-    def __init__(self, output, bucket, key, secret, regions, add_tags):
+    def __init__(self, output, bucket, key, secret, regions, add_tags, permission_public):
         self.output = output
         self.bucket = bucket
         self.key = key
         self.secret = secret
         self.regions = regions
         self.add_tags = add_tags or {}
+        self.permission_public = permission_public
 
         self.__compute = self.__storage = None
 
@@ -87,6 +88,12 @@ class ImageUploaderEc2:
         finally:
             self.delete_file(image, obj)
 
+    def generate_permissions(self, name):
+        if self.permission_public:
+            return {f'{name}.Add.1.Group': 'all'}
+        else:
+            return {f'{name}.Remove.1.Group': 'all'}
+
     def generate_tags(self, image, name):
         tags = self.add_tags.copy()
         tags.update({
@@ -127,6 +134,10 @@ class ImageUploaderEc2:
             logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
             driver.ex_create_tags(ec2_image, self.generate_tags(image, name))
+            driver.ex_modify_image_attribute(
+                ec2_image,
+                self.generate_permissions('LaunchPermission'),
+            )
 
             ec2_images[driver.region_name] = ec2_image
 
@@ -148,6 +159,10 @@ class ImageUploaderEc2:
                 logging.info('Copy snapshot to %s/%s', region, snapshot.id)
 
             compute.ex_create_tags(snapshot, self.generate_tags(image, name))
+            compute.ex_modify_snapshot_attribute(
+                snapshot,
+                self.generate_permissions('CreateVolumePermission'),
+            )
 
             snapshots_creating.append(snapshot)
 
@@ -258,8 +273,13 @@ class UploadEc2Command(UploadBaseCommand):
             help='Additional tags to be set on both snapshot and AMI',
             nargs='+',
         )
+        parser.add_argument(
+            '--permission-public',
+            action='store_true',
+            help='Make snapshot and image public',
+        )
 
-    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], add_tags={}, **kw):
+    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], add_tags={}, permission_public=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderEc2(
@@ -269,6 +289,7 @@ class UploadEc2Command(UploadBaseCommand):
             secret=access_secret_key,
             regions=regions,
             add_tags=add_tags,
+            permission_public=permission_public,
         )
 
 
