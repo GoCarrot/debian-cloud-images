@@ -20,12 +20,13 @@ class ImageUploaderEc2:
         'arm64': 'arm64',
     }
 
-    def __init__(self, output, bucket, key, secret, regions):
+    def __init__(self, output, bucket, key, secret, regions, add_tags):
         self.output = output
         self.bucket = bucket
         self.key = key
         self.secret = secret
         self.regions = regions
+        self.add_tags = add_tags or {}
 
         self.__compute = self.__storage = None
 
@@ -86,6 +87,14 @@ class ImageUploaderEc2:
         finally:
             self.delete_file(image, obj)
 
+    def generate_tags(self, image, name):
+        tags = self.add_tags.copy()
+        tags.update({
+            'Name': 'AMI {}'.format(name),
+            'AMI': name,
+        })
+        return tags
+
     def create_image(self, image, name, snapshots):
         """ Create images in all regions """
 
@@ -117,10 +126,7 @@ class ImageUploaderEc2:
 
             logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
-            driver.ex_create_tags(ec2_image, {
-                'AMI': name,
-                'Project': 'images',
-            })
+            driver.ex_create_tags(ec2_image, self.generate_tags(image, name))
 
             ec2_images[driver.region_name] = ec2_image
 
@@ -141,11 +147,7 @@ class ImageUploaderEc2:
 
                 logging.info('Copy snapshot to %s/%s', region, snapshot.id)
 
-            compute.ex_create_tags(snapshot, {
-                'Name': 'AMI {}'.format(name),
-                'AMI': name,
-                'Project': 'images',
-            })
+            compute.ex_create_tags(snapshot, self.generate_tags(image, name))
 
             snapshots_creating.append(snapshot)
 
@@ -247,8 +249,17 @@ class UploadEc2Command(UploadBaseCommand):
             help='Regions to copy snapshot and image to or "all"\n    (default: region of bucket)',
             nargs='+',
         )
+        parser.add_argument(
+            '--add-tag',
+            action=argparse_ext.ConfigHashAction,
+            config=config,
+            config_key='ec2-add-tags',
+            dest='add_tags',
+            help='Additional tags to be set on both snapshot and AMI',
+            nargs='+',
+        )
 
-    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], **kw):
+    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], add_tags={}, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderEc2(
@@ -257,6 +268,7 @@ class UploadEc2Command(UploadBaseCommand):
             key=access_key_id,
             secret=access_secret_key,
             regions=regions,
+            add_tags=add_tags,
         )
 
 
