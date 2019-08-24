@@ -43,7 +43,7 @@ class TestEtc:
             return
         if shell == '/bin/sync' and name == 'sync':
             return
-        if shell in ('/sbin/nologin', '/usr/sbin/nologin'):
+        if shell in ('/sbin/nologin', '/usr/sbin/nologin', '/bin/false'):
             return
         pytest.fail('/etc/passwd includes user {} with not allowed shell {}'.format(name, shell), pytrace=False)
 
