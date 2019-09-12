@@ -128,311 +128,198 @@ test pytest latest:
   variables:
     CLOUD_IMAGE_TYPE: dev
 
-.build official:
-  extends: .build
-  only:
-    - schedules@cloud-team/debian-cloud-images
-  tags:
-    - debian-cloud-images-build
-  variables:
-    CLOUD_IMAGE_TYPE: official
-
 ####
 # Builds for developer uploads pushes
 ####
 
-azure stretch build: &build-azure-stretch
+azure stretch build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: azure
 
-azure stretch-backports build: &build-azure-stretch-backports
+azure stretch-backports build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
     CLOUD_VENDOR: azure
 
-azure buster build: &build-azure-buster
+azure buster build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: azure
 
-azure buster-backports build: &build-azure-buster-backports
+azure buster-backports build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster-backports
     CLOUD_VENDOR: azure
 
-azure sid build: &build-azure-sid
+azure sid build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: azure
 
-ec2 stretch amd64 build: &build-ec2-amd64-stretch
+ec2 stretch amd64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
-ec2 buster amd64 build: &build-ec2-amd64-buster
+ec2 buster amd64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: ec2
 
-ec2 sid amd64 build: &build-ec2-amd64-sid
+ec2 sid amd64 build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: ec2
 
-ec2 stretch arm64 build: &build-ec2-arm64-stretch
+ec2 stretch arm64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
-ec2 buster arm64 build: &build-ec2-arm64-buster
+ec2 buster arm64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: ec2
 
-ec2 sid arm64 build: &build-ec2-arm64-sid
+ec2 sid arm64 build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: ec2
 
-gce stretch build: &build-gce-stretch
+gce stretch build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: gce
 
-gce buster build: &build-gce-buster
+gce buster build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: gce
 
-gce sid build: &build-gce-sid
+gce sid build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: gce
 
-generic buster amd64 build: &build-generic-buster-amd64
+generic buster amd64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: generic
 
-generic sid amd64 build: &build-generic-sid-amd64
+generic sid amd64 build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
-generic buster arm64 build: &build-generic-buster-arm64
+generic buster arm64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: generic
 
-generic sid arm64 build: &build-generic-sid-arm64
+generic sid arm64 build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
-generic buster ppc64el build: &build-generic-buster-ppc64el
+generic buster ppc64el build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: generic
 
-generic sid ppc64el build: &build-generic-sid-ppc64el
+generic sid ppc64el build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
-genericcloud buster amd64 build: &build-genericcloud-buster-amd64
+genericcloud buster amd64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: genericcloud
 
-genericcloud sid amd64 build: &build-genericcloud-sid-amd64
+genericcloud sid amd64 build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: genericcloud
 
-nocloud stretch amd64 build: &build-nocloud-stretch-amd64
+nocloud stretch amd64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: nocloud
 
-nocloud buster amd64 build: &build-nocloud-buster-amd64
+nocloud buster amd64 build:
   extends: .build dev manual
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: nocloud
 
-nocloud sid amd64 build: &build-nocloud-sid-amd64
+nocloud sid amd64 build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
-nocloud sid arm64 build: &build-nocloud-sid-arm64
+nocloud sid arm64 build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
-nocloud sid ppc64el build: &build-nocloud-sid-ppc64el
+nocloud sid ppc64el build:
   extends: .build dev pushes
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
-
-####
-# Official builds done on Debian hardware
-####
-
-azure stretch build official:
-  <<: *build-azure-stretch
-  extends: .build official
-
-azure stretch-backports build official:
-  <<: *build-azure-stretch-backports
-  extends: .build official
-
-azure buster build official:
-  <<: *build-azure-buster
-  extends: .build official
-
-azure buster-backports build official:
-  <<: *build-azure-buster-backports
-  extends: .build official
-
-azure sid build official:
-  <<: *build-azure-sid
-  extends: .build official
-
-ec2 stretch amd64 build official:
-  <<: *build-ec2-amd64-stretch
-  extends: .build official
-
-ec2 buster amd64 build official:
-  <<: *build-ec2-amd64-buster
-  extends: .build official
-
-ec2 sid amd64 build official:
-  <<: *build-ec2-amd64-sid
-  extends: .build official
-
-ec2 stretch arm64 build official:
-  <<: *build-ec2-arm64-stretch
-  extends: .build official
-
-ec2 buster arm64 build official:
-  <<: *build-ec2-arm64-buster
-  extends: .build official
-
-ec2 sid arm64 build official:
-  <<: *build-ec2-arm64-sid
-  extends: .build official
-
-gce stretch build official:
-  <<: *build-gce-stretch
-  extends: .build official
-
-gce buster build official:
-  <<: *build-gce-buster
-  extends: .build official
-
-gce sid build official:
-  <<: *build-gce-sid
-  extends: .build official
-
-generic buster amd64 build official:
-  <<: *build-generic-buster-amd64
-  extends: .build official
-
-generic sid amd64 build official:
-  <<: *build-generic-sid-amd64
-  extends: .build official
-
-generic buster arm64 build official:
-  <<: *build-generic-buster-arm64
-  extends: .build official
-
-generic sid arm64 build official:
-  <<: *build-generic-sid-arm64
-  extends: .build official
-
-generic buster ppc64el build official:
-  <<: *build-generic-buster-ppc64el
-  extends: .build official
-
-generic sid ppc64el build official:
-  <<: *build-generic-sid-ppc64el
-  extends: .build official
-
-genericcloud buster amd64 build official:
-  <<: *build-genericcloud-buster-amd64
-  extends: .build official
-
-genericcloud sid amd64 build official:
-  <<: *build-genericcloud-sid-amd64
-  extends: .build official
-
-nocloud stretch amd64 build official:
-  <<: *build-nocloud-stretch-amd64
-  extends: .build official
-
-nocloud buster amd64 build official:
-  <<: *build-nocloud-buster-amd64
-  extends: .build official
-
-nocloud sid amd64 build official:
-  <<: *build-nocloud-sid-amd64
-  extends: .build official
 
 ####
 # Provider uploads for developer pushs
@@ -516,96 +403,4 @@ gce upload:
     expire_in: 7 days
     paths:
       - '*.upload-gce.json'
-  allow_failure: true
-
-####
-# Provider uploads for daily builds
-####
-
-azure upload daily:
-  stage: vendor upload
-  image: debian:buster
-  script:
-    # Variables contains secrets!
-    - >
-      ./bin/debian-cloud-images upload-azure-cloudpartner
-      --config-file "${CLOUD_UPLOAD_DAILY_CONFIG}"
-      --variant daily
-      ${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL:+--publish "${CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL}"}
-      *.build.json
-  dependencies:
-    - azure buster build official
-    - azure buster-backports build official
-    - azure sid build official
-  only:
-    refs:
-      - schedules@cloud-team/debian-cloud-images
-    variables:
-      - $CLOUD_UPLOAD_AZURE_DAILY_ENABLED == "1"
-  artifacts:
-    name: upload-azure
-    expire_in: 7 days
-    paths:
-      - '*.upload-azure-cloudpartner.json'
-  allow_failure: true
-
-ec2 upload daily:
-  stage: vendor upload
-  image: debian:buster
-  script:
-    - >
-      ./bin/debian-cloud-images upload-ec2
-      --config-file "${CLOUD_UPLOAD_DAILY_CONFIG}"
-      *.build.json
-  dependencies:
-    - ec2 buster amd64 build official
-    - ec2 sid amd64 build official
-    - ec2 buster arm64 build official
-    - ec2 sid arm64 build official
-  only:
-    refs:
-      - schedules@cloud-team/debian-cloud-images
-    variables:
-      - $CLOUD_UPLOAD_EC2_DAILY_ENABLED == "1"
-  artifacts:
-    name: upload-ec2
-    expire_in: 7 days
-    paths:
-      - '*.upload-ec2.json'
-  allow_failure: true
-
-####
-# Own upload for daily builds
-####
-
-upload daily:
-  stage: upload
-  image: debian:buster
-  script:
-    - apt-get install --no-install-recommends -y sshfs
-    - chmod 600 ${CLOUD_UPLOAD_DAILY_SSH_KEY}
-    - >
-      sshfs
-      -o IdentityFile=${CLOUD_UPLOAD_DAILY_SSH_KEY}
-      -o VerifyHostKeyDNS=yes
-      "${CLOUD_UPLOAD_DAILY_SSH_REMOTE}"
-      /mnt
-    - >
-      ./bin/debian-cloud-images upload
-      --variant daily
-      --provider cloud.debian.org
-      --storage /mnt
-      *.json
-  only:
-    refs:
-      - schedules@cloud-team/debian-cloud-images
-    variables:
-      - $CLOUD_UPLOAD_DAILY_ENABLED == "1"
-  tags:
-    - debian-cloud-images-upload
-  artifacts:
-    name: upload
-    expire_in: 7 days
-    paths:
-      - '*.upload.json'
   allow_failure: true
