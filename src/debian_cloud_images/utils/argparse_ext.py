@@ -153,6 +153,6 @@ class ConfigStoreAzureAuthAction(ConfigStoreAction):
 
     def create(self, value):
         try:
-            return self.AzureAuth(*value.split(':'))
+            return self.AzureAuth(*value.split(':', 2))
         except TypeError:
             raise argparse.ArgumentError(self, 'invalid value')
