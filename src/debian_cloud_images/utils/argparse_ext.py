@@ -144,13 +144,15 @@ class ConfigStoreAzureAuthAction(ConfigStoreAction):
             self.client_id = client_id
             self.client_secret = client_secret
 
-        @classmethod
-        def create(cls, value):
-            return cls(*value.split(':'))
-
     def __init__(self, **kw):
         kw.setdefault('config_key', 'azure-auth')
         kw.setdefault('help', 'Authentication info for Azure AD service principal')
         kw.setdefault('metavar', 'TENANT:APPLICATION:SECRET')
-        kw.setdefault('type', self.AzureAuth.create)
+        kw.setdefault('type', self.create)
         super().__init__(**kw)
+
+    def create(self, value):
+        try:
+            return self.AzureAuth(*value.split(':'))
+        except TypeError:
+            raise argparse.ArgumentError(self, 'invalid value')
