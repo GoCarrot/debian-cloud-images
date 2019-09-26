@@ -1,0 +1,6 @@
+deb {%apt_cdn%}/debian bullseye main
+deb-src {%apt_cdn%}/debian bullseye main
+deb {%security_cdn%}/debian-security bullseye-security main
+deb-src {%security_cdn%}/debian-security bullseye-security main
+deb {%apt_cdn%}/debian bullseye-updates main
+deb-src {%apt_cdn%}/debian bullseye-updates main
