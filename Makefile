@@ -3,7 +3,7 @@
 help:
 	@echo "To run this makefile, run:"
 	@echo "   make <DIST>-image-<CLOUD>"
-	@echo "  WHERE <DIST> is buster, stretch or sid"
+	@echo "  WHERE <DIST> is bullseye, buster, stretch or sid"
 	@echo "    And <CLOUD> is azure, ec2, gce, openstack, nocloud"
 
 _image.raw:
@@ -12,6 +12,9 @@ _image.raw:
 
 sid-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=sid
+
+bullseye-image-%:
+	${MAKE} _image.raw CLOUD=$* DIST=bullseye
 
 buster-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=buster

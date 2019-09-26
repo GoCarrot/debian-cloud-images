@@ -99,6 +99,12 @@ ReleaseEnum = enum.Enum(
             'fai_classes': ('BUSTER', 'BACKPORTS', 'BACKPORTS_LINUX'),
             'supports_linux_image_cloud': True,
         },
+        'bullseye': {
+            'id': '11',
+            'baseid': '11',
+            'fai_classes': ('BULLSEYE', 'BACKPORTS'),
+            'supports_linux_image_cloud': True,
+        },
         'sid': {
             'id': 'sid',
             'baseid': 'sid',
