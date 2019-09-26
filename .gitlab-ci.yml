@@ -145,6 +145,7 @@ azure stretch-backports build:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
     CLOUD_VENDOR: azure
+  allow_failure: true
 
 azure buster build:
   extends: .build dev manual
@@ -159,6 +160,7 @@ azure buster-backports build:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster-backports
     CLOUD_VENDOR: azure
+  allow_failure: true
 
 azure sid build:
   extends: .build dev pushes
