@@ -68,7 +68,7 @@ class ImageUploaderEc2:
         try:
             ec2_snapshot = self.import_snapshot(image, name, obj)
             ec2_snapshots = self.copy_snapshot(image, name, ec2_snapshot)
-            ec2_images = self.create_image(image, name, ec2_snapshots)
+            ec2_images = self.create_image(image, public_info, ec2_snapshots)
 
             manifests = []
             for region, ec2_image in ec2_images.items():
@@ -102,7 +102,7 @@ class ImageUploaderEc2:
         })
         return tags
 
-    def create_image(self, image, name, snapshots):
+    def create_image(self, image, public_info, snapshots):
         """ Create images in all regions """
 
         ec2_images = {}
@@ -121,8 +121,8 @@ class ImageUploaderEc2:
             architecture = self.architecture_map[image.build_arch]
 
             ec2_image = driver.ex_register_image(
-                name=name,
-                description='Test',
+                name=public_info.vendor_name,
+                description=public_info.vendor_description,
                 architecture=architecture,
                 block_device_mapping=mapping,
                 root_device_name='/dev/xvda',
@@ -133,7 +133,7 @@ class ImageUploaderEc2:
 
             logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
-            driver.ex_create_tags(ec2_image, self.generate_tags(image, name))
+            driver.ex_create_tags(ec2_image, self.generate_tags(image, public_info.vendor_name))
             driver.ex_modify_image_attribute(
                 ec2_image,
                 self.generate_permissions('LaunchPermission'),
