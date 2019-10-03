@@ -143,7 +143,7 @@ class ImageUploaderEc2:
 
         return ec2_images
 
-    def copy_snapshot(self, image, name, snapshot_base):
+    def copy_snapshot(self, image, public_info, snapshot_base):
         """ Copy snapshot to other regions """
 
         region_base = snapshot_base.driver.region_name
@@ -154,11 +154,14 @@ class ImageUploaderEc2:
             if region == region_base:
                 snapshot = snapshot_base
             else:
-                snapshot = compute.ex_copy_snapshot(snapshot_base)
+                snapshot = compute.ex_copy_snapshot(
+                    snapshot_base,
+                    public_info.vendor_description,
+                )
 
                 logging.info('Copy snapshot to %s/%s', region, snapshot.id)
 
-            compute.ex_create_tags(snapshot, self.generate_tags(image, name))
+            compute.ex_create_tags(snapshot, self.generate_tags(image, public_info.vendor_name))
             compute.ex_modify_snapshot_attribute(
                 snapshot,
                 self.generate_permissions('CreateVolumePermission'),
@@ -188,7 +191,7 @@ class ImageUploaderEc2:
 
         return snapshots_available
 
-    def import_snapshot(self, image, name, obj):
+    def import_snapshot(self, image, public_info, obj):
         """ Import file as snapshot in same region as bucket """
 
         region_name = obj.driver.region_name
@@ -197,7 +200,7 @@ class ImageUploaderEc2:
 
         return self.compute[region_name].ex_import_snapshot(
             disk_container=[{
-                'Description': 'Description',
+                'Description': public_info.vendor_description,
                 'Format': 'VMDK',
                 'UserBucket': {
                     'S3Bucket': self.bucket,
