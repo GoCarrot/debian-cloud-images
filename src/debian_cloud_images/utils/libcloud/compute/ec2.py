@@ -28,9 +28,10 @@ class ExEC2NodeDriver(BaseEC2NodeDriver):
         endpoint = element.find(fixxpath('regionEndpoint', namespace=NAMESPACE)).text
         return ExEC2Region(name, endpoint)
 
-    def ex_copy_snapshot(self, snapshot):
+    def ex_copy_snapshot(self, snapshot, description):
         params = {
             'Action': 'CopySnapshot',
+            'Description': description,
             'SourceRegion': snapshot.driver.region_name,
             'SourceSnapshotId': snapshot.id,
         }

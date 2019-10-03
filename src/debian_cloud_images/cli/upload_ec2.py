@@ -66,9 +66,9 @@ class ImageUploaderEc2:
         obj = self.upload_file(image, name)
 
         try:
-            ec2_snapshot = self.import_snapshot(image, name, obj)
-            ec2_snapshots = self.copy_snapshot(image, name, ec2_snapshot)
-            ec2_images = self.create_image(image, name, ec2_snapshots)
+            ec2_snapshot = self.import_snapshot(image, public_info, obj)
+            ec2_snapshots = self.copy_snapshot(image, public_info, ec2_snapshot)
+            ec2_images = self.create_image(image, public_info, ec2_snapshots)
 
             manifests = []
             for region, ec2_image in ec2_images.items():
@@ -94,15 +94,17 @@ class ImageUploaderEc2:
         else:
             return {f'{name}.Remove.1.Group': 'all'}
 
-    def generate_tags(self, image, name):
+    def generate_tags(self, image, public_info):
         tags = self.add_tags.copy()
         tags.update({
-            'Name': 'AMI {}'.format(name),
-            'AMI': name,
+            'Name': 'AMI {}'.format(public_info.vendor_name),
+            'AMI': public_info.vendor_name,
+            'ImageFamily': public_info.vendor_family,
+            'ImageVersion': image.build_info['version'],
         })
         return tags
 
-    def create_image(self, image, name, snapshots):
+    def create_image(self, image, public_info, snapshots):
         """ Create images in all regions """
 
         ec2_images = {}
@@ -121,8 +123,8 @@ class ImageUploaderEc2:
             architecture = self.architecture_map[image.build_arch]
 
             ec2_image = driver.ex_register_image(
-                name=name,
-                description='Test',
+                name=public_info.vendor_name,
+                description=public_info.vendor_description,
                 architecture=architecture,
                 block_device_mapping=mapping,
                 root_device_name='/dev/xvda',
@@ -133,7 +135,7 @@ class ImageUploaderEc2:
 
             logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
-            driver.ex_create_tags(ec2_image, self.generate_tags(image, name))
+            driver.ex_create_tags(ec2_image, self.generate_tags(image, public_info))
             driver.ex_modify_image_attribute(
                 ec2_image,
                 self.generate_permissions('LaunchPermission'),
@@ -143,7 +145,7 @@ class ImageUploaderEc2:
 
         return ec2_images
 
-    def copy_snapshot(self, image, name, snapshot_base):
+    def copy_snapshot(self, image, public_info, snapshot_base):
         """ Copy snapshot to other regions """
 
         region_base = snapshot_base.driver.region_name
@@ -154,11 +156,14 @@ class ImageUploaderEc2:
             if region == region_base:
                 snapshot = snapshot_base
             else:
-                snapshot = compute.ex_copy_snapshot(snapshot_base)
+                snapshot = compute.ex_copy_snapshot(
+                    snapshot_base,
+                    public_info.vendor_description,
+                )
 
                 logging.info('Copy snapshot to %s/%s', region, snapshot.id)
 
-            compute.ex_create_tags(snapshot, self.generate_tags(image, name))
+            compute.ex_create_tags(snapshot, self.generate_tags(image, public_info))
             compute.ex_modify_snapshot_attribute(
                 snapshot,
                 self.generate_permissions('CreateVolumePermission'),
@@ -188,7 +193,7 @@ class ImageUploaderEc2:
 
         return snapshots_available
 
-    def import_snapshot(self, image, name, obj):
+    def import_snapshot(self, image, public_info, obj):
         """ Import file as snapshot in same region as bucket """
 
         region_name = obj.driver.region_name
@@ -196,8 +201,9 @@ class ImageUploaderEc2:
         logging.info('Import snapshot to region %s', region_name)
 
         return self.compute[region_name].ex_import_snapshot(
+            description=public_info.vendor_description,
             disk_container=[{
-                'Description': 'Description',
+                'Description': 'root',
                 'Format': 'VMDK',
                 'UserBucket': {
                     'S3Bucket': self.bucket,
