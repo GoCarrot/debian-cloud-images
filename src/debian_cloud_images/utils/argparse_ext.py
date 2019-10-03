@@ -69,7 +69,7 @@ class ConfigAppendAction(argparse.Action):
         *,
         config,
         config_key,
-        default=None,
+        default=[],
         help='',
         required=False,
         **kw,
