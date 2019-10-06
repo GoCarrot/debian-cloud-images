@@ -23,11 +23,12 @@ class AzureResourceGroup:
 
 
 class ImageUploaderAzure:
-    def __init__(self, output, storage_group, storage_id, image_group, auth):
+    def __init__(self, output, storage_group, storage_id, image_group, generation, auth):
         self.output = output
         self.storage_group = storage_group
         self.storage_id = storage_id
         self.image_group = image_group
+        self.generation = generation
         self.auth = auth
 
         self.__compute_driver = self.__storage = self.__storage_driver = None
@@ -111,6 +112,7 @@ class ImageUploaderAzure:
             ex_resource_group=self.image_group.resource_group,
             location=image_location,
             ex_blob=image_url,
+            ex_generation=self.generation,
         )
 
     def delete_container(self, container):
@@ -204,13 +206,20 @@ class UploadAzureCommand(UploadBaseCommand):
             required=True,
         )
         parser.add_argument(
+            '--generation',
+            choices=(1, 2),
+            default=1,
+            help='Generation of VM (1 is legacy, 2 is UEFI and modern emulation)',
+            type=int,
+        )
+        parser.add_argument(
             '--auth',
             action=argparse_ext.ConfigStoreAzureAuthAction,
             config=config,
             required=True,
         )
 
-    def __init__(self, *, group=None, storage_id=None, auth=None, **kw):
+    def __init__(self, *, group=None, storage_id=None, generation=None, auth=None, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
@@ -218,6 +227,7 @@ class UploadAzureCommand(UploadBaseCommand):
             storage_group=group,
             storage_id=storage_id,
             image_group=group,
+            generation=generation,
             auth=auth,
         )
 
