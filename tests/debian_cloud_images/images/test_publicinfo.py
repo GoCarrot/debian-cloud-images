@@ -52,9 +52,9 @@ def test_ImagePublicInfo_field_gce():
     }
 
     p = ImagePublicInfo().apply(info)
+    assert len(p.vendor_name63) == len_max
     assert len(p.vendor_gce_family) == len_max
-    assert len(p.vendor_gce_name) == len_max
-    assert p.vendor_gce_name[-len_version:] == 'v' * len_version
+    assert p.vendor_name63[-len_version:] == 'v' * len_version
 
 
 def test_ImagePublicInfo_field_override():

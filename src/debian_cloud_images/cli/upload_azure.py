@@ -68,7 +68,7 @@ class ImageUploaderAzure:
         return ret
 
     def __call__(self, image, public_info):
-        image_name = public_info.vendor_name
+        image_name = public_info.vendor_name63
         image_file = '{}/disk.vhd'.format(image_name)
         image_url = 'https://{}/{}'.format(self.storage.connection.host, image_file)
 

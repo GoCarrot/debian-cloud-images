@@ -38,7 +38,15 @@ class ImagePublicInfo:
 
         @property
         def vendor_name(self):
+            " Return vendor name "
             return '{}-{}'.format(self.vendor_family, self.__info['version'])
+
+        @property
+        def vendor_name63(self):
+            " Return vendor name limited to 63 characters "
+            version = self.__info['version']
+            family = self.vendor_family[:63 - 1 - len(version)]
+            return f'{family}-{version}'
 
         @property
         def vendor_azure_family(self):
@@ -49,13 +57,6 @@ class ImagePublicInfo:
         def vendor_gce_family(self):
             " Return vendor family limited to 63 characters for GCE "
             return self.vendor_family[:63]
-
-        @property
-        def vendor_gce_name(self):
-            " Return vendor name limited to 63 characters for GCE "
-            version = self.__info['version']
-            family = self.vendor_gce_family[:63 - 1 - len(version)]
-            return '{}-{}'.format(family, version)
 
     def __init__(
         self,
