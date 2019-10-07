@@ -25,7 +25,7 @@ class ExAzureNodeDriver(AzureNodeDriver):
         })
         return ret
 
-    def ex_create_computeimage(self, name, ex_resource_group, location, ex_blob, wait_for_completion=True):
+    def ex_create_computeimage(self, name, ex_resource_group, location, ex_blob, ex_generation=1, wait_for_completion=True):
         action = '/subscriptions/{}/resourceGroups/{}/providers/Microsoft.Compute/images/{}'.format(
             self.subscription_id,
             ex_resource_group,
@@ -35,6 +35,7 @@ class ExAzureNodeDriver(AzureNodeDriver):
         data = {
             'location': location,
             'properties': {
+                'hyperVGeneration': f'V{ex_generation}',
                 'storageProfile': {
                     'osDisk': {
                         'osType': 'Linux',
@@ -45,7 +46,7 @@ class ExAzureNodeDriver(AzureNodeDriver):
             }
         }
 
-        self.connection.request(action, data=data, method='PUT', params={'api-version': '2018-06-01'})
+        self.connection.request(action, data=data, method='PUT', params={'api-version': '2019-03-01'})
 
         if wait_for_completion:
             self._wait_create_computeimage(action)

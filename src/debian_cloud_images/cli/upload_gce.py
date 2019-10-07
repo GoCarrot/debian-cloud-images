@@ -54,7 +54,7 @@ class ImageUploaderGce:
 
     def __call__(self, image, public_info):
         gce_family = public_info.vendor_gce_family
-        gce_name = public_info.vendor_gce_name
+        gce_name = public_info.vendor_name63
 
         gce_family_url = f'projects/{self.project}/global/images/family/{gce_family}'
         gce_name_url = f'projects/{self.project}/global/images/{gce_name}'

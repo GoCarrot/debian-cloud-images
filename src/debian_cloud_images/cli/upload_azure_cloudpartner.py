@@ -356,6 +356,17 @@ class ImageUploaderAzureCloudpartner:
             'osVhdUrl': str(image_url_sas),
         }
 
+        for generation in plan.get('diskGenerations', []):
+            generation_id = generation['planId']
+            logging.info('Inserting image %s (%s) for release %s generation %s', image.name, azure_version, release_id, generation_id)
+            generation_images = generation['microsoft-azure-corevm.vmImagesPublicAzure']
+            generation_images[azure_version] = {
+                'description': image_description,
+                'label': image_family,
+                'mediaName': f'{image_name}-{generation_id}',
+                'osVhdUrl': str(image_url_sas),
+            }
+
         logging.info('Saving offer %s/%s', offer.publisher_id, offer.offer_id)
         offer.save()
         return True
