@@ -3,6 +3,7 @@
 rm -f $target/etc/resolv.conf \
       $target/etc/mailname \
       $target/etc/machine-id \
+      $target/etc/apt/sources.list.d/localdebs.list \
       $target/usr/bin/qemu-*-static \
       $target/var/lib/dbus/machine-id \
       $target/var/log/alternatives.log \
