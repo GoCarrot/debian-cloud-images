@@ -34,17 +34,16 @@ This will create some log output and the following files:
 Example 2:
 
 ```
-    # make buster-image-openstack
+    # make buster-image-genericcloud
 ```
 
-- openstack-buster-image.build.json
-- openstack-buster-image.info
-- openstack-buster-image.qcow2
-- openstack-buster-image.qcow2.tar
-- openstack-buster-image.raw
+- genericcloud-buster-image.build.json
+- genericcloud-buster-image.info
+- genericcloud-buster-image.raw
+- genericcloud-buster-image.tar
 
 These images can be used with QEMU-KVM, Virtualbox or any other virtualization
-backend that support raw disk or qcow2 images.
+backend that support raw disk images.
 
 You can login as root on the VM console without a password (but not over
 SSH), and there are no other users. You can add new users using `adduser` as
@@ -54,7 +53,7 @@ After the disk image is created you can try it with kvm, and wait 5s for the
 boot sequence to start:
 
 ```
-    # kvm -m1000 -hda openstack-image-buster.raw
+    # kvm -nic user,model=virtio -m1000 -hda genericcloud-buster-image.raw
 ```
 
 ## Supported image types
