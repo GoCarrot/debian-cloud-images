@@ -79,30 +79,30 @@ ReleaseEnum = enum.Enum(
         'stretch': {
             'id': '9',
             'baseid': '9',
-            'fai_classes': ('STRETCH', 'BACKPORTS'),
+            'fai_classes': ('STRETCH', ),
         },
         'stretch-backports': {
             'id': '9-backports',
             'baseid': '9',
-            'fai_classes': ('STRETCH', 'BACKPORTS', 'BACKPORTS_LINUX'),
+            'fai_classes': ('STRETCH', 'BACKPORTS_LINUX'),
             'supports_linux_image_cloud': True,
         },
         'buster': {
             'id': '10',
             'baseid': '10',
-            'fai_classes': ('BUSTER', 'BACKPORTS', 'EXTRAS'),
+            'fai_classes': ('BUSTER', 'EXTRAS'),
             'supports_linux_image_cloud': True,
         },
         'buster-backports': {
             'id': '10-backports',
             'baseid': '10',
-            'fai_classes': ('BUSTER', 'BACKPORTS', 'BACKPORTS_LINUX', 'EXTRAS'),
+            'fai_classes': ('BUSTER', 'BACKPORTS_LINUX', 'EXTRAS'),
             'supports_linux_image_cloud': True,
         },
         'bullseye': {
             'id': '11',
             'baseid': '11',
-            'fai_classes': ('BULLSEYE', 'BACKPORTS'),
+            'fai_classes': ('BULLSEYE', ),
             'supports_linux_image_cloud': True,
         },
         'sid': {
