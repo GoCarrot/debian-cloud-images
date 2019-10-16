@@ -4,3 +4,5 @@ deb {%security_cdn%}/debian-security buster/updates main
 deb-src {%security_cdn%}/debian-security buster/updates main
 deb {%apt_cdn%}/debian buster-updates main
 deb-src {%apt_cdn%}/debian buster-updates main
+deb {%apt_cdn%}/debian {%release%}-backports main
+deb-src {%apt_cdn%}/debian {%release%}-backports main
