@@ -26,6 +26,10 @@ class TestEtc:
             'messagebus',
             # From package openssh-server
             'sshd',
+            # From package tcpdump
+            'tcpdump'
+            # From package uuid-runtime
+            'uuid',
         ):
             return
         if name.startswith('_') or name.startswith('systemd-'):
