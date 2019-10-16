@@ -3,14 +3,13 @@
 # machine or cloud instance.
 
 PACKAGES install
-locales-all
 apt-listchanges
 bash-completion
 bind9-host
 less
 man-db
 manpages
-netcat-openbsd
+socat
 pciutils
 reportbug
 traceroute
@@ -23,4 +22,3 @@ ethtool
 uuid-runtime
 screen
 xz-utils
-less
