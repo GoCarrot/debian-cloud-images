@@ -90,13 +90,13 @@ ReleaseEnum = enum.Enum(
         'buster': {
             'id': '10',
             'baseid': '10',
-            'fai_classes': ('BUSTER', 'BACKPORTS'),
+            'fai_classes': ('BUSTER', 'BACKPORTS', 'EXTRAS'),
             'supports_linux_image_cloud': True,
         },
         'buster-backports': {
             'id': '10-backports',
             'baseid': '10',
-            'fai_classes': ('BUSTER', 'BACKPORTS', 'BACKPORTS_LINUX'),
+            'fai_classes': ('BUSTER', 'BACKPORTS', 'BACKPORTS_LINUX', 'EXTRAS'),
             'supports_linux_image_cloud': True,
         },
         'bullseye': {
@@ -108,7 +108,7 @@ ReleaseEnum = enum.Enum(
         'sid': {
             'id': 'sid',
             'baseid': 'sid',
-            'fai_classes': ('SID', ),
+            'fai_classes': ('SID', 'EXTRAS'),
             'supports_linux_image_cloud': True,
         },
     },
