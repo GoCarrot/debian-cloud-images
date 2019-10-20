@@ -182,14 +182,11 @@ class UploadAzureCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images to Azure'
 
     @classmethod
-    def _argparse_register(cls, parser, config):
-        super()._argparse_register(parser, config)
+    def _argparse_register(cls, parser):
+        super()._argparse_register(parser)
 
         parser.add_argument(
             '--group',
-            action=argparse_ext.ConfigStoreAction,
-            config=config,
-            config_key='azure-group',
             help='Azure Subscription and Resource group',
             metavar='SUBSCRIPTION:GROUP',
             required=True,
@@ -197,9 +194,6 @@ class UploadAzureCommand(UploadBaseCommand):
         )
         parser.add_argument(
             '--storage',
-            action=argparse_ext.ConfigStoreAction,
-            config=config,
-            config_key='azure-storage',
             dest='storage_id',
             help='Name or ID of Azure storage',
             metavar='ID',
@@ -214,8 +208,7 @@ class UploadAzureCommand(UploadBaseCommand):
         )
         parser.add_argument(
             '--auth',
-            action=argparse_ext.ConfigStoreAzureAuthAction,
-            config=config,
+            action=argparse_ext.StoreAzureAuthAction,
             required=True,
         )
 

@@ -151,23 +151,17 @@ class UploadGceCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images to GCE'
 
     @classmethod
-    def _argparse_register(cls, parser, config):
-        super()._argparse_register(parser, config)
+    def _argparse_register(cls, parser):
+        super()._argparse_register(parser)
 
         parser.add_argument(
             '--project',
-            action=argparse_ext.ConfigStoreAction,
-            config=config,
-            config_key='gce-project',
             help='create images in this Google Cloud project',
             metavar='PROJECT',
             required=True,
         )
         parser.add_argument(
             '--bucket',
-            action=argparse_ext.ConfigStoreAction,
-            config=config,
-            config_key='gce-bucket',
             help='create temporary image file in this Google Storage bucket',
             metavar='BUCKET',
             required=True,

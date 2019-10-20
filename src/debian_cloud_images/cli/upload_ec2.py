@@ -240,14 +240,11 @@ class UploadEc2Command(UploadBaseCommand):
     argparser_help = 'upload Debian images to Amazon EC2'
 
     @classmethod
-    def _argparse_register(cls, parser, config):
-        super()._argparse_register(parser, config)
+    def _argparse_register(cls, parser):
+        super()._argparse_register(parser)
 
         parser.add_argument(
             '--bucket',
-            action=argparse_ext.ConfigStoreAction,
-            config=config,
-            config_key='ec2-bucket',
             help='create temporary image file in this S3 bucket',
             required=True,
         )
@@ -263,18 +260,12 @@ class UploadEc2Command(UploadBaseCommand):
         )
         parser.add_argument(
             '--region',
-            action=argparse_ext.ConfigAppendAction,
-            config=config,
-            config_key='ec2-regions',
             dest='regions',
             help='Regions to copy snapshot and image to or "all"\n    (default: region of bucket)',
             nargs='+',
         )
         parser.add_argument(
             '--add-tag',
-            action=argparse_ext.ConfigHashAction,
-            config=config,
-            config_key='ec2-add-tags',
             dest='add_tags',
             help='Additional tags to be set on both snapshot and AMI',
             nargs='+',
