@@ -21,7 +21,7 @@ You also need python3-libcloud from Buster or newer.
 Example 1:
 
 ```
-   # make stretch-image-nocloud
+   # make image-stretch-nocloud
 ```
 
 This will create some log output and the following files:
@@ -34,7 +34,7 @@ This will create some log output and the following files:
 Example 2:
 
 ```
-    # make buster-image-genericcloud
+    # make image-buster-genericcloud
 ```
 
 - image-genericcloud-buster.build.json

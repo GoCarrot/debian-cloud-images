@@ -4,7 +4,7 @@ DESTDIR = .
 
 help:
 	@echo "To run this makefile, run:"
-	@echo "   make <DIST>-image-<CLOUD>"
+	@echo "   make image-<DIST>-<CLOUD>"
 	@echo "  WHERE <DIST> is bullseye, buster, stretch or sid"
 	@echo "    And <CLOUD> is azure, ec2, gce, generic, genericcloud, nocloud"
 	@echo "Set DESTDIR= to write images to given directory."
@@ -19,16 +19,16 @@ _image.raw:
 	  --output $(DESTDIR) \
 	  --override-name image-$(CLOUD)-$(DIST)
 
-sid-image-%:
+image-sid-%:
 	${MAKE} _image.raw CLOUD=$* DIST=sid
 
-bullseye-image-%:
+image-bullseye-%:
 	${MAKE} _image.raw CLOUD=$* DIST=bullseye
 
-buster-image-%:
+image-buster-%:
 	${MAKE} _image.raw CLOUD=$* DIST=buster
 
-stretch-image-%:
+image-stretch-%:
 	${MAKE} _image.raw CLOUD=$* DIST=stretch
 
 clean:
