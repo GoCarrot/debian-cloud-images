@@ -17,7 +17,7 @@ _image.raw:
 	  --version 0 \
 	  --localdebs \
 	  --output $(DESTDIR) \
-	  --override-name $(CLOUD)-$(DIST)-image
+	  --override-name image-$(CLOUD)-$(DIST)
 
 sid-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=sid

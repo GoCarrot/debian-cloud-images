@@ -26,10 +26,10 @@ Example 1:
 
 This will create some log output and the following files:
 
-- nocloud-stretch-image.build.json
-- nocloud-stretch-image.info
-- nocloud-stretch-image.raw
-- nocloud-stretch-image.raw.tar
+- image-nocloud-stretch.build.json
+- image-nocloud-stretch.info
+- image-nocloud-stretch.raw
+- image-nocloud-stretch.raw.tar
 
 Example 2:
 
@@ -37,10 +37,10 @@ Example 2:
     # make buster-image-genericcloud
 ```
 
-- genericcloud-buster-image.build.json
-- genericcloud-buster-image.info
-- genericcloud-buster-image.raw
-- genericcloud-buster-image.tar
+- image-genericcloud-buster.build.json
+- image-genericcloud-buster.info
+- image-genericcloud-buster.raw
+- image-genericcloud-buster.tar
 
 These images can be used with QEMU-KVM, Virtualbox or any other virtualization
 backend that support raw disk images.
