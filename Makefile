@@ -15,7 +15,7 @@ image-%:
 	sudo ./bin/debian-cloud-images build \
 	  $(subst -, ,$*) \
 	  --build-id manual \
-	  --version 0 \
+	  --version $(shell date '+%Y%m%d%H%M') \
 	  --localdebs \
 	  --output $(DESTDIR) \
 	  --override-name image-$*
