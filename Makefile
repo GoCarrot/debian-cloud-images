@@ -31,7 +31,5 @@ buster-image-%:
 stretch-image-%:
 	${MAKE} _image.raw CLOUD=$* DIST=stretch
 
-clean: cleanall
-
-cleanall:
-	rm -rf *.raw *vhd *.tar *.qcow2
+clean:
+	rm -rf image-*.*
