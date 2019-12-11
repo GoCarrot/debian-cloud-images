@@ -21,26 +21,26 @@ You also need python3-libcloud from Buster or newer.
 Example 1:
 
 ```
-   # make stretch-image-nocloud
+   # make image-stretch-nocloud-amd64
 ```
 
 This will create some log output and the following files:
 
-- nocloud-stretch-image.build.json
-- nocloud-stretch-image.info
-- nocloud-stretch-image.raw
-- nocloud-stretch-image.raw.tar
+- image-stretch-nocloud-amd64.build.json
+- image-stretch-nocloud-amd64.info
+- image-stretch-nocloud-amd64.raw
+- image-stretch-nocloud-amd64.raw.tar
 
 Example 2:
 
 ```
-    # make buster-image-genericcloud
+    # make image-buster-genericcloud-amd64
 ```
 
-- genericcloud-buster-image.build.json
-- genericcloud-buster-image.info
-- genericcloud-buster-image.raw
-- genericcloud-buster-image.tar
+- image-buster-genericcloud-amd64.build.json
+- image-buster-genericcloud-amd64.info
+- image-buster-genericcloud-amd64.raw
+- image-buster-genericcloud-amd64.tar
 
 These images can be used with QEMU-KVM, Virtualbox or any other virtualization
 backend that support raw disk images.
