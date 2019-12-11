@@ -3,3 +3,6 @@ PACKAGES install-norec
 waagent
 # Some waagent extensions still need python2.7, and break when it is not present
 python
+
+PACKAGES install-norec BULLSEYE SID
+cloud-init
