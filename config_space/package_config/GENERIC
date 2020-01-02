@@ -1,2 +1,5 @@
 PACKAGES install-norec
 cloud-init
+bridge-utils
+ifenslave
+vlan
