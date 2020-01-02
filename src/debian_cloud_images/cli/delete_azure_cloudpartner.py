@@ -221,11 +221,27 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
         return changed
 
     def delete_from_storage(self):
-        pass
-# TODO: libcloud fails to extract last modified
-#        for c in self.storage.iterate_containers():
-#            last_modified = c.extra['last_modified']
-#            logging.debug(f'Container {c.name} last modified {last_modified}')
+        for c in self.storage.iterate_containers():
+            # XXX: libcloud fails to extract last modified
+            # last_modified = c.extra['last_modified']
+
+            try:
+                name_prefix, name_date, name_id = c.name.rsplit('-', 2)
+                date = datetime.datetime.strptime(name_date, '%Y%m%d')
+            except ValueError:
+                logging.warning(f'Not deleting file {c.name}, unable to parse name')
+                continue
+
+            if date >= self.delete_date_storage:
+                logging.debug(f'Not deleting image {c.name}, too new')
+            else:
+                if not self.no_op:
+                    logging.info(f'Deleting image {c.name}')
+                    for f in c.iterate_objects():
+                        self.storage.delete_object(f)
+                    self.storage.delete_container(c)
+                else:
+                    logging.info(f'Would deleting image {c.name}')
 
 
 if __name__ == '__main__':
