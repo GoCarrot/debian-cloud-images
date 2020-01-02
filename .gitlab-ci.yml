@@ -26,8 +26,6 @@ test flake8:
       apt-get install --no-install-recommends -y
       python3-flake8
     - python3 -m flake8
-  only:
-    - pushes
 
 test package:
   stage: source test
@@ -39,8 +37,6 @@ test package:
       lintian
     - DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -us -uc
     - lintian ../*.changes
-  only:
-    - pushes
 
 test pytest:
   stage: source test
@@ -62,8 +58,6 @@ test pytest:
       - coverage/
     reports:
       junit: junit.xml
-  only:
-    - pushes
 
 test pytest latest:
   stage: source test
@@ -72,8 +66,6 @@ test pytest latest:
     - pip install -e .
   script:
     - python3 ./setup.py pytest
-  only:
-    - pushes
 
 .build:
   stage: build
@@ -91,13 +83,13 @@ test pytest latest:
       echo
       debian-cloud-images build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
-      --build-type ${CLOUD_IMAGE_TYPE}
+      --build-type dev
       --version ${CI_PIPELINE_IID}
       ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH}
     - >
       ./bin/debian-cloud-images build
       --build-id ${CLOUD_IMAGE_BUILD_ID}
-      --build-type ${CLOUD_IMAGE_TYPE}
+      --build-type dev
       ${CLOUD_RELEASE} ${CLOUD_VENDOR} ${CLOUD_ARCH}
     - 'xz -vk5T0 *.tar'
   artifacts:
@@ -109,278 +101,303 @@ test pytest latest:
       - '*.tar.xz'
     reports:
       junit: '*.build.junit.xml'
-
-####
-# Different selections when builds will be done
-####
-
-.build dev manual:
-  extends: .build
-  only:
-    - web
-  variables:
-    CLOUD_IMAGE_TYPE: dev
-
-.build dev pushes:
-  extends: .build
-  only:
-    - pushes
-  variables:
-    CLOUD_IMAGE_TYPE: dev
+  allow_failure: true
 
 ####
 # Builds for developer uploads pushes
+#
+# Builds are run if
+# - it is requested by setting $BUILD_AZURE, $BUILD_EC2, $BUILD_GCE, $BUILD_GENERIC or $BUILD_NOCLOUD or
+# - the manual jobs are started.
 ####
 
+.azure build:
+  extends: .build
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_AZURE'
+    when: on_success
+  - if: '$CI_MERGE_REQUEST_ID == null'
+    when: manual
+
 azure stretch build:
-  extends: .build dev manual
+  extends: .azure build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: azure
 
 azure stretch-backports build:
-  extends: .build dev manual
+  extends: .azure build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch-backports
     CLOUD_VENDOR: azure
-  allow_failure: true
 
 azure buster build:
-  extends: .build dev manual
+  extends: .azure build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: azure
 
 azure buster-backports build:
-  extends: .build dev manual
+  extends: .azure build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster-backports
     CLOUD_VENDOR: azure
-  allow_failure: true
 
 azure bullseye build:
-  extends: .build dev manual
+  extends: .azure build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: azure
 
 azure sid build:
-  extends: .build dev pushes
+  extends: .azure build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: azure
 
+.ec2 build:
+  extends: .build
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_EC2'
+    when: on_success
+  - if: '$CI_MERGE_REQUEST_ID == null'
+    when: manual
+
 ec2 stretch amd64 build:
-  extends: .build dev manual
+  extends: .ec2 build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
 ec2 buster amd64 build:
-  extends: .build dev manual
+  extends: .ec2 build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: ec2
 
 ec2 bullseye amd64 build:
-  extends: .build dev manual
+  extends: .ec2 build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: ec2
 
 ec2 sid amd64 build:
-  extends: .build dev pushes
+  extends: .ec2 build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: ec2
 
 ec2 stretch arm64 build:
-  extends: .build dev manual
+  extends: .ec2 build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
 ec2 buster arm64 build:
-  extends: .build dev manual
+  extends: .ec2 build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: ec2
 
 ec2 bullseye arm64 build:
-  extends: .build dev manual
+  extends: .ec2 build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: ec2
 
 ec2 sid arm64 build:
-  extends: .build dev pushes
+  extends: .ec2 build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: ec2
 
+.gce build:
+  extends: .build
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_GCE'
+    when: on_success
+  - if: '$CI_MERGE_REQUEST_ID == null'
+    when: manual
+
 gce stretch build:
-  extends: .build dev manual
+  extends: .gce build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: gce
 
 gce buster build:
-  extends: .build dev manual
+  extends: .gce build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: gce
 
 gce bullseye build:
-  extends: .build dev manual
+  extends: .gce build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: gce
 
 gce sid build:
-  extends: .build dev pushes
+  extends: .gce build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: gce
 
+.generic build:
+  extends: .build
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_GENERIC'
+    when: on_success
+  - if: '$CI_MERGE_REQUEST_ID == null'
+    when: manual
+
 generic buster amd64 build:
-  extends: .build dev manual
+  extends: .generic build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: generic
 
 generic bullseye amd64 build:
-  extends: .build dev manual
+  extends: .generic build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: generic
 
 generic sid amd64 build:
-  extends: .build dev pushes
+  extends: .generic build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
 generic buster arm64 build:
-  extends: .build dev manual
+  extends: .generic build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: generic
 
 generic bullseye arm64 build:
-  extends: .build dev manual
+  extends: .generic build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: generic
 
 generic sid arm64 build:
-  extends: .build dev pushes
+  extends: .generic build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
 generic buster ppc64el build:
-  extends: .build dev manual
+  extends: .generic build
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: generic
 
 generic bullseye ppc64el build:
-  extends: .build dev manual
+  extends: .generic build
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: generic
 
 generic sid ppc64el build:
-  extends: .build dev pushes
+  extends: .generic build
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: generic
 
 genericcloud buster amd64 build:
-  extends: .build dev manual
+  extends: .generic build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: genericcloud
 
 genericcloud bullseye amd64 build:
-  extends: .build dev manual
+  extends: .generic build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: genericcloud
 
 genericcloud sid amd64 build:
-  extends: .build dev pushes
+  extends: .generic build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: genericcloud
 
+.nocloud build:
+  extends: .build
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_NOCLOUD'
+    when: on_success
+  - if: '$CI_MERGE_REQUEST_ID == null'
+    when: manual
+
 nocloud stretch amd64 build:
-  extends: .build dev manual
+  extends: .nocloud build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: stretch
     CLOUD_VENDOR: nocloud
 
 nocloud buster amd64 build:
-  extends: .build dev manual
+  extends: .nocloud build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: nocloud
 
 nocloud bullseye amd64 build:
-  extends: .build dev manual
+  extends: .nocloud build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: nocloud
 
 nocloud sid amd64 build:
-  extends: .build dev pushes
+  extends: .nocloud build
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
 nocloud sid arm64 build:
-  extends: .build dev pushes
+  extends: .nocloud build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
 nocloud sid ppc64el build:
-  extends: .build dev pushes
+  extends: .nocloud build
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: sid
@@ -405,17 +422,16 @@ azure upload:
     - azure buster-backports build
     - azure bullseye build
     - azure sid build
-  only:
-    refs:
-      - pushes
-      - web
-    variables:
-      - $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1"
   artifacts:
     name: upload-azure
     expire_in: 7 days
     paths:
       - '*.upload-azure.json'
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1" && $BUILD_AZURE'
+    when: on_success
+  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1"'
+    when: manual
   allow_failure: true
 
 ec2 upload:
@@ -435,17 +451,16 @@ ec2 upload:
     - ec2 buster arm64 build
     - ec2 bullseye arm64 build
     - ec2 sid arm64 build
-  only:
-    refs:
-      - pushes
-      - web
-    variables:
-      - $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1"
   artifacts:
     name: upload-ec2
     expire_in: 7 days
     paths:
       - '*.upload-ec2.json'
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1" && $BUILD_EC2'
+    when: on_success
+  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1"'
+    when: manual
   allow_failure: true
 
 gce upload:
@@ -461,15 +476,14 @@ gce upload:
     - gce buster build
     - gce bullseye build
     - gce sid build
-  only:
-    refs:
-      - pushes
-      - web
-    variables:
-      - $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"
   artifacts:
     name: upload-gce
     expire_in: 7 days
     paths:
       - '*.upload-gce.json'
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1" && $BUILD_GCE'
+    when: on_success
+  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"'
+    when: manual
   allow_failure: true
