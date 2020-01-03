@@ -32,12 +32,8 @@ class TestTypeMetaRegistry:
     def test_load(self):
         registry = TypeMetaRegistry()
 
-        class TestOne:
-            pass
-
         @registry.register
         class TestOneSchema(v1_TypeMetaSchema):
-            __model__ = TestOne
             __typemeta__ = TypeMeta('One', 'v1')
 
         data = {
@@ -46,6 +42,29 @@ class TestTypeMetaRegistry:
         }
 
         registry.load(data)
+
+    def test_load_default(self):
+        registry = TypeMetaRegistry()
+
+        @registry.register
+        class TestOneSchema(v1_TypeMetaSchema):
+            __typemeta__ = TypeMeta('One', 'v1')
+
+        data = {}
+
+        registry.load(data, default_typemeta=TestOneSchema.__typemeta__)
+
+    def test_load_empty(self):
+        registry = TypeMetaRegistry()
+
+        @registry.register
+        class TestOneSchema(v1_TypeMetaSchema):
+            __typemeta__ = TypeMeta('One', 'v1')
+
+        data = {}
+
+        with pytest.raises(ValueError):
+            registry.load(data)
 
     def test_load_unknown(self):
         registry = TypeMetaRegistry()

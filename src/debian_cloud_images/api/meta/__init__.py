@@ -13,8 +13,8 @@ class v1_TypeMetaSchema(Schema):
     __model__ = TypeMeta
     __typemeta__ = None
 
-    api_version = fields.Str(required=True, data_key='apiVersion')
-    kind = fields.Str(required=True)
+    api_version = fields.Str(data_key='apiVersion')
+    kind = fields.Str()
 
     @post_dump
     def dump_typemeta(self, data, **kw):

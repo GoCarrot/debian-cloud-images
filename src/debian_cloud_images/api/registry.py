@@ -23,11 +23,15 @@ class TypeMetaRegistry(Mapping):
             raise ValueError(f'Unable to find schema for class={obj.__class__}')
         return cls(context={'registry': self}).dump(obj)
 
-    def load(self, value, **kw):
+    def load(self, value, default_typemeta=None, **kw):
         from .meta import TypeMeta, v1_TypeMetaSchema
 
         base = v1_TypeMetaSchema().load(value, unknown=EXCLUDE)
-        typemeta = TypeMeta(base['kind'], base['api_version'])
+        typemeta = TypeMeta(
+            base.get('kind', default_typemeta and default_typemeta.kind),
+            base.get('api_version', default_typemeta and default_typemeta.api_version),
+        )
+
         try:
             cls = self._typemeta[typemeta]
         except KeyError:
