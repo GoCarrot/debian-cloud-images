@@ -77,10 +77,10 @@ class Test_v1_ObjectMetaSchema:
 
 
 class Test_v1_TypeMetaSchema:
-    class TestSchema(v1_TypeMetaSchema):
+    class Schema(v1_TypeMetaSchema):
         __typemeta__ = TypeMeta('Test', 'test/v1')
 
-    schema = TestSchema()
+    schema = Schema()
 
     def test_correct(self):
         data = {
