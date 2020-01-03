@@ -58,19 +58,26 @@ class v1_ListSchema(v1_TypeMetaSchema):
 
 
 class ObjectMeta:
-    def __init__(self, labels=None, uid=None):
+    def __init__(self, name=None, labels=None, uid=None):
+        self.name = name
         self.labels = labels or {}
         self.uid = uid or uuid4()
 
     def copy(self):
         return self.__class__(
+            name=self.name,
             labels=self.labels.copy(),
         )
 
 
 class v1_ObjectMetaSchema(Schema):
+    name = fields.String()
     labels = fields.Dict(keys=fields.Str(), values=fields.Str())
-    uid = fields.UUID(required=True)
+    uid = fields.UUID()
+
+    @post_dump
+    def remove_empty(self, data, **kw):
+        return {i: j for i, j in data.items() if j not in (None, [], {})}
 
     @post_load
     def make_object(self, data, **kw):

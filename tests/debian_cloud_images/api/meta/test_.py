@@ -63,16 +63,29 @@ class Test_v1_ListSchema:
 class Test_v1_ObjectMetaSchema:
     schema = v1_ObjectMetaSchema()
 
-    def test(self):
+    def test_name(self):
+        data = {
+            'name': 'name',
+            'uid': '00000000-0000-0000-0000-000000000000',
+        }
+        obj = self.schema.load(data)
+        assert data == self.schema.dump(obj)
+
+    def test_labels(self):
         data = {
             'labels': {
                 'test': 'test',
             },
             'uid': '00000000-0000-0000-0000-000000000000',
         }
-
         obj = self.schema.load(data)
+        assert data == self.schema.dump(obj)
 
+    def test_uid(self):
+        data = {
+            'uid': '00000000-0000-0000-0000-000000000000',
+        }
+        obj = self.schema.load(data)
         assert data == self.schema.dump(obj)
 
 
