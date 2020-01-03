@@ -2,6 +2,7 @@ from collections import namedtuple
 from marshmallow import Schema, fields, pre_dump, post_dump, post_load, ValidationError, validates
 from uuid import uuid4
 
+from ..base import SchemaNonempty
 from ..registry import registry as _registry
 from ...utils.marshmallow import fields_ext
 
@@ -70,14 +71,10 @@ class ObjectMeta:
         )
 
 
-class v1_ObjectMetaSchema(Schema):
+class v1_ObjectMetaSchema(SchemaNonempty):
     name = fields.String()
     labels = fields.Dict(keys=fields.Str(), values=fields.Str())
     uid = fields.UUID()
-
-    @post_dump
-    def remove_empty(self, data, **kw):
-        return {i: j for i, j in data.items() if j not in (None, [], {})}
 
     @post_load
     def make_object(self, data, **kw):
