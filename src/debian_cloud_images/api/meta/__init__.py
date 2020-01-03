@@ -1,5 +1,5 @@
 from collections import namedtuple
-from marshmallow import Schema, fields, pre_dump, post_dump, post_load, ValidationError, validates
+from marshmallow import fields, pre_dump, post_dump, post_load, ValidationError, validates
 from uuid import uuid4
 
 from ..base import SchemaNonempty
@@ -10,7 +10,7 @@ from ...utils.marshmallow import fields_ext
 TypeMeta = namedtuple('TypeMeta', ['kind', 'api_version'])
 
 
-class v1_TypeMetaSchema(Schema):
+class v1_TypeMetaSchema(SchemaNonempty):
     __model__ = TypeMeta
     __typemeta__ = None
 
@@ -47,15 +47,11 @@ class v1_ListSchema(v1_TypeMetaSchema):
 
     @pre_dump
     def dump_items(self, data, **kw):
-        return {
-            'api_version': self.__typemeta__.api_version,
-            'kind': self.__typemeta__.kind,
-            'items': data,
-        }
+        return {'items': data}
 
     @post_load
     def load_items(self, data, **kw):
-        return list(data['items'])
+        return data.get('items', [])
 
 
 class ObjectMeta:

@@ -15,7 +15,6 @@ class Test_v1_ListSchema:
         data = {
             'apiVersion': 'v1',
             'kind': 'List',
-            'items': [],
         }
 
         obj = self.schema.load(data)
@@ -53,7 +52,6 @@ class Test_v1_ListSchema:
 
         obj = registry.load(data)
 
-        print(obj)
         assert isinstance(obj, list)
         assert len(obj) == 1
 
