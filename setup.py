@@ -9,6 +9,7 @@ setuptools.setup(
     install_requires=[
         'apache-libcloud',
         'marshmallow>=3.0.0b14',
+        'PyYAML',
     ],
     tests_require=[
         'pytest',
