@@ -1,8 +1,9 @@
 debian-cloud-images (0.0.2) unstable; urgency=medium
 
+  * New release snapshot includes the official buster release support.
   * Update package description in debian/control. (Closes: #935906)
 
- --
+ -- Noah Meyerhans <noahm@debian.org>  Mon, 06 Jan 2020 12:42:32 -0800
 
 debian-cloud-images (0.0.1) unstable; urgency=medium
 
