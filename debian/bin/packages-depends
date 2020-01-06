@@ -5,6 +5,7 @@ import sys
 
 exclude = (
     'AZURE',  # (Azure specific) waagent and cloud-init conflicts
+    'BUSTER', # Ignore buster-specific dependencies as we're not packaged for buster.
     'DEVEL',
     'EXTRAS',
     'GCE_SDK',

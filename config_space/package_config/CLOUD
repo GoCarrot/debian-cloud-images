@@ -26,6 +26,3 @@ netbase
 rsyslog
 vim-tiny
 whiptail
-
-PACKAGES install-norec BUSTER
-bsdmainutils
