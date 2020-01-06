@@ -1,0 +1,2 @@
+PACKAGES install-norec EC2
+python-boto
