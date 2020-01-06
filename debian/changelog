@@ -1,3 +1,9 @@
+debian-cloud-images (0.0.2) unstable; urgency=medium
+
+  * Update package description in debian/control. (Closes: #935906)
+
+ --
+
 debian-cloud-images (0.0.1) unstable; urgency=medium
 
   * Initial package (Closes: #910706).

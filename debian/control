@@ -29,14 +29,17 @@ Depends:
  ${python3:Depends},
  ${misc:Depends},
 Description: tool used by the Debian Cloud Team to create official cloud images
- This package contains a script which is used by the Debian Cloud Team to
- generate the official Debian Cloud images for different providers. Currently
- supported clouds are:
-  * AWS (amd64)
-  * Azure (amd64)
-  * GCE (amd64)
-  * OpenStack (amd64, arm64)
-  * helpful for creating images to be used
+ This package contains a script which is used by the Debian Cloud Team
+ to generate the official Debian Cloud images for various cloud
+ service providers. It also can be useful to create customized
+ derivative images, or as a tool for the generation of general-purpose
+ virtual machine images.
+ .
+ Currently supported cloud services are:
+  * Amazon EC2 (AWS)
+  * Microsoft Azure
+  * Google Compute Engine (GCE)
+  * OpenStack
 
 Package: debian-cloud-images-packages
 Architecture: amd64 arm64 ppc64el
