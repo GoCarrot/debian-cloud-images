@@ -70,6 +70,33 @@ class HashAction(argparse.Action):
         setattr(namespace, self.dest, items)
 
 
+class HashItemAction(argparse.Action):
+    def __init__(
+        self,
+        *,
+        dest_key,
+        default=None,
+        **kw,
+    ):
+        assert default is None
+        self.dest_key = dest_key,
+        super().__init__(
+            default=default,
+            **kw,
+        )
+
+    def __call__(self, parser, namespace, value, option_string=None):
+        items = getattr(namespace, self.dest)
+
+        subitem = items
+        kl = self.dest_key.split('.')
+        for k in kl[:-1]:
+            subitem = subitem.setdefault(k, {})
+        subitem[kl[-1]] = value
+
+        setattr(namespace, self.dest, items)
+
+
 class StoreAzureAuthAction(argparse.Action):
     class AzureAuth:
         def __init__(self, tenant_id, client_id, client_secret):
