@@ -1,3 +1,4 @@
+import argparse
 import logging
 import time
 
@@ -238,6 +239,10 @@ class ImageUploaderEc2:
 class UploadEc2Command(UploadBaseCommand):
     argparser_name = 'upload-ec2'
     argparser_help = 'upload Debian images to Amazon EC2'
+    argparser_epilog = '''
+config options:
+  ec2.bucket           create temporary image file in this S3 bucket
+'''
 
     @classmethod
     def _argparse_register(cls, parser):
@@ -245,8 +250,10 @@ class UploadEc2Command(UploadBaseCommand):
 
         parser.add_argument(
             '--bucket',
-            help='create temporary image file in this S3 bucket',
-            required=True,
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            dest_key='ec2.bucket',
+            help=argparse.SUPPRESS,
         )
         parser.add_argument(
             '--access-key-id',
@@ -276,12 +283,12 @@ class UploadEc2Command(UploadBaseCommand):
             help='Make snapshot and image public',
         )
 
-    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], add_tags={}, permission_public=None, **kw):
+    def __init__(self, *, access_key_id, access_secret_key, regions=[], add_tags={}, permission_public, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderEc2(
             output=self.output,
-            bucket=bucket,
+            bucket=self.config_get('ec2.bucket', 'ec2-bucket'),
             key=access_key_id,
             secret=access_secret_key,
             regions=regions,

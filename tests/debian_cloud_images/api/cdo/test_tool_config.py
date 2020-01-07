@@ -25,6 +25,9 @@ class Test_v1alpha1_ToolConfigSchema:
                 'name': 'test',
                 'uid': '00000000-0000-0000-0000-000000000000',
             },
+            'ec2': {
+                'bucket': 'test',
+            },
             'gce': {
                 'credentialsFile': 'test',
                 'bucket': 'test',
