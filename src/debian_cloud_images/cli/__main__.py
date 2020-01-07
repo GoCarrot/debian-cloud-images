@@ -31,7 +31,7 @@ def main():
     UploadGceCommand._argparse_init_sub(subparsers)
 
     args = parser.parse_args()
-    args.cls(**vars(args))()
+    args.cls(argparser=parser, **vars(args))()
 
 
 if __name__ == '__main__':

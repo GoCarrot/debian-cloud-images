@@ -1,5 +1,6 @@
 import argparse
 import os
+import yaml
 
 
 class ActionEnum(argparse.Action):
@@ -33,6 +34,40 @@ class ActionEnv(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, values)
+
+
+class HashAction(argparse.Action):
+    def __init__(
+        self,
+        *,
+        default=None,
+        dest=None,
+        help='',
+        metavar=None,
+        **kw,
+    ):
+        assert default is None
+        if metavar is None:
+            metavar = f'{dest.upper()}=VALUE'
+        super().__init__(
+            default={},
+            dest=dest,
+            help=help,
+            metavar=metavar,
+            **kw,
+        )
+
+    def __call__(self, parser, namespace, value, option_string=None):
+        items = getattr(namespace, self.dest)
+        k, v = value.split('=', 1)
+
+        subitem = items
+        kl = k.split('.')
+        for k in kl[:-1]:
+            subitem = subitem.setdefault(k, {})
+        subitem[kl[-1]] = yaml.safe_load(v)
+
+        setattr(namespace, self.dest, items)
 
 
 class StoreAzureAuthAction(argparse.Action):

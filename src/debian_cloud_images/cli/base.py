@@ -1,8 +1,13 @@
 import argparse
 import logging
 
+from ..utils import argparse_ext
+from ..utils.config import Config
+
 
 class BaseCommand:
+    _marker = object()
+
     argparser_name = None
     argparser_help = None
     argparser_usage = None
@@ -21,6 +26,21 @@ class BaseCommand:
     def _argparse_register(cls, parser):
         parser.set_defaults(cls=cls)
         parser.add_argument(
+            '--config',
+            action=argparse_ext.HashAction,
+            help='override config option',
+        )
+        parser.add_argument(
+            '--config-file',
+            help='use config file',
+            metavar='FILE',
+        )
+        parser.add_argument(
+            '--config-section',
+            help='use section from config file',
+            metavar='SECTION',
+        )
+        parser.add_argument(
             '--debug',
             action='store_true',
             help='enable debug output',
@@ -34,13 +54,35 @@ class BaseCommand:
         )
         cls._argparse_register(parser)
         args = parser.parse_args()
-        return cls(**vars(args))()
+        return cls(argparser=parser, **vars(args))()
 
-    def __init__(self, *, cls=None, config_file=None, config_section=None, debug=False):
+    def __init__(self, *, argparser=None, cls=None, config={}, config_file=None, config_section=None, debug=False):
         logging.basicConfig(
             level=debug and logging.DEBUG or logging.INFO,
             format='%(asctime)s %(levelname)s %(message)s',
         )
 
+        self._config = Config(override=config)
+        if config_file:
+            self._config.read(config_file)
+        else:
+            self._config.read_defaults()
+
+        if config_section:
+            self.config = self._config[f'_name={config_section}']
+        else:
+            self.config = self._config[None]
+
+        self.argparser = argparser
+
     def __call__(self):
         raise NotImplementedError
+
+    def config_get(self, *keys, default=_marker):
+        for key in keys:
+            ret = self.config.get(key, self._marker)
+            if ret != self._marker:
+                return ret
+        if default == self._marker:
+            self.argparser.error(f'the following config option is required: {keys[0]}')
+        return default
