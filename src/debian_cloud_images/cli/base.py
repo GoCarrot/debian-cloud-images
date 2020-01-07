@@ -9,6 +9,7 @@ class BaseCommand:
     _marker = object()
 
     argparser_name = None
+    argparser_epilog = None
     argparser_help = None
     argparser_usage = None
 
@@ -16,8 +17,10 @@ class BaseCommand:
     def _argparse_init_sub(cls, subparsers):
         parser = subparsers.add_parser(
             name=cls.argparser_name,
+            epilog=cls.argparser_epilog,
             help=cls.argparser_help,
             usage=cls.argparser_usage,
+            formatter_class=argparse.RawTextHelpFormatter,
         )
         cls._argparse_register(parser)
         return parser
@@ -49,8 +52,10 @@ class BaseCommand:
     @classmethod
     def _main(cls):
         parser = argparse.ArgumentParser(
+            epilog=cls.argparser_epilog,
             prog=cls.argparser_name,
             usage=cls.argparser_usage,
+            formatter_class=argparse.RawTextHelpFormatter,
         )
         cls._argparse_register(parser)
         args = parser.parse_args()
