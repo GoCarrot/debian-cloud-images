@@ -1,12 +1,15 @@
-import argparse
 import logging
 import sys
 
+from collections import namedtuple
 from libcloud.common.exceptions import BaseHTTPError
 
 from .base import BaseCommand
-from ..utils import argparse_ext
 from ..utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Connection
+
+
+AzureAuth = namedtuple('AzureAuth', ('client', 'secret'))
+AzureCloudpartner = namedtuple('AzureCloudpartner', ('tenant', 'publisher'))
 
 
 class ReleaseAzureCloudpartnerCommand(BaseCommand):
@@ -23,23 +26,12 @@ config options:
         super()._argparse_register(parser)
 
         parser.add_argument(
-            '--publisher',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='azure.cloudpartner.publisher',
-            help=argparse.SUPPRESS,
-        )
-        parser.add_argument(
             '--offer',
             action='append',
             dest='offer_ids',
             help='Azure offer, can be specified multiple times',
             metavar='OFFER',
             required=True,
-        )
-        parser.add_argument(
-            '--auth',
-            action=argparse_ext.StoreAzureAuthAction,
         )
 
     def __init__(
@@ -49,23 +41,29 @@ config options:
     ):
         super().__init__(**kw)
 
-        self.publisher_id = self.config_get('azure.cloudpartner.publisher', 'azure-publisher')
+        self.auth = AzureAuth(
+            client=str(self.config_get('azure.auth.client')),
+            secret=self.config_get('azure.auth.secret'),
+        )
+        self.cloudpartner = AzureCloudpartner(
+            tenant=str(self.config_get('azure.cloudpartner.tenant')),
+            publisher=self.config_get('azure.cloudpartner.publisher'),
+        )
         self.offer_ids = offer_ids or []
-        self.auth = self.config_get('azure-auth')
 
-        self.__cloudpartner = None
+        self.__cloudpartner_obj = None
 
     @property
-    def cloudpartner(self):
-        ret = self.__cloudpartner
+    def cloudpartner_obj(self):
+        ret = self.__cloudpartner_obj
         if ret is None:
             ret = AzureCloudpartnerOAuth2Connection(
-                tenant_id=self.auth.tenant_id,
-                client_id=self.auth.client_id,
-                client_secret=self.auth.client_secret,
+                tenant_id=self.cloudpartner.tenant,
+                client_id=self.auth.client,
+                client_secret=self.auth.secret,
             )
             ret.connect()
-            self.__cloudpartner = ret
+            self.__cloudpartner_obj = ret
         return ret
 
     def __call__(self):
@@ -81,10 +79,10 @@ config options:
             sys.exit(1)
 
     def golive_offer(self, offer_id):
-        logging.info(f'Releasing offer {offer_id} of publisher {self.publisher_id}')
+        logging.info(f'Releasing offer {offer_id} of publisher {self.cloudpartner.publisher}')
         try:
-            self.cloudpartner.request(
-                f'/api/publishers/{self.publisher_id}/offers/{offer_id}/golive',
+            self.cloudpartner_obj.request(
+                f'/api/publishers/{self.cloudpartner.publisher}/offers/{offer_id}/golive',
                 method='POST',
             )
         except BaseHTTPError as e:
