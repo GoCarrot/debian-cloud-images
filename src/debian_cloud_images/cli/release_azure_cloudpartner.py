@@ -1,3 +1,4 @@
+import argparse
 import logging
 import sys
 
@@ -11,6 +12,11 @@ from ..utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Con
 class ReleaseAzureCloudpartnerCommand(BaseCommand):
     argparser_name = 'release-azure-cloudpartner'
     argparser_help = 'release Debian images via Azure Cloud Partner interface'
+    argparser_epilog = '''
+config options:
+  azure.cloudpartner.publisher
+                       Azure publisher
+'''
 
     @classmethod
     def _argparse_register(cls, parser):
@@ -18,10 +24,10 @@ class ReleaseAzureCloudpartnerCommand(BaseCommand):
 
         parser.add_argument(
             '--publisher',
-            dest='publisher_id',
-            help='Azure publisher',
-            metavar='PUBLISHER',
-            required=True,
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            dest_key='azure.cloudpartner.publisher',
+            help=argparse.SUPPRESS,
         )
         parser.add_argument(
             '--offer',
@@ -34,21 +40,18 @@ class ReleaseAzureCloudpartnerCommand(BaseCommand):
         parser.add_argument(
             '--auth',
             action=argparse_ext.StoreAzureAuthAction,
-            required=True,
         )
 
     def __init__(
             self, *,
-            publisher_id,
-            offer_ids,
-            auth=None,
+            offer_ids=[],
             **kw,
     ):
         super().__init__(**kw)
 
-        self.publisher_id = publisher_id
+        self.publisher_id = self.config_get('azure.cloudpartner.publisher', 'azure-publisher')
         self.offer_ids = offer_ids or []
-        self.auth = auth
+        self.auth = self.config_get('azure-auth')
 
         self.__cloudpartner = None
 
