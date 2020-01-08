@@ -16,9 +16,9 @@ Build-Depends:
  python3-setuptools,
  qemu-utils,
 Standards-Version: 4.2.0
-Vcs-Browser: https://salsa.debian.org/cloud-team/debian/debian-cloud-images
-Vcs-Git: https://salsa.debian.org/cloud-team/debian/debian-cloud-images.git
-Homepage: https://salsa.debian.org/cloud-team/debian/debian-cloud-images
+Vcs-Browser: https://salsa.debian.org/cloud-team/debian-cloud-images
+Vcs-Git: https://salsa.debian.org/cloud-team/debian-cloud-images.git
+Homepage: https://salsa.debian.org/cloud-team/debian-cloud-images
 
 Package: debian-cloud-images
 Architecture: all

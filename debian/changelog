@@ -1,3 +1,9 @@
+debian-cloud-images (0.0.3) unstable; urgency=medium
+
+  * Fix Vcs links in debian/control
+
+ --
+
 debian-cloud-images (0.0.2) unstable; urgency=medium
 
   * New release snapshot includes the official buster release support.
