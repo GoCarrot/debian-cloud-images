@@ -1,6 +1,11 @@
 import pytest
 
-from debian_cloud_images.cli.upload_azure import UploadAzureCommand
+from debian_cloud_images.cli.upload_azure import (
+    UploadAzureCommand,
+    AzureAuth,
+    AzureImage,
+    AzureStorage,
+)
 
 
 class TestCommand:
@@ -22,9 +27,23 @@ class TestCommand:
     def test___init__(self, config_file, mock_uploader):
         UploadAzureCommand(
             config={
-                'azure-auth': 'auth',
-                'azure-group': 'group',
-                'azure-storage': 'storage',
+                'azure': {
+                    'auth': {
+                        'client': '00000000-0000-0000-0000-000000000001',
+                        'secret': 'secret',
+                    },
+                    'image': {
+                        'group': 'image-group',
+                        'subscription': '00000000-0000-0000-0000-000000000002',
+                        'tenant': '00000000-0000-0000-0000-000000000003',
+                    },
+                    'storage': {
+                        'group': 'storage-group',
+                        'name': 'name',
+                        'subscription': '00000000-0000-0000-0000-000000000004',
+                        'tenant': '00000000-0000-0000-0000-000000000005',
+                    },
+                },
             },
             config_file=config_file,
             generation=1,
@@ -32,10 +51,62 @@ class TestCommand:
         )
 
         mock_uploader.assert_called_once_with(
-            auth='auth',
+            auth=AzureAuth(
+                client='00000000-0000-0000-0000-000000000001',
+                secret='secret',
+            ),
             generation=1,
-            image_group='group',
+            image=AzureImage(
+                tenant='00000000-0000-0000-0000-000000000003',
+                subscription='00000000-0000-0000-0000-000000000002',
+                group='image-group',
+            ),
             output='output',
-            storage_group='group',
-            storage_id='storage',
+            storage=AzureStorage(
+                tenant='00000000-0000-0000-0000-000000000005',
+                subscription='00000000-0000-0000-0000-000000000004',
+                group='storage-group',
+                name='name',
+            ),
+        )
+
+    def test___init___noimage(self, config_file, mock_uploader):
+        UploadAzureCommand(
+            config={
+                'azure': {
+                    'auth': {
+                        'client': '00000000-0000-0000-0000-000000000001',
+                        'secret': 'secret',
+                    },
+                    'storage': {
+                        'group': 'storage-group',
+                        'name': 'name',
+                        'subscription': '00000000-0000-0000-0000-000000000002',
+                        'tenant': '00000000-0000-0000-0000-000000000003',
+                    },
+                },
+            },
+            config_file=config_file,
+            generation=1,
+            output='output',
+        )
+
+        mock_uploader.assert_called_once_with(
+            auth=AzureAuth(
+                client='00000000-0000-0000-0000-000000000001',
+                secret='secret',
+            ),
+            generation=1,
+            image=AzureImage(
+                tenant='00000000-0000-0000-0000-000000000003',
+                subscription='00000000-0000-0000-0000-000000000002',
+                group='storage-group',
+            ),
+            output='output',
+            storage=AzureStorage(
+                tenant='00000000-0000-0000-0000-000000000003',
+                subscription='00000000-0000-0000-0000-000000000002',
+                group='storage-group',
+                name='name',
+            ),
         )
