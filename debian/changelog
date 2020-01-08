@@ -1,6 +1,7 @@
 debian-cloud-images (0.0.3) unstable; urgency=medium
 
   * Fix Vcs links in debian/control
+  * Add lintian overrides for issues within the FAI config space.
 
  --
 
