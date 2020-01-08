@@ -4,12 +4,34 @@ from ..meta import TypeMeta, v1_ObjectMetaSchema, v1_TypeMetaSchema
 from ..registry import registry as _registry
 
 
+class v1alpha1_ToolConfigAzureAuthSchema(Schema):
+    client = fields.UUID()
+    secret = fields.Str()
+
+
 class v1alpha1_ToolConfigAzureCloudpartnerSchema(Schema):
     publisher = fields.Str()
+    tenant = fields.UUID()
+
+
+class v1alpha1_ToolConfigAzureImageSchema(Schema):
+    group = fields.Str()
+    subscription = fields.UUID()
+    tenant = fields.UUID()
+
+
+class v1alpha1_ToolConfigAzureStorageSchema(Schema):
+    group = fields.Str()
+    name = fields.Str()
+    subscription = fields.UUID()
+    tenant = fields.UUID()
 
 
 class v1alpha1_ToolConfigAzureSchema(Schema):
+    auth = fields.Nested(v1alpha1_ToolConfigAzureAuthSchema)
     cloudpartner = fields.Nested(v1alpha1_ToolConfigAzureCloudpartnerSchema)
+    image = fields.Nested(v1alpha1_ToolConfigAzureImageSchema)
+    storage = fields.Nested(v1alpha1_ToolConfigAzureStorageSchema)
 
 
 class v1alpha1_ToolConfigEc2Schema(Schema):
