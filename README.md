@@ -104,9 +104,14 @@ Uploaders typically need some variables set with credentials or targets.
  * `$AWS_SECRET_ACCESS_KEY`
 
 ```
-[DEFAULT]
-ec2-bucket = bucket
-ec2-regions = region region
+---
+ec2:
+  bucket: BUCKET
+  image:
+    regions:
+    - REGION
+    tags:
+    - TAG=VALUE
 ```
 
 ### Google Compute Engine
@@ -117,9 +122,10 @@ ec2-regions = region region
 #### Config file example
 
 ```
-[DEFAULT]
-gce-bucket = bucket
-gce-project = project
+---
+gce:
+  bucket: bucket
+  project: project
 ```
 
 ### Microsoft Azure
@@ -129,16 +135,18 @@ gce-project = project
 #### Config file example
 
 ```
-[DEFAULT]
-azure-auth = TENANT:OBJECT:SECRET
-azure-group = SUBSCRIPTION:GROUP
-azure-storage = STORAGE
-
-# For daily uploads only
-azure-publisher = debian
+---
+azure:
+  auth:
+    client: OBJECT
+    secret: SECRET
+  image:
+    tenant: TENANT
+    subscription: SUBSCRIPTION
+    group: GROUP
+  storage:
+    tenant: TENANT
+    subscription: SUBSCRIPTION
+    group: GROUP
+    name: NAME
 ```
-
-#### Uploads for daily builds
-
- * `$CLOUD_UPLOAD_AZURE_DAILY_ENABLED`: Set to `1` to upload images.
- * `$CLOUD_UPLOAD_AZURE_DAILY_NOTIFY_EMAIL`: Run publish process and send report to given e-mail address.
