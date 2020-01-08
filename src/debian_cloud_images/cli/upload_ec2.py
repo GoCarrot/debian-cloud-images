@@ -266,18 +266,6 @@ config options:
             env='AWS_SECRET_ACCESS_KEY',
         )
         parser.add_argument(
-            '--region',
-            dest='regions',
-            help='Regions to copy snapshot and image to or "all"\n    (default: region of bucket)',
-            nargs='+',
-        )
-        parser.add_argument(
-            '--add-tag',
-            dest='add_tags',
-            help='Additional tags to be set on both snapshot and AMI',
-            nargs='+',
-        )
-        parser.add_argument(
             '--permission-public',
             action='store_true',
             help='Make snapshot and image public',
@@ -291,8 +279,8 @@ config options:
             bucket=self.config_get('ec2.bucket', 'ec2-bucket'),
             key=access_key_id,
             secret=access_secret_key,
-            regions=regions,
-            add_tags=add_tags,
+            regions=self.config_get('ec2.image.regions', default=[]),
+            add_tags=self.config_get('ec2.image.tags', default={}),
             permission_public=permission_public,
         )
 

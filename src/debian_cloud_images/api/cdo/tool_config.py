@@ -34,8 +34,14 @@ class v1alpha1_ToolConfigAzureSchema(Schema):
     storage = fields.Nested(v1alpha1_ToolConfigAzureStorageSchema)
 
 
+class v1alpha1_ToolConfigEc2ImageSchema(Schema):
+    regions = fields.List(fields.Str())
+    tags = fields.List(fields.Str())
+
+
 class v1alpha1_ToolConfigEc2Schema(Schema):
     bucket = fields.Str()
+    image = fields.Nested(v1alpha1_ToolConfigEc2ImageSchema)
 
 
 class v1alpha1_ToolConfigGceSchema(Schema):

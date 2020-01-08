@@ -48,6 +48,10 @@ class Test_v1alpha1_ToolConfigSchema:
             },
             'ec2': {
                 'bucket': 'test',
+                'image': {
+                    'regions': ['all'],
+                    'tags': ['Tag=Value'],
+                },
             },
             'gce': {
                 'credentialsFile': 'test',
