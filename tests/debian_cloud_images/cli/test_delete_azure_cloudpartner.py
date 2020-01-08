@@ -1,6 +1,11 @@
 import pytest
 
-from debian_cloud_images.cli.delete_azure_cloudpartner import DeleteAzureCloudpartnerCommand
+from debian_cloud_images.cli.delete_azure_cloudpartner import (
+    DeleteAzureCloudpartnerCommand,
+    AzureAuth,
+    AzureCloudpartner,
+    AzureStorage,
+)
 
 
 class TestCommand:
@@ -14,13 +19,37 @@ class TestCommand:
     def test___init__(self, config_file):
         c = DeleteAzureCloudpartnerCommand(
             config={
-                'azure-auth': 'auth',
-                'azure.cloudpartner.publisher': 'publisher',
-                'azure-storage': 'storage',
+                'azure': {
+                    'auth': {
+                        'client': '00000000-0000-0000-0000-000000000001',
+                        'secret': 'secret',
+                    },
+                    'cloudpartner': {
+                        'publisher': 'publisher',
+                        'tenant': '00000000-0000-0000-0000-000000000002',
+                    },
+                    'storage': {
+                        'group': 'storage-group',
+                        'name': 'name',
+                        'subscription': '00000000-0000-0000-0000-000000000003',
+                        'tenant': '00000000-0000-0000-0000-000000000004',
+                    },
+                },
             },
             config_file=config_file,
         )
 
-        assert c.auth == 'auth'
-        assert c.publisher_id == 'publisher'
-        assert c.storage_id == 'storage'
+        assert c.auth == AzureAuth(
+            client='00000000-0000-0000-0000-000000000001',
+            secret='secret',
+        )
+        assert c.cloudpartner == AzureCloudpartner(
+            tenant='00000000-0000-0000-0000-000000000002',
+            publisher='publisher',
+        )
+        assert c.storage == AzureStorage(
+            tenant='00000000-0000-0000-0000-000000000004',
+            subscription='00000000-0000-0000-0000-000000000003',
+            group='storage-group',
+            name='name',
+        )

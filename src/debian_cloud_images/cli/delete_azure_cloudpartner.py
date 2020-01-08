@@ -1,14 +1,18 @@
-import argparse
 import datetime
 import logging
 
+from collections import namedtuple
 from libcloud.common.exceptions import BaseHTTPError
 
 from .base import BaseCommand
-from ..utils import argparse_ext
 from ..utils.azure.image_version import AzureImageVersion
 from ..utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Connection
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
+
+
+AzureAuth = namedtuple('AzureAuth', ('client', 'secret'))
+AzureCloudpartner = namedtuple('AzureCloudpartner', ('tenant', 'publisher'))
+AzureStorage = namedtuple('AzureStorage', ('tenant', 'subscription', 'group', 'name'))
 
 
 class AzureCloudPartnerOffer:
@@ -59,27 +63,11 @@ config options:
         super()._argparse_register(parser)
 
         parser.add_argument(
-            '--publisher',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='azure.cloudpartner.publisher',
-            help=argparse.SUPPRESS,
-        )
-        parser.add_argument(
             '--offer',
             action='append',
             dest='offer_ids',
             help='Azure offer, can be specified multiple times',
             metavar='OFFER',
-        )
-        parser.add_argument(
-            '--storage',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            # TODO: legacy key
-            dest_key='azure-storage',
-            help='Name or ID of Azure storage',
-            metavar='ID',
         )
         parser.add_argument(
             '--offer-delete-after',
@@ -94,11 +82,6 @@ config options:
             help='Delete images from storage after X days',
             metavar='DAYS',
             type=int,
-        )
-        parser.add_argument(
-            '--auth',
-            action=argparse_ext.StoreAzureAuthAction,
-            required=True,
         )
         parser.add_argument(
             '--no-op',
@@ -116,10 +99,22 @@ config options:
     ):
         super().__init__(**kw)
 
-        self.publisher_id = self.config_get('azure.cloudpartner.publisher', 'azure-publisher')
+        self.auth = AzureAuth(
+            client=str(self.config_get('azure.auth.client')),
+            secret=self.config_get('azure.auth.secret'),
+        )
+        self.cloudpartner = AzureCloudpartner(
+            tenant=str(self.config_get('azure.cloudpartner.tenant')),
+            publisher=self.config_get('azure.cloudpartner.publisher'),
+        )
+        self.storage = AzureStorage(
+            tenant=str(self.config_get('azure.storage.tenant')),
+            subscription=str(self.config_get('azure.storage.subscription')),
+            group=self.config_get('azure.storage.group'),
+            name=self.config_get('azure.storage.name'),
+        )
+
         self.offer_ids = offer_ids
-        self.storage_id = self.config_get('azure-storage')
-        self.auth = self.config_get('azure-auth')
         self.no_op = no_op
 
         if delete_after_offer:
@@ -132,7 +127,7 @@ config options:
         else:
             self.delete_date_storage = None
 
-        self.__cloudpartner = self.__storage = None
+        self.__cloudpartner_obj = self.__storage_obj = None
 
     def __call__(self):
         if self.delete_date_offer:
@@ -148,30 +143,31 @@ config options:
             logging.info(f'Not deleting images from storage')
 
     @property
-    def cloudpartner(self):
-        ret = self.__cloudpartner
+    def cloudpartner_obj(self):
+        ret = self.__cloudpartner_obj
         if ret is None:
             ret = AzureCloudpartnerOAuth2Connection(
-                tenant_id=self.auth.tenant_id,
-                client_id=self.auth.client_id,
-                client_secret=self.auth.client_secret,
+                tenant_id=self.cloudpartner.tenant,
+                client_id=self.auth.client,
+                client_secret=self.auth.secret,
             )
             ret.connect()
-            self.__cloudpartner = ret
+            self.__cloudpartner_obj = ret
         return ret
 
     @property
-    def storage(self):
-        ret = self.__storage
+    def storage_obj(self):
+        ret = self.__storage_obj
         if ret is None:
             storage_driver = AzureResourceManagementStorageDriver(
-                tenant_id=self.auth.tenant_id,
-                subscription_id=None,
-                client_id=self.auth.client_id,
-                client_secret=self.auth.client_secret,
+                tenant_id=self.storage.tenant,
+                subscription_id=self.storage.subscription,
+                client_id=self.auth.client,
+                client_secret=self.auth.secret,
             )
             ret = self.__storage = storage_driver.get_storage(
-                self.storage_id,
+                name=self.storage.name,
+                resource_group=self.storage.group,
             )
         return ret
 
@@ -182,7 +178,7 @@ config options:
     def _delete_from_offer(self, offer_id):
         logging.debug(f'Deleting images from offer {offer_id}')
 
-        offer = AzureCloudPartnerOffer(self.cloudpartner, self.publisher_id, offer_id)
+        offer = AzureCloudPartnerOffer(self.cloudpartner_obj, self.cloudpartner.publisher, offer_id)
         changed = False
         for plan_id, plan in offer.plans.items():
             changed |= self._delete_from_offer_plan(plan_id, plan)
@@ -227,7 +223,7 @@ config options:
         return changed
 
     def delete_from_storage(self):
-        for c in self.storage.iterate_containers():
+        for c in self.storage_obj.iterate_containers():
             # XXX: libcloud fails to extract last modified
             # last_modified = c.extra['last_modified']
 
