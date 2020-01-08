@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import hashlib
 import hmac
@@ -378,6 +379,11 @@ class ImageUploaderAzureCloudpartner:
 class UploadAzureCloudpartnerCommand(UploadBaseCommand):
     argparser_name = 'upload-azure-cloudpartner'
     argparser_help = 'upload Debian images for publishing via Azure Cloud Partner interface'
+    argparser_epilog = '''
+config options:
+  azure.cloudpartner.publisher
+                       Azure publisher
+'''
 
     @classmethod
     def _argparse_register(cls, parser):
@@ -385,22 +391,23 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
 
         parser.add_argument(
             '--publisher',
-            dest='publisher_id',
-            help='Azure publisher',
-            metavar='PUBLISHER',
-            required=True,
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            dest_key='azure.cloudpartner.publisher',
+            help=argparse.SUPPRESS,
         )
         parser.add_argument(
             '--storage',
-            dest='storage_id',
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            # TODO: legacy key
+            dest_key='azure-storage',
             help='Name or ID of Azure storage',
             metavar='ID',
-            required=True,
         )
         parser.add_argument(
             '--auth',
             action=argparse_ext.StoreAzureAuthAction,
-            required=True,
         )
         parser.add_argument(
             '--publish',
@@ -410,9 +417,6 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
 
     def __init__(
             self, *,
-            publisher_id,
-            storage_id,
-            auth=None,
             publish=None,
             **kw,
     ):
@@ -420,9 +424,9 @@ class UploadAzureCloudpartnerCommand(UploadBaseCommand):
 
         self.uploader = ImageUploaderAzureCloudpartner(
             output=self.output,
-            publisher_id=publisher_id,
-            storage_id=storage_id,
-            auth=auth,
+            publisher_id=self.config_get('azure.cloudpartner.publisher', 'azure-publisher'),
+            storage_id=self.config_get('azure-storage'),
+            auth=self.config_get('azure-auth'),
             publish=publish,
         )
 
