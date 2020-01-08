@@ -1,6 +1,11 @@
 import pytest
 
-from debian_cloud_images.cli.upload_azure_cloudpartner import UploadAzureCloudpartnerCommand
+from debian_cloud_images.cli.upload_azure_cloudpartner import (
+    UploadAzureCloudpartnerCommand,
+    AzureAuth,
+    AzureCloudpartner,
+    AzureStorage,
+)
 
 
 class TestCommand:
@@ -22,18 +27,42 @@ class TestCommand:
     def test___init__(self, config_file, mock_uploader):
         UploadAzureCloudpartnerCommand(
             config={
-                'azure-auth': 'auth',
-                'azure.cloudpartner.publisher': 'publisher',
-                'azure-storage': 'storage',
+                'azure': {
+                    'auth': {
+                        'client': '00000000-0000-0000-0000-000000000001',
+                        'secret': 'secret',
+                    },
+                    'cloudpartner': {
+                        'publisher': 'publisher',
+                        'tenant': '00000000-0000-0000-0000-000000000002',
+                    },
+                    'storage': {
+                        'group': 'storage-group',
+                        'name': 'name',
+                        'subscription': '00000000-0000-0000-0000-000000000003',
+                        'tenant': '00000000-0000-0000-0000-000000000004',
+                    },
+                },
             },
             config_file=config_file,
             output='output',
         )
 
         mock_uploader.assert_called_once_with(
-            auth='auth',
+            auth=AzureAuth(
+                client='00000000-0000-0000-0000-000000000001',
+                secret='secret',
+            ),
+            cloudpartner=AzureCloudpartner(
+                tenant='00000000-0000-0000-0000-000000000002',
+                publisher='publisher',
+            ),
             output='output',
             publish=None,
-            publisher_id='publisher',
-            storage_id='storage',
+            storage=AzureStorage(
+                tenant='00000000-0000-0000-0000-000000000004',
+                subscription='00000000-0000-0000-0000-000000000003',
+                group='storage-group',
+                name='name',
+            ),
         )
