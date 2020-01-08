@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import logging
 
@@ -47,6 +48,11 @@ class AzureCloudPartnerOffer:
 class DeleteAzureCloudpartnerCommand(BaseCommand):
     argparser_name = 'delete-azure-cloudpartner'
     argparser_help = 'delete Debian images published via Azure Cloud Partner interface'
+    argparser_epilog = '''
+config options:
+  azure.cloudpartner.publisher
+                       Azure publisher
+'''
 
     @classmethod
     def _argparse_register(cls, parser):
@@ -54,9 +60,10 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
 
         parser.add_argument(
             '--publisher',
-            dest='publisher_id',
-            help='Azure publisher',
-            metavar='PUBLISHER',
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            dest_key='azure.cloudpartner.publisher',
+            help=argparse.SUPPRESS,
         )
         parser.add_argument(
             '--offer',
@@ -67,7 +74,10 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
         )
         parser.add_argument(
             '--storage',
-            dest='storage_id',
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            # TODO: legacy key
+            dest_key='azure-storage',
             help='Name or ID of Azure storage',
             metavar='ID',
         )
@@ -97,10 +107,7 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
 
     def __init__(
             self, *,
-            publisher_id,
-            offer_ids,
-            storage_id,
-            auth,
+            offer_ids=[],
             delete_after_offer=None,
             delete_after_storage=None,
             no_op=False,
@@ -109,10 +116,10 @@ class DeleteAzureCloudpartnerCommand(BaseCommand):
     ):
         super().__init__(**kw)
 
-        self.publisher_id = publisher_id
-        self.offer_ids = offer_ids or []
-        self.storage_id = storage_id
-        self.auth = auth
+        self.publisher_id = self.config_get('azure.cloudpartner.publisher', 'azure-publisher')
+        self.offer_ids = offer_ids
+        self.storage_id = self.config_get('azure-storage')
+        self.auth = self.config_get('azure-auth')
         self.no_op = no_op
 
         if delete_after_offer:
