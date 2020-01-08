@@ -97,7 +97,7 @@ class HashItemAction(argparse.Action):
         setattr(namespace, self.dest, items)
 
 
-class StoreAzureAuthAction(argparse.Action):
+class StoreAzureAuthAction(HashItemAction):
     class AzureAuth:
         def __init__(self, tenant_id, client_id, client_secret):
             self.tenant_id = tenant_id
@@ -105,6 +105,9 @@ class StoreAzureAuthAction(argparse.Action):
             self.client_secret = client_secret
 
     def __init__(self, **kw):
+        kw.setdefault('dest', 'config')
+        # TODO: legacy key
+        kw.setdefault('dest_key', 'azure-auth')
         kw.setdefault('help', 'Authentication info for Azure AD service principal')
         kw.setdefault('metavar', 'TENANT:APPLICATION:SECRET')
         kw.setdefault('type', self.create)
@@ -115,6 +118,3 @@ class StoreAzureAuthAction(argparse.Action):
             return self.AzureAuth(*value.split(':', 2))
         except TypeError:
             raise argparse.ArgumentError(self, 'invalid value')
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values)

@@ -187,17 +187,22 @@ class UploadAzureCommand(UploadBaseCommand):
 
         parser.add_argument(
             '--group',
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            # TODO: legacy key
+            dest_key='azure-group',
             help='Azure Subscription and Resource group',
             metavar='SUBSCRIPTION:GROUP',
-            required=True,
             type=AzureResourceGroup.create,
         )
         parser.add_argument(
             '--storage',
-            dest='storage_id',
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            # TODO: legacy key
+            dest_key='azure-storage',
             help='Name or ID of Azure storage',
             metavar='ID',
-            required=True,
         )
         parser.add_argument(
             '--generation',
@@ -209,19 +214,18 @@ class UploadAzureCommand(UploadBaseCommand):
         parser.add_argument(
             '--auth',
             action=argparse_ext.StoreAzureAuthAction,
-            required=True,
         )
 
-    def __init__(self, *, group=None, storage_id=None, generation=None, auth=None, **kw):
+    def __init__(self, *, generation, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderAzure(
             output=self.output,
-            storage_group=group,
-            storage_id=storage_id,
-            image_group=group,
+            storage_group=self.config_get('azure-group'),
+            storage_id=self.config_get('azure-storage'),
+            image_group=self.config_get('azure-group'),
             generation=generation,
-            auth=auth,
+            auth=self.config_get('azure-auth'),
         )
 
 
