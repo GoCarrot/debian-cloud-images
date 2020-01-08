@@ -280,7 +280,7 @@ config options:
             key=access_key_id,
             secret=access_secret_key,
             regions=self.config_get('ec2.image.regions', default=[]),
-            add_tags=self.config_get('ec2.image.tags', default={}),
+            add_tags=dict(tuple(i.split('=', 1)) for i in self.config_get('ec2.image.tags', default=[])),
             permission_public=permission_public,
         )
 

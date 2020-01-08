@@ -20,9 +20,15 @@ class TestCommand:
         return ret
 
     def test___init__(self, config_file, mock_uploader):
-        UploadEc2Command(
+        c = UploadEc2Command(
             config={
-                'ec2.bucket': 'bucket',
+                'ec2': {
+                    'bucket': 'bucket',
+                    'image': {
+                        'regions': ['all'],
+                        'tags': ['Tag=Value'],
+                    },
+                },
             },
             config_file=config_file,
             access_key_id='access_key_id',
@@ -30,13 +36,14 @@ class TestCommand:
             output='output',
             permission_public='permission_public',
         )
+        print(c.config)
 
         mock_uploader.assert_called_once_with(
-            add_tags={},
+            add_tags={'Tag': 'Value'},
             bucket='bucket',
             key='access_key_id',
             output='output',
             permission_public='permission_public',
-            regions=[],
+            regions=['all'],
             secret='access_secret_key',
         )
