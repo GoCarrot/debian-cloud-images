@@ -3,18 +3,18 @@
 import pathlib
 import sys
 
-exclude = (
+class_exclude = {
     'AZURE',  # (Azure specific) waagent and cloud-init conflicts
     'BUSTER', # Ignore buster-specific dependencies as we're not packaged for buster.
     'DEVEL',
     'EXTRAS',
     'GCE_SDK',
-)
+}
 
-modifier = {
-    'AMD64': '{} [amd64]',
-    'ARM64': '{} [arm64]',
-    'PPC64EL': '{} [ppc64el]',
+class_arch = {
+    'AMD64': 'amd64',
+    'ARM64': 'arm64',
+    'PPC64EL': 'ppc64el',
 }
 
 arch = sys.argv[0]
@@ -22,18 +22,36 @@ arch = sys.argv[0]
 packages = set()
 
 for i in pathlib.Path('config_space/package_config').glob('*'):
-    if '.' in i.name or i.name in exclude:
+    if '.' in i.name or i.name in class_exclude:
         continue
-    m = modifier.get(i.name, '{}')
+
+    arch = class_arch.get(i.name)
+
     with i.open() as f:
-        for l in f.readlines():
-            # Ignore empty lines, comments and section header
-            if not l or l.startswith('#') or l.startswith('PACKAGES'):
-                continue
-            for i in l.split():
-                # Ignore to be removed packages
-                if i.endswith('-'):
-                    continue
-                packages.add(m.format(i))
+        for line in f.readlines():
+            line = line.strip()
+            # Ignore empty lines and comments
+            if not line or line.startswith('#'):
+                pass
+
+            elif line.startswith('PACKAGES'):
+                l = line.split()
+                # Ignore unknown commands
+                if l[1] in ('install', 'install-norec'):
+                    classes = frozenset(l[2:])
+                    ignore = False
+                    # Ignore entries if all of the extra classes are excluded
+                    if classes and not (classes - class_exclude):
+                        ignore = True
+
+            elif not ignore:
+                for package in line.split():
+                    # Ignore to be removed packages
+                    if package.endswith('-'):
+                        continue
+                    if arch:
+                        packages.add(f'{package} [{arch}]')
+                    else:
+                        packages.add(package)
 
 print(', '.join(sorted(packages)))
