@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import hmac
 import http.client
@@ -220,12 +221,14 @@ class ImageUploaderAzureCloudpartner:
                 image_name = image_public_info.apply(image.build_info).vendor_name
                 image_file = '{}/disk.vhd'.format(image_name)
                 image_url = 'https://{}/{}'.format(self.storage.connection.host, image_file)
+                sas_start = datetime.date.today() - datetime.timedelta(days=30)
+                sas_expiry = datetime.date.today() + datetime.timedelta(days=730)
                 image_url_sas = UrlSas(
                     image_url,
                     self.storage_secret,
                     sas_permission='rl',
-                    sas_start='2018-01-01T00:00:00Z',
-                    sas_expiry='2020-01-01T00:00:00Z',
+                    sas_start=sas_start.strftime('%Y-%m-%dT00:00:00Z'),
+                    sas_expiry=sas_expiry.strftime('%Y-%m-%dT00:00:00Z'),
                 )
 
                 logging.info('Uploading image %s to %s/%s', image.name, offer.publisher_id, offer.offer_id)
