@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import base64
+import hashlib
 import logging
 import pathlib
 import subprocess
@@ -23,8 +25,9 @@ class RunTar:
         self.output_filename = output_filename
         self.inner_filename = inner_filename
 
-    def __call__(self, run: bool, *, popen=subprocess.Popen) -> None:
+    def __call__(self, run: bool, *, popen=subprocess.Popen) -> str:
         cmd = self.command
+        output_hash = hashlib.sha512()
 
         if run:
             logger.info(f'Running tar: {" ".join(cmd)}')
@@ -38,6 +41,7 @@ class RunTar:
                         if len(o) == 0:
                             break
                         output.write(o)
+                        output_hash.update(o)
 
                     retcode = process.wait()
                     if retcode:
@@ -48,6 +52,11 @@ class RunTar:
 
         else:
             logger.info(f'Would run tar: {" ".join(cmd)}')
+
+        output_digest = base64.b64encode(output_hash.digest()).decode().rstrip('=')
+        digest = f'{output_hash.name}:{output_digest}'
+
+        return digest
 
     @property
     def command(self) -> tuple:

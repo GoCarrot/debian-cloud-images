@@ -24,7 +24,10 @@ class TestRunTar:
         popen_proc.wait = Mock(return_value=0)
         popen = Mock(return_value=popen_proc)
 
-        run(True, popen=popen)
+        digest = run(True, popen=popen)
+
+        # Digest of empty string
+        assert digest == 'sha512:z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg'
 
         popen.assert_called_with(
             (
