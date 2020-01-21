@@ -6,13 +6,13 @@ import logging
 import os
 import pathlib
 import re
-import subprocess
 
 from datetime import datetime
 
 from .base import BaseCommand
 
 from ..build.fai import RunFAI
+from ..build.tar import RunTar
 from ..data import data_path
 from ..utils import argparse_ext
 
@@ -387,21 +387,14 @@ class BuildCommand(BaseCommand):
             env=self.env,
         )
 
-        self.cmd_tar = (
-            'tar',
-            '-cS',
-            '-f', image_tar.as_posix(),
-            '--transform', r'flags=r;s|.*\.raw|disk.raw|',
-            image_raw.as_posix(),
+        self.tar = RunTar(
+            input_filename=image_raw,
+            output_filename=image_tar,
         )
 
     def __call__(self):
         self.fai(not self.noop)
-
-        logging.info('Running: %s', ' '.join(self.cmd_tar))
-
-        if not self.noop:
-            subprocess.check_call(self.cmd_tar)
+        self.tar(not self.noop)
 
 
 if __name__ == '__main__':
