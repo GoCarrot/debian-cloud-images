@@ -29,14 +29,22 @@ class RunTar:
         if run:
             logger.info(f'Running tar: {" ".join(cmd)}')
 
-            try:
-                process = popen(cmd)
-                retcode = process.wait()
-                if retcode:
-                    raise subprocess.CalledProcessError(retcode, cmd)
+            with self.output_filename.open('wb') as output:
+                try:
+                    process = popen(cmd, bufsize=0, stdout=subprocess.PIPE)
 
-            finally:
-                process.kill()
+                    while True:
+                        o = process.stdout.read()
+                        if len(o) == 0:
+                            break
+                        output.write(o)
+
+                    retcode = process.wait()
+                    if retcode:
+                        raise subprocess.CalledProcessError(retcode, cmd)
+
+                finally:
+                    process.kill()
 
         else:
             logger.info(f'Would run tar: {" ".join(cmd)}')
@@ -47,7 +55,6 @@ class RunTar:
             'tar',
             '--create',
             '--absolute-names',
-            '--file', self.output_filename.as_posix(),
             '--sparse',
             '--transform', r's/.*/' + self.inner_filename + '/',
             self.input_filename.as_posix(),

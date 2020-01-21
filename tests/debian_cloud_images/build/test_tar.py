@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import io
 import pytest
 import subprocess
 import tarfile
@@ -19,6 +20,7 @@ class TestRunTar:
             inner_filename='file',
         )
         popen_proc = Mock()
+        popen_proc.stdout = io.BytesIO(b'')
         popen_proc.wait = Mock(return_value=0)
         popen = Mock(return_value=popen_proc)
 
@@ -29,11 +31,12 @@ class TestRunTar:
                 'tar',
                 '--create',
                 '--absolute-names',
-                '--file', output_filename.as_posix(),
                 '--sparse',
                 '--transform', r's/.*/file/',
                 input_filename.as_posix(),
             ),
+            bufsize=0,
+            stdout=subprocess.PIPE,
         )
         popen_proc.wait.assert_called()
 
@@ -46,6 +49,7 @@ class TestRunTar:
             inner_filename='file',
         )
         popen_proc = Mock()
+        popen_proc.stdout = io.BytesIO(b'')
         popen_proc.wait = Mock(return_value=23)
         popen = Mock(return_value=popen_proc)
 
