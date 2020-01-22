@@ -56,6 +56,8 @@ class RunTar:
         output_digest = base64.b64encode(output_hash.digest()).decode().rstrip('=')
         digest = f'{output_hash.name}:{output_digest}'
 
+        logger.info(f'Image tar digest: {digest}')
+
         return digest
 
     @property
