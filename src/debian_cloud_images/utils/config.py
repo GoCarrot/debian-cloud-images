@@ -47,12 +47,13 @@ class Config:
                 with p.open() as f:
                     yield f
 
-    def read(self, filename):
-        with open(filename) as f:
-            try:
-                self.read_yaml((f, ))
-            except yaml.parser.ParserError:
-                self.read_configparser((f, ))
+    def read(self, *filenames):
+        for filename in filenames:
+            with open(filename) as f:
+                try:
+                    self.read_yaml((f, ))
+                except yaml.parser.ParserError:
+                    self.read_configparser((f, ))
 
     def read_defaults(self):
         self.read_yaml(self._default_files('config.yml', 'config.yaml'))

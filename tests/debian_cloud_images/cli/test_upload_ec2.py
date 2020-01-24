@@ -5,11 +5,11 @@ from debian_cloud_images.cli.upload_ec2 import UploadEc2Command
 
 class TestCommand:
     @pytest.fixture
-    def config_file(self, tmp_path):
+    def config_files(self, tmp_path):
         p = tmp_path / 'config'
         with p.open(mode='w') as f:
             f.write('')
-        return p.as_posix()
+        return [p.as_posix()]
 
     @pytest.fixture
     def mock_uploader(self, monkeypatch):
@@ -19,7 +19,7 @@ class TestCommand:
         monkeypatch.setattr(upload_ec2, 'ImageUploaderEc2', ret)
         return ret
 
-    def test___init__(self, config_file, mock_uploader):
+    def test___init__(self, config_files, mock_uploader):
         c = UploadEc2Command(
             config={
                 'ec2': {
@@ -30,7 +30,7 @@ class TestCommand:
                     },
                 },
             },
-            config_file=config_file,
+            config_files=config_files,
             access_key_id='access_key_id',
             access_secret_key='access_secret_key',
             output='output',

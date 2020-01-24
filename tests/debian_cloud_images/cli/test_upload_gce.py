@@ -12,11 +12,11 @@ class TestCommand:
         return p.as_posix()
 
     @pytest.fixture
-    def config_file(self, tmp_path):
+    def config_files(self, tmp_path):
         p = tmp_path / 'config'
         with p.open(mode='w') as f:
             f.write('')
-        return p.as_posix()
+        return [p.as_posix()]
 
     @pytest.fixture
     def mock_env(self, monkeypatch):
@@ -31,14 +31,14 @@ class TestCommand:
         monkeypatch.setattr(upload_gce, 'ImageUploaderGce', ret)
         return ret
 
-    def test___init__(self, auth_file, config_file, mock_env, mock_uploader):
+    def test___init__(self, auth_file, config_files, mock_env, mock_uploader):
         UploadGceCommand(
             config={
                 'gce.project': 'project',
                 'gce.bucket': 'bucket',
                 'gce.credentials_file': auth_file,
             },
-            config_file=config_file,
+            config_files=config_files,
             output='output',
         )
 
@@ -49,7 +49,7 @@ class TestCommand:
             project='project',
         )
 
-    def test___init___auth_env(self, auth_file, config_file, mock_env, mock_uploader):
+    def test___init___auth_env(self, auth_file, config_files, mock_env, mock_uploader):
         mock_env.setenv('GOOGLE_APPLICATION_CREDENTIALS', auth_file)
 
         UploadGceCommand(
@@ -57,7 +57,7 @@ class TestCommand:
                 'gce.project': 'project',
                 'gce.bucket': 'bucket',
             },
-            config_file=config_file,
+            config_files=config_files,
             output='output',
         )
 

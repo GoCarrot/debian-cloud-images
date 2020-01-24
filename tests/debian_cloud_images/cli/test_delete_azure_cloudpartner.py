@@ -10,13 +10,13 @@ from debian_cloud_images.cli.delete_azure_cloudpartner import (
 
 class TestCommand:
     @pytest.fixture
-    def config_file(self, tmp_path):
+    def config_files(self, tmp_path):
         p = tmp_path / 'config'
         with p.open(mode='w') as f:
             f.write('')
-        return p.as_posix()
+        return [p.as_posix()]
 
-    def test___init__(self, config_file):
+    def test___init__(self, config_files):
         c = DeleteAzureCloudpartnerCommand(
             config={
                 'azure': {
@@ -36,7 +36,7 @@ class TestCommand:
                     },
                 },
             },
-            config_file=config_file,
+            config_files=config_files,
         )
 
         assert c.auth == AzureAuth(
