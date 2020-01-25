@@ -1,7 +1,8 @@
 from collections import namedtuple
-from marshmallow import Schema, fields, pre_dump, post_dump, post_load, ValidationError, validates
+from marshmallow import fields, pre_dump, post_dump, post_load, ValidationError, validates
 from uuid import uuid4
 
+from ..base import SchemaNonempty
 from ..registry import registry as _registry
 from ...utils.marshmallow import fields_ext
 
@@ -9,12 +10,12 @@ from ...utils.marshmallow import fields_ext
 TypeMeta = namedtuple('TypeMeta', ['kind', 'api_version'])
 
 
-class v1_TypeMetaSchema(Schema):
+class v1_TypeMetaSchema(SchemaNonempty):
     __model__ = TypeMeta
     __typemeta__ = None
 
-    api_version = fields.Str(required=True, data_key='apiVersion')
-    kind = fields.Str(required=True)
+    api_version = fields.Str(data_key='apiVersion')
+    kind = fields.Str()
 
     @post_dump
     def dump_typemeta(self, data, **kw):
@@ -46,31 +47,30 @@ class v1_ListSchema(v1_TypeMetaSchema):
 
     @pre_dump
     def dump_items(self, data, **kw):
-        return {
-            'api_version': self.__typemeta__.api_version,
-            'kind': self.__typemeta__.kind,
-            'items': data,
-        }
+        return {'items': data}
 
     @post_load
     def load_items(self, data, **kw):
-        return list(data['items'])
+        return data.get('items', [])
 
 
 class ObjectMeta:
-    def __init__(self, labels=None, uid=None):
+    def __init__(self, name=None, labels=None, uid=None):
+        self.name = name
         self.labels = labels or {}
         self.uid = uid or uuid4()
 
     def copy(self):
         return self.__class__(
+            name=self.name,
             labels=self.labels.copy(),
         )
 
 
-class v1_ObjectMetaSchema(Schema):
+class v1_ObjectMetaSchema(SchemaNonempty):
+    name = fields.String()
     labels = fields.Dict(keys=fields.Str(), values=fields.Str())
-    uid = fields.UUID(required=True)
+    uid = fields.UUID()
 
     @post_load
     def make_object(self, data, **kw):

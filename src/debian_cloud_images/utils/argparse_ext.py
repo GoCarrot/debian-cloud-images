@@ -1,5 +1,6 @@
 import argparse
 import os
+import yaml
 
 
 class ActionEnum(argparse.Action):
@@ -35,109 +36,68 @@ class ActionEnv(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
-class ConfigStoreAction(argparse.Action):
+class HashAction(argparse.Action):
     def __init__(
         self,
         *,
-        config,
-        config_key,
-        default=None,
-        help='',
-        required=False,
-        **kw,
-    ):
-        if default:
-            help += f'\n    (default: {default})'
-        help += f'\n    (config key: {config_key})'
-        config_default = config.get(config_key, default)
-        if config_default:
-            required = False
-        super().__init__(
-            default=config_default,
-            help=help,
-            required=required,
-            **kw,
-        )
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, values)
-
-
-class ConfigAppendAction(argparse.Action):
-    def __init__(
-        self,
-        *,
-        config,
-        config_key,
-        default=[],
-        help='',
-        required=False,
-        **kw,
-    ):
-        if default:
-            help += f'\n    (default: {default})'
-        help += f'\n    (config key: {config_key})'
-        config_default = config.get(config_key, default)
-        if config_default:
-            config_default = config_default.split(' ')
-            required = False
-        super().__init__(
-            default=config_default,
-            help=help,
-            required=required,
-            **kw,
-        )
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        items = getattr(namespace, self.dest, [])
-        items = items[:] + values
-        setattr(namespace, self.dest, items)
-
-
-class ConfigHashAction(argparse.Action):
-    def __init__(
-        self,
-        *,
-        config,
-        config_key,
         default=None,
         dest=None,
         help='',
         metavar=None,
-        required=False,
         **kw,
     ):
-        if default:
-            help += f'\n    (default: {default})'
-        help += f'\n    (config key: {config_key})'
-        config_default = config.get(config_key, default)
-        if config_default:
-            config_default = self._parse_values(config_default.split(' '))
-            required = False
+        assert default is None
         if metavar is None:
             metavar = f'{dest.upper()}=VALUE'
         super().__init__(
-            default=config_default,
+            default={},
             dest=dest,
             help=help,
             metavar=metavar,
-            required=required,
             **kw,
         )
 
-    @staticmethod
-    def _parse_values(values):
-        return dict(i.split('=', 1) for i in values)
+    def __call__(self, parser, namespace, value, option_string=None):
+        items = getattr(namespace, self.dest)
+        k, v = value.split('=', 1)
 
-    def __call__(self, parser, namespace, values, option_string=None):
-        items = getattr(namespace, self.dest, None)
-        if items is None or items is self.default:
-            items = {}
-        items.update(self._parse_values(values))
+        subitem = items
+        kl = k.split('.')
+        for k in kl[:-1]:
+            subitem = subitem.setdefault(k, {})
+        subitem[kl[-1]] = yaml.safe_load(v)
+
         setattr(namespace, self.dest, items)
 
 
-class ConfigStoreAzureAuthAction(ConfigStoreAction):
+class HashItemAction(argparse.Action):
+    def __init__(
+        self,
+        *,
+        dest_key,
+        default=None,
+        **kw,
+    ):
+        assert default is None
+        self.dest_key = dest_key,
+        super().__init__(
+            default=default,
+            **kw,
+        )
+
+    def __call__(self, parser, namespace, value, option_string=None):
+        items = getattr(namespace, self.dest)
+
+        subitem = items
+        kl = self.dest_key.split('.')
+        for k in kl[:-1]:
+            subitem = subitem.setdefault(k, {})
+        subitem[kl[-1]] = value
+
+        setattr(namespace, self.dest, items)
+
+
+class StoreAzureAuthAction(HashItemAction):
     class AzureAuth:
         def __init__(self, tenant_id, client_id, client_secret):
             self.tenant_id = tenant_id
@@ -145,7 +105,9 @@ class ConfigStoreAzureAuthAction(ConfigStoreAction):
             self.client_secret = client_secret
 
     def __init__(self, **kw):
-        kw.setdefault('config_key', 'azure-auth')
+        kw.setdefault('dest', 'config')
+        # TODO: legacy key
+        kw.setdefault('dest_key', 'azure-auth')
         kw.setdefault('help', 'Authentication info for Azure AD service principal')
         kw.setdefault('metavar', 'TENANT:APPLICATION:SECRET')
         kw.setdefault('type', self.create)

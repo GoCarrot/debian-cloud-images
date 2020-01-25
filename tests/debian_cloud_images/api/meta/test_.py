@@ -15,7 +15,6 @@ class Test_v1_ListSchema:
         data = {
             'apiVersion': 'v1',
             'kind': 'List',
-            'items': [],
         }
 
         obj = self.schema.load(data)
@@ -53,7 +52,6 @@ class Test_v1_ListSchema:
 
         obj = registry.load(data)
 
-        print(obj)
         assert isinstance(obj, list)
         assert len(obj) == 1
 
@@ -63,24 +61,37 @@ class Test_v1_ListSchema:
 class Test_v1_ObjectMetaSchema:
     schema = v1_ObjectMetaSchema()
 
-    def test(self):
+    def test_name(self):
+        data = {
+            'name': 'name',
+            'uid': '00000000-0000-0000-0000-000000000000',
+        }
+        obj = self.schema.load(data)
+        assert data == self.schema.dump(obj)
+
+    def test_labels(self):
         data = {
             'labels': {
                 'test': 'test',
             },
             'uid': '00000000-0000-0000-0000-000000000000',
         }
-
         obj = self.schema.load(data)
+        assert data == self.schema.dump(obj)
 
+    def test_uid(self):
+        data = {
+            'uid': '00000000-0000-0000-0000-000000000000',
+        }
+        obj = self.schema.load(data)
         assert data == self.schema.dump(obj)
 
 
 class Test_v1_TypeMetaSchema:
-    class TestSchema(v1_TypeMetaSchema):
+    class Schema(v1_TypeMetaSchema):
         __typemeta__ = TypeMeta('Test', 'test/v1')
 
-    schema = TestSchema()
+    schema = Schema()
 
     def test_correct(self):
         data = {

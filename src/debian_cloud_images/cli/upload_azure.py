@@ -1,57 +1,51 @@
 import http.client
 import logging
 
+from collections import namedtuple
+from libcloud.storage.drivers.azure_blobs import AzureBlobLease
+
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_type
-from ..utils import argparse_ext
 from ..utils.files import ChunkedFile
 from ..utils.libcloud.compute.azure_arm import ExAzureNodeDriver
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
-from libcloud.storage.drivers.azure_blobs import AzureBlobLease
 
-
-class AzureResourceGroup:
-    def __init__(self, subscription_id, resource_group):
-        self.subscription_id = subscription_id
-        self.resource_group = resource_group
-
-    @classmethod
-    def create(cls, value):
-        return cls(*value.split(':'))
+AzureAuth = namedtuple('AzureAuth', ('client', 'secret'))
+AzureImage = namedtuple('AzureImage', ('tenant', 'subscription', 'group'))
+AzureStorage = namedtuple('AzureStorage', ('tenant', 'subscription', 'group', 'name'))
 
 
 class ImageUploaderAzure:
-    def __init__(self, output, storage_group, storage_id, image_group, generation, auth):
+    def __init__(self, output, image, storage, generation, auth):
         self.output = output
-        self.storage_group = storage_group
-        self.storage_id = storage_id
-        self.image_group = image_group
+        self.image = image
+        self.storage = storage
         self.generation = generation
         self.auth = auth
 
-        self.__compute_driver = self.__storage = self.__storage_driver = None
+        self.__image_driver = self.__storage_obj = self.__storage_driver = None
 
     @property
-    def compute_driver(self):
-        ret = self.__compute_driver
+    def image_driver(self):
+        ret = self.__image_driver
         if ret is None:
-            ret = self.__compute_driver = ExAzureNodeDriver(
-                tenant_id=self.auth.tenant_id,
-                subscription_id=self.storage_group.subscription_id,
-                client_id=self.auth.client_id,
-                client_secret=self.auth.client_secret,
+            ret = self.__image_driver = ExAzureNodeDriver(
+                tenant_id=self.image.tenant,
+                subscription_id=self.image.subscription,
+                client_id=self.auth.client,
+                client_secret=self.auth.secret,
             )
         return ret
 
     @property
-    def storage(self):
-        ret = self.__storage
+    def storage_obj(self):
+        ret = self.__storage_obj
         if ret is None:
-            ret = self.__storage = self.storage_driver.get_storage(
-                self.storage_id,
-                resource_group=self.storage_group.resource_group,
+            ret = self.__storage_obj = self.storage_driver.get_storage(
+                name=self.storage.name,
+                resource_group=self.storage.group,
             )
         return ret
 
@@ -60,17 +54,17 @@ class ImageUploaderAzure:
         ret = self.__storage_driver
         if ret is None:
             ret = self.__storage_driver = AzureResourceManagementStorageDriver(
-                tenant_id=self.auth.tenant_id,
-                subscription_id=self.storage_group.subscription_id,
-                client_id=self.auth.client_id,
-                client_secret=self.auth.client_secret,
+                tenant_id=self.storage.tenant,
+                subscription_id=self.storage.subscription,
+                client_id=self.auth.client,
+                client_secret=self.auth.secret,
             )
         return ret
 
     def __call__(self, image, public_info):
         image_name = public_info.vendor_name63
         image_file = '{}/disk.vhd'.format(image_name)
-        image_url = 'https://{}/{}'.format(self.storage.connection.host, image_file)
+        image_url = 'https://{}/{}'.format(self.storage_obj.connection.host, image_file)
 
         self.create_container(image_name)
         self.upload_file(image, image_file)
@@ -81,7 +75,7 @@ class ImageUploaderAzure:
 
         manifests = [Upload(
             metadata=metadata,
-            provider=self.compute_driver.connection.host,
+            provider=self.image_driver.connection.host,
             ref=image_id,
         )]
 
@@ -92,7 +86,7 @@ class ImageUploaderAzure:
     def create_container(self, container):
         logging.info('Creating container %s', container)
 
-        r = self.storage.connection.request(
+        r = self.storage_obj.connection.request(
             container,
             method='PUT',
             params={
@@ -103,13 +97,13 @@ class ImageUploaderAzure:
             raise RuntimeError('Error creating container: {0.error} ({0.status})'.format(r))
 
     def create_image(self, image, image_name, image_url):
-        image_location = self.storage.extra['location']
+        image_location = self.storage_obj.extra['location']
 
-        logging.info('Create image %s/%s in %s', self.image_group.resource_group, image_name, image_location)
+        logging.info('Create image %s/%s in %s', self.image.group, image_name, image_location)
 
-        return self.compute_driver.ex_create_computeimage(
+        return self.image_driver.ex_create_computeimage(
             name=image_name,
-            ex_resource_group=self.image_group.resource_group,
+            ex_resource_group=self.image.group,
             location=image_location,
             ex_blob=image_url,
             ex_generation=self.generation,
@@ -118,7 +112,7 @@ class ImageUploaderAzure:
     def delete_container(self, container):
         logging.info('Deleting container %s', container)
 
-        self.storage.connection.request(
+        self.storage_obj.connection.request(
             container,
             method='DELETE',
             params={
@@ -133,14 +127,14 @@ class ImageUploaderAzure:
         with image.open_image('vhd') as f:
             chunked = ChunkedFile(f, 4 * 1024 * 1024)
 
-            with AzureBlobLease(self.storage, path, True) as lease:
+            with AzureBlobLease(self.storage_obj, path, True) as lease:
                 headers = {
                     'x-ms-blob-type': 'PageBlob',
                     'x-ms-blob-content-length': str(chunked.size),
                 }
                 lease.update_headers(headers)
 
-                r = self.storage.connection.request(
+                r = self.storage_obj.connection.request(
                     path,
                     method='PUT',
                     headers=headers,
@@ -164,7 +158,7 @@ class ImageUploaderAzure:
         lease.update_headers(headers)
         lease.renew()
 
-        r = self.storage.connection.request(
+        r = self.storage_obj.connection.request(
             path,
             method='PUT',
             params={
@@ -180,31 +174,23 @@ class ImageUploaderAzure:
 class UploadAzureCommand(UploadBaseCommand):
     argparser_name = 'upload-azure'
     argparser_help = 'upload Debian images to Azure'
+    argparser_epilog = '''
+config options:
+  azure.auth.client
+  azure.auth.secret
+  azure.image.tenant
+  azure.image.subscription
+  azure.image.group
+  azure.storage.tenant
+  azure.storage.subscription
+  azure.storage.group
+  azure.storage.name
+'''
 
     @classmethod
-    def _argparse_register(cls, parser, config):
-        super()._argparse_register(parser, config)
+    def _argparse_register(cls, parser):
+        super()._argparse_register(parser)
 
-        parser.add_argument(
-            '--group',
-            action=argparse_ext.ConfigStoreAction,
-            config=config,
-            config_key='azure-group',
-            help='Azure Subscription and Resource group',
-            metavar='SUBSCRIPTION:GROUP',
-            required=True,
-            type=AzureResourceGroup.create,
-        )
-        parser.add_argument(
-            '--storage',
-            action=argparse_ext.ConfigStoreAction,
-            config=config,
-            config_key='azure-storage',
-            dest='storage_id',
-            help='Name or ID of Azure storage',
-            metavar='ID',
-            required=True,
-        )
         parser.add_argument(
             '--generation',
             choices=(1, 2),
@@ -212,21 +198,30 @@ class UploadAzureCommand(UploadBaseCommand):
             help='Generation of VM (1 is legacy, 2 is UEFI and modern emulation)',
             type=int,
         )
-        parser.add_argument(
-            '--auth',
-            action=argparse_ext.ConfigStoreAzureAuthAction,
-            config=config,
-            required=True,
-        )
 
-    def __init__(self, *, group=None, storage_id=None, generation=None, auth=None, **kw):
+    def __init__(self, *, generation, **kw):
         super().__init__(**kw)
+
+        auth = AzureAuth(
+            client=str(self.config_get('azure.auth.client')),
+            secret=self.config_get('azure.auth.secret'),
+        )
+        image = AzureImage(
+            tenant=str(self.config_get('azure.image.tenant', 'azure.storage.tenant')),
+            subscription=str(self.config_get('azure.image.subscription', 'azure.storage.subscription')),
+            group=self.config_get('azure.image.group', 'azure.storage.group'),
+        )
+        storage = AzureStorage(
+            tenant=str(self.config_get('azure.storage.tenant')),
+            subscription=str(self.config_get('azure.storage.subscription')),
+            group=self.config_get('azure.storage.group'),
+            name=self.config_get('azure.storage.name'),
+        )
 
         self.uploader = ImageUploaderAzure(
             output=self.output,
-            storage_group=group,
-            storage_id=storage_id,
-            image_group=group,
+            image=image,
+            storage=storage,
             generation=generation,
             auth=auth,
         )

@@ -1,37 +1,48 @@
 import argparse
-import configparser
 import logging
-import os
-import pathlib
+
+from ..utils import argparse_ext
+from ..utils.config import Config
 
 
 class BaseCommand:
+    _marker = object()
+
     argparser_name = None
+    argparser_epilog = None
     argparser_help = None
     argparser_usage = None
 
     @classmethod
-    def _argparse_init_sub(cls, subparsers, config, config_section):
+    def _argparse_init_sub(cls, subparsers):
         parser = subparsers.add_parser(
-            formatter_class=argparse.RawTextHelpFormatter,
             name=cls.argparser_name,
+            epilog=cls.argparser_epilog,
             help=cls.argparser_help,
             usage=cls.argparser_usage,
+            formatter_class=argparse.RawTextHelpFormatter,
         )
-        if config_section:
-            section = config[config_section]
-        else:
-            try:
-                section = config[cls.argparser_name]
-            except KeyError:
-                section = config.defaults()
-        cls._argparse_register_config(parser)
-        cls._argparse_register(parser, section)
+        cls._argparse_register(parser)
         return parser
 
     @classmethod
-    def _argparse_register(cls, parser, config):
+    def _argparse_register(cls, parser):
         parser.set_defaults(cls=cls)
+        parser.add_argument(
+            '--config',
+            action=argparse_ext.HashAction,
+            help='override config option',
+        )
+        parser.add_argument(
+            '--config-file',
+            help='use config file',
+            metavar='FILE',
+        )
+        parser.add_argument(
+            '--config-section',
+            help='use section from config file',
+            metavar='SECTION',
+        )
         parser.add_argument(
             '--debug',
             action='store_true',
@@ -39,70 +50,44 @@ class BaseCommand:
         )
 
     @classmethod
-    def _argparse_register_config(cls, parser):
-        parser.add_argument(
-            '--config-file',
-            help='Use config file',
-            metavar='FILE',
-        )
-        parser.add_argument(
-            '--config-section',
-            help='Use section from config file',
-            metavar='SECTION',
-        )
-
-    @staticmethod
-    def _config_files():
-        path = os.getenv('XDG_CONFIG_DIRS', '/etc/xdg')
-        for p in path.split(os.pathsep):
-            yield pathlib.Path(p).expanduser() / 'debian-cloud-images' / 'config'
-        path = os.getenv('XDG_CONFIG_HOME', os.path.expanduser("~/.config"))
-        for p in path.split(os.pathsep):
-            yield pathlib.Path(p).expanduser() / 'debian-cloud-images' / 'config'
-
-    @classmethod
-    def _config_read(cls, config_file):
-        config = configparser.ConfigParser()
-        if config_file:
-            with open(config_file) as f:
-                config.read_file(f)
-        else:
-            config.read(cls._config_files())
-        return config
-
-    @classmethod
     def _main(cls):
-        early_parser = argparse.ArgumentParser(
-            add_help=False,
-            allow_abbrev=False,
-            formatter_class=argparse.RawTextHelpFormatter,
-        )
-        cls._argparse_register_config(early_parser)
-        early_args, remainder_argv = early_parser.parse_known_args()
-
-        config = cls._config_read(early_args.config_file)
         parser = argparse.ArgumentParser(
-            allow_abbrev=False,
-            formatter_class=argparse.RawTextHelpFormatter,
+            epilog=cls.argparser_epilog,
+            prog=cls.argparser_name,
             usage=cls.argparser_usage,
+            formatter_class=argparse.RawTextHelpFormatter,
         )
-        if early_args.config_section:
-            section = config[early_args.config_section]
-        else:
-            try:
-                section = config[cls.argparser_name]
-            except KeyError:
-                section = config.defaults()
-        cls._argparse_register_config(parser)
-        cls._argparse_register(parser, section)
-        args = parser.parse_args(remainder_argv)
-        return cls(**vars(args))()
+        cls._argparse_register(parser)
+        args = parser.parse_args()
+        return cls(argparser=parser, **vars(args))()
 
-    def __init__(self, *, cls=None, config_file=None, config_section=None, debug=False):
+    def __init__(self, *, argparser=None, cls=None, config={}, config_file=None, config_section=None, debug=False):
         logging.basicConfig(
             level=debug and logging.DEBUG or logging.INFO,
             format='%(asctime)s %(levelname)s %(message)s',
         )
 
+        self._config = Config(override=config)
+        if config_file:
+            self._config.read(config_file)
+        else:
+            self._config.read_defaults()
+
+        if config_section:
+            self.config = self._config[f'_name={config_section}']
+        else:
+            self.config = self._config[None]
+
+        self.argparser = argparser
+
     def __call__(self):
         raise NotImplementedError
+
+    def config_get(self, *keys, default=_marker):
+        for key in keys:
+            ret = self.config.get(key, self._marker)
+            if ret != self._marker:
+                return ret
+        if default == self._marker:
+            self.argparser.error(f'the following config option is required: {keys[0]}')
+        return default

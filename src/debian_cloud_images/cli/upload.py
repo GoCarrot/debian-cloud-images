@@ -68,8 +68,8 @@ class UploadCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images to own storage'
 
     @classmethod
-    def _argparse_register(cls, parser, config):
-        super()._argparse_register(parser, config)
+    def _argparse_register(cls, parser):
+        super()._argparse_register(parser)
 
         parser.add_argument(
             '--provider',

@@ -1,3 +1,4 @@
+import argparse
 import logging
 import time
 
@@ -238,18 +239,21 @@ class ImageUploaderEc2:
 class UploadEc2Command(UploadBaseCommand):
     argparser_name = 'upload-ec2'
     argparser_help = 'upload Debian images to Amazon EC2'
+    argparser_epilog = '''
+config options:
+  ec2.bucket           create temporary image file in this S3 bucket
+'''
 
     @classmethod
-    def _argparse_register(cls, parser, config):
-        super()._argparse_register(parser, config)
+    def _argparse_register(cls, parser):
+        super()._argparse_register(parser)
 
         parser.add_argument(
             '--bucket',
-            action=argparse_ext.ConfigStoreAction,
-            config=config,
-            config_key='ec2-bucket',
-            help='create temporary image file in this S3 bucket',
-            required=True,
+            action=argparse_ext.HashItemAction,
+            dest='config',
+            dest_key='ec2.bucket',
+            help=argparse.SUPPRESS,
         )
         parser.add_argument(
             '--access-key-id',
@@ -262,39 +266,21 @@ class UploadEc2Command(UploadBaseCommand):
             env='AWS_SECRET_ACCESS_KEY',
         )
         parser.add_argument(
-            '--region',
-            action=argparse_ext.ConfigAppendAction,
-            config=config,
-            config_key='ec2-regions',
-            dest='regions',
-            help='Regions to copy snapshot and image to or "all"\n    (default: region of bucket)',
-            nargs='+',
-        )
-        parser.add_argument(
-            '--add-tag',
-            action=argparse_ext.ConfigHashAction,
-            config=config,
-            config_key='ec2-add-tags',
-            dest='add_tags',
-            help='Additional tags to be set on both snapshot and AMI',
-            nargs='+',
-        )
-        parser.add_argument(
             '--permission-public',
             action='store_true',
             help='Make snapshot and image public',
         )
 
-    def __init__(self, *, bucket=None, access_key_id=None, access_secret_key=None, regions=[], add_tags={}, permission_public=None, **kw):
+    def __init__(self, *, access_key_id, access_secret_key, regions=[], add_tags={}, permission_public, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderEc2(
             output=self.output,
-            bucket=bucket,
+            bucket=self.config_get('ec2.bucket', 'ec2-bucket'),
             key=access_key_id,
             secret=access_secret_key,
-            regions=regions,
-            add_tags=add_tags,
+            regions=self.config_get('ec2.image.regions', default=[]),
+            add_tags=dict(tuple(i.split('=', 1)) for i in self.config_get('ec2.image.tags', default=[])),
             permission_public=permission_public,
         )
 

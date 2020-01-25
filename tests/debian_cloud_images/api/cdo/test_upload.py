@@ -9,7 +9,6 @@ class Test_v1alpha1_UploadSchema:
             'apiVersion': 'cloud.debian.org/v1alpha1',
             'kind': 'Upload',
             'metadata': {
-                'labels': {},
                 'uid': '00000000-0000-0000-0000-000000000000',
             },
             'data': {
