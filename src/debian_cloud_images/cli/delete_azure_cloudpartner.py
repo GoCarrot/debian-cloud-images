@@ -42,7 +42,12 @@ class AzureCloudPartnerOffer:
     def read(self):
         r = self._request()
         self.data, self.etag = r.parse_body(), r.headers['etag']
-        self.plans = {i['planId']: i for i in self.data['definition']['plans']}
+        self.plans = {}
+        for plan in self.data['definition']['plans']:
+            images = {plan['planId']: plan['microsoft-azure-corevm.vmImagesPublicAzure']}
+            for generation in plan['diskGenerations']:
+                images[generation['planId']] = generation['microsoft-azure-corevm.vmImagesPublicAzure']
+            self.plans[plan['planId']] = images
 
     def save(self):
         r = self._request(data=self.data, method='PUT', headers={'If-Match': self.etag})
@@ -180,8 +185,8 @@ config options:
 
         offer = AzureCloudPartnerOffer(self.cloudpartner_obj, self.cloudpartner.publisher, offer_id)
         changed = False
-        for plan_id, plan in offer.plans.items():
-            changed |= self._delete_from_offer_plan(plan_id, plan)
+        for plan in offer.plans.values():
+            changed |= self._delete_from_offer_plan(plan)
 
         if changed:
             if not self.no_op:
@@ -192,33 +197,33 @@ config options:
         else:
             logging.debug(f'Would not save unmodified offer {offer_id}')
 
-    def _delete_from_offer_plan(self, plan_id, plan):
+    def _delete_from_offer_plan(self, plan):
         changed = False
 
-        logging.debug(f'Deleting images from plan {plan_id}')
+        for plan_id, images in plan.items():
+            logging.debug(f'Deleting images from plan {plan_id}')
 
-        images = plan['microsoft-azure-corevm.vmImagesPublicAzure']
-        versions_all = frozenset(AzureImageVersion.from_string(i) for i in images)
-        versions_remain = set()
+            versions_all = frozenset(AzureImageVersion.from_string(i) for i in images)
+            versions_remain = set()
 
-        for version in sorted(versions_all, reverse=True):
-            if version.minor == 0:
-                logging.warning(f'Not deleting images from plan {plan_id}, undated images found')
-                return False
-            date = datetime.datetime.strptime(str(version.minor), '%Y%m%d')
-            if date >= self.delete_date_offer:
-                logging.debug(f'Not deleting image {version} from plan {plan_id}, too new')
-                versions_remain.add(version)
-            else:
-                break
+            for version in sorted(versions_all, reverse=True):
+                if version.minor == 0:
+                    logging.warning(f'Not deleting images from plan {plan_id}, undated images found')
+                    return False
+                date = datetime.datetime.strptime(str(version.minor), '%Y%m%d')
+                if date >= self.delete_date_offer:
+                    logging.debug(f'Not deleting image {version} from plan {plan_id}, too new')
+                    versions_remain.add(version)
+                else:
+                    break
 
-        for version in sorted(versions_all - versions_remain):
-            if len(images) > 1:
-                logging.info(f'Deleting image {version} from plan {plan_id}')
-                del images[str(version)]
-                changed = True
-            else:
-                logging.debug(f'Not deleting image {version} from plan {plan_id}, last remaining')
+            for version in sorted(versions_all - versions_remain):
+                if len(images) > 1:
+                    logging.info(f'Deleting image {version} from plan {plan_id}')
+                    del images[str(version)]
+                    changed = True
+                else:
+                    logging.debug(f'Not deleting image {version} from plan {plan_id}, last remaining')
 
         return changed
 
