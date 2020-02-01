@@ -1,4 +1,5 @@
 import time
+import typing
 
 from libcloud.compute.drivers.azure_arm import AzureNodeDriver
 
@@ -6,7 +7,7 @@ from ..common.azure import AzureGenericOAuth2Connection
 
 
 class ExAzureNodeDriver(AzureNodeDriver):
-    connectionCls = AzureGenericOAuth2Connection
+    connectionCls: typing.Type = AzureGenericOAuth2Connection
 
     def __init__(self, *, client_id, client_secret, subscription_id, tenant_id):
         self.client_id = client_id

@@ -2,6 +2,9 @@ from marshmallow import fields, ValidationError
 
 
 class NestedRegistry(fields.Nested):
+    def __init__(self, *args, **kw):
+        super().__init__(fields.Field(), *args, **kw)
+
     @property
     def registry(self):
         return self.parent.context['registry']

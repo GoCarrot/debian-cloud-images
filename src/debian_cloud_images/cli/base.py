@@ -1,5 +1,6 @@
 import argparse
 import logging
+import typing
 
 from ..utils import argparse_ext
 from ..utils.config import Config
@@ -8,10 +9,10 @@ from ..utils.config import Config
 class BaseCommand:
     _marker = object()
 
-    argparser_name = None
-    argparser_epilog = None
-    argparser_help = None
-    argparser_usage = None
+    argparser_name: typing.Optional[str] = None
+    argparser_epilog: typing.Optional[str] = None
+    argparser_help: typing.Optional[str] = None
+    argparser_usage: typing.Optional[str] = None
 
     @classmethod
     def _argparse_init_sub(cls, subparsers):
