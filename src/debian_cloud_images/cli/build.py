@@ -6,13 +6,13 @@ import logging
 import os
 import pathlib
 import re
-import subprocess
 
 from datetime import datetime
 
 from .base import BaseCommand
 
-from ..build import fai_config_path
+from ..build.fai import RunFAI
+from ..build.tar import RunTar
 from ..data import data_path
 from ..utils import argparse_ext
 
@@ -380,30 +380,21 @@ class BuildCommand(BaseCommand):
         image_raw = output / '{}.raw'.format(name)
         image_tar = output / '{}.tar'.format(name)
 
-        self.cmd = (
-            'fai-diskimage',
-            '--verbose',
-            '--hostname', 'debian',
-            '--class', ','.join(self.c.classes),
-            '--size', self.c.vendor.fai_size,
-            '--cspace', fai_config_path,
-            image_raw.as_posix(),
+        self.fai = RunFAI(
+            output_filename=image_raw,
+            classes=self.c.classes,
+            size_gb=self.c.vendor.fai_size,
+            env=self.env,
         )
 
-        self.cmd_tar = (
-            'tar',
-            '-cS',
-            '-f', image_tar.as_posix(),
-            '--transform', r'flags=r;s|.*\.raw|disk.raw|',
-            image_raw.as_posix(),
+        self.tar = RunTar(
+            input_filename=image_raw,
+            output_filename=image_tar,
         )
 
     def __call__(self):
-        logging.info('Running: %s; %s', ' '.join(self.cmd), ' '.join(self.cmd_tar))
-
-        if not self.noop:
-            subprocess.check_call(self.cmd, env=self.env)
-            subprocess.check_call(self.cmd_tar)
+        self.fai(not self.noop)
+        self.tar(not self.noop)
 
 
 if __name__ == '__main__':
