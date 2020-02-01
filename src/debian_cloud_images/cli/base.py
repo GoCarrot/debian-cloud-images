@@ -35,6 +35,8 @@ class BaseCommand:
         )
         parser.add_argument(
             '--config-file',
+            action='append',
+            dest='config_files',
             help='use config file',
             metavar='FILE',
         )
@@ -61,15 +63,15 @@ class BaseCommand:
         args = parser.parse_args()
         return cls(argparser=parser, **vars(args))()
 
-    def __init__(self, *, argparser=None, cls=None, config={}, config_file=None, config_section=None, debug=False):
+    def __init__(self, *, argparser=None, cls=None, config={}, config_files=[], config_section=None, debug=False):
         logging.basicConfig(
             level=debug and logging.DEBUG or logging.INFO,
             format='%(asctime)s %(levelname)s %(message)s',
         )
 
         self._config = Config(override=config)
-        if config_file:
-            self._config.read(config_file)
+        if config_files:
+            self._config.read(*config_files)
         else:
             self._config.read_defaults()
 

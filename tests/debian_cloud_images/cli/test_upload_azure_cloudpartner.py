@@ -10,11 +10,11 @@ from debian_cloud_images.cli.upload_azure_cloudpartner import (
 
 class TestCommand:
     @pytest.fixture
-    def config_file(self, tmp_path):
+    def config_files(self, tmp_path):
         p = tmp_path / 'config'
         with p.open(mode='w') as f:
             f.write('')
-        return p.as_posix()
+        return [p.as_posix()]
 
     @pytest.fixture
     def mock_uploader(self, monkeypatch):
@@ -24,7 +24,7 @@ class TestCommand:
         monkeypatch.setattr(upload_azure_cloudpartner, 'ImageUploaderAzureCloudpartner', ret)
         return ret
 
-    def test___init__(self, config_file, mock_uploader):
+    def test___init__(self, config_files, mock_uploader):
         UploadAzureCloudpartnerCommand(
             config={
                 'azure': {
@@ -44,7 +44,7 @@ class TestCommand:
                     },
                 },
             },
-            config_file=config_file,
+            config_files=config_files,
             output='output',
         )
 
