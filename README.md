@@ -80,6 +80,7 @@ be any of the following:
 
 ## Documentation
 
+ * [Details about creating images](doc/details.md)
  * https://fai-project.org/fai-guide/
  * https://noah.meyerhans.us/blog/2017/02/10/using-fai-to-customize-and-build-your-own-cloud-images/
 
