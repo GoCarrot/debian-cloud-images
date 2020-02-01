@@ -10,6 +10,7 @@ class TestVar:
             'btmp',
             'chrony',
             'faillog',
+            'journal',  # systemd persistent journal
             'lastlog',
             'runit',
             'unattended-upgrades',
