@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+# generate dependencies for debian/control, so packages we need are not removed from testing
+# this is not yet used
+
 import pathlib
 import sys
 
