@@ -5,6 +5,15 @@ class TestVar:
         assert p.is_dir(), '/var/log is no directory'
 
         c = set(i.relative_to(p).as_posix() for i in p.glob('*'))
-        c.difference_update(('apt', 'btmp', 'chrony', 'faillog', 'lastlog', 'runit', 'unattended-upgrades', 'wtmp'))
+        c.difference_update((
+            'apt',
+            'btmp',
+            'chrony',
+            'faillog',
+            'lastlog',
+            'runit',
+            'unattended-upgrades',
+            'wtmp',
+        ))
 
         assert len(c) == 0, '/var/log contains unexpected files: {}'.format(', '.join(c))
