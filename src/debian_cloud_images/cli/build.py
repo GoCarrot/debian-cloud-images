@@ -56,7 +56,8 @@ class BuildType:
         init(**kw)
 
 
-ArchEnum = enum.Enum(
+ArchEnum = enum.Enum(  # type:ignore
+                       # mypy is not able to parse functional Enum properly
     'ArchEnum',
     {
         'amd64': {
@@ -73,7 +74,8 @@ ArchEnum = enum.Enum(
 )
 
 
-ReleaseEnum = enum.Enum(
+ReleaseEnum = enum.Enum(  # type:ignore
+                          # mypy is not able to parse functional Enum properly
     'ReleaseEnum',
     {
         'stretch': {
@@ -116,7 +118,8 @@ ReleaseEnum = enum.Enum(
 )
 
 
-VendorEnum = enum.Enum(
+VendorEnum = enum.Enum(  # type:ignore
+                         # mypy is not able to parse functional Enum properly
     'VendorEnum',
     {
         'azure': {
@@ -152,7 +155,8 @@ VendorEnum = enum.Enum(
 )
 
 
-BuildTypeEnum = enum.Enum(
+BuildTypeEnum = enum.Enum(  # type:ignore
+                            # mypy is not able to parse functional Enum properly
     'BuildTypeEnum',
     {
         'dev': {
