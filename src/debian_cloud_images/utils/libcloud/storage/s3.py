@@ -1,4 +1,5 @@
 import requests
+import typing
 import urllib.parse
 
 from libcloud.common.aws import AWSDriver
@@ -7,7 +8,7 @@ from libcloud.storage.drivers.s3 import BaseS3StorageDriver, S3SignatureV4Connec
 
 class S3BucketStorageDriver(AWSDriver, BaseS3StorageDriver):
     name = 'Amazon S3 (virtual host)'
-    connectionCls = S3SignatureV4Connection
+    connectionCls: typing.Type = S3SignatureV4Connection
 
     def __init__(self, bucket, key, secret=None, region=None, **kwargs):
         host, self.region_name = self._get_host_region(bucket)

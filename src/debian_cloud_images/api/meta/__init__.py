@@ -1,3 +1,5 @@
+import typing
+
 from collections import namedtuple
 from marshmallow import fields, pre_dump, post_dump, post_load, ValidationError, validates
 from uuid import uuid4
@@ -11,8 +13,8 @@ TypeMeta = namedtuple('TypeMeta', ['kind', 'api_version'])
 
 
 class v1_TypeMetaSchema(SchemaNonempty):
-    __model__ = TypeMeta
-    __typemeta__ = None
+    __model__: typing.Type = TypeMeta
+    __typemeta__: typing.Optional[TypeMeta] = None
 
     api_version = fields.Str(data_key='apiVersion')
     kind = fields.Str()
@@ -43,7 +45,7 @@ class v1_ListSchema(v1_TypeMetaSchema):
     __model__ = list
     __typemeta__ = list_typemeta
 
-    items = fields_ext.NestedRegistry(None, many=True)
+    items = fields_ext.NestedRegistry(many=True)
 
     @pre_dump
     def dump_items(self, data, **kw):

@@ -1,4 +1,5 @@
 import time
+import typing
 
 from libcloud.common.azure import AzureResponse
 from libcloud.storage.drivers.azure_blobs import AzureBlobsStorageDriver
@@ -7,7 +8,7 @@ from ..common.azure import AzureGenericOAuth2Connection
 
 
 class AzureStorageOAuth2Connection(AzureGenericOAuth2Connection):
-    responseCls = AzureResponse
+    responseCls: typing.Type = AzureResponse
 
     def add_default_headers(self, headers):
         headers['Authorization'] = "Bearer %s" % self.access_token
@@ -21,7 +22,7 @@ class AzureStorageOAuth2Connection(AzureGenericOAuth2Connection):
 
 class AzureBlobsOAuth2StorageDriver(AzureBlobsStorageDriver):
     name = 'Microsoft Azure (blobs with OAuth2)'
-    connectionCls = AzureStorageOAuth2Connection
+    connectionCls: typing.Type = AzureStorageOAuth2Connection
 
     def __init__(self, key, *, client_id, client_secret, tenant_id, host=None, extra=None):
         self.client_id = client_id

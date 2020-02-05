@@ -27,6 +27,16 @@ test flake8:
       python3-flake8
     - python3 -m flake8
 
+test mypy:
+  stage: source test
+  image: debian:bullseye
+  script:
+    - >
+      apt-get install --no-install-recommends -y
+      mypy
+    - mypy src
+  allow_failure: true
+
 test package:
   stage: source test
   image: debian:buster
