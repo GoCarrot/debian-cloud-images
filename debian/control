@@ -28,6 +28,7 @@ Depends:
  fai-client (>= 5.7),
  fai-setup-storage,
  qemu-utils,
+ dosfstools,
  ${python3:Depends},
  ${misc:Depends},
 Description: tool used by the Debian Cloud Team to create official cloud images
