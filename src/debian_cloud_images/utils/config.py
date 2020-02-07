@@ -22,12 +22,12 @@ def flatten_dict(d):
 
 
 class Config:
-    def __init__(self, override=None):
+    def __init__(self, overrides=[]):
         self._configs_default = []
         self._configs_override = []
         self._configs = {}
 
-        if override:
+        for override in overrides:
             config = api_registry.load(override, default_typemeta=v1alpha1_ToolConfigSchema.__typemeta__, unknown=marshmallow.INCLUDE)
             self._configs_override.append(flatten_dict(config))
 

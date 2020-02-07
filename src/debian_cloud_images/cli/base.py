@@ -70,7 +70,7 @@ class BaseCommand:
             format='%(asctime)s %(levelname)s %(message)s',
         )
 
-        self._config = Config(override=config)
+        self._config = Config(overrides=[config])
         if config_files:
             self._config.read(*config_files)
         else:
