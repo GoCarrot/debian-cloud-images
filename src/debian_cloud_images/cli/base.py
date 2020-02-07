@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import typing
 
 from ..utils import argparse_ext
@@ -70,7 +71,7 @@ class BaseCommand:
             format='%(asctime)s %(levelname)s %(message)s',
         )
 
-        self._config = Config(overrides=[config])
+        self._config = Config(overrides=[self.config_env(), config])
         if config_files:
             self._config.read(*config_files)
         else:
@@ -85,6 +86,19 @@ class BaseCommand:
 
     def __call__(self):
         raise NotImplementedError
+
+    def config_env(self):
+        ret = {}
+
+        for k, v in os.environ.items():
+            if k.startswith('DCI_CONFIG_'):
+                subitem = ret
+                kl = [i.lower() for i in k.split('_')[2:]]
+                for k in kl[:-1]:
+                    subitem = subitem.setdefault(k, {})
+                subitem[kl[-1]] = v
+
+        return ret
 
     def config_get(self, *keys, default=_marker):
         for key in keys:
