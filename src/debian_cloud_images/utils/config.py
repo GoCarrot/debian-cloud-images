@@ -1,8 +1,9 @@
 import configparser
 import marshmallow
-import yaml
 import os
 import pathlib
+import sys
+import yaml
 
 from ..api.meta import ObjectMeta
 from ..api.cdo.tool_config import v1alpha1_ToolConfigSchema
@@ -22,12 +23,12 @@ def flatten_dict(d):
 
 
 class Config:
-    def __init__(self, override=None):
+    def __init__(self, overrides=[]):
         self._configs_default = []
         self._configs_override = []
         self._configs = {}
 
-        if override:
+        for override in overrides:
             config = api_registry.load(override, default_typemeta=v1alpha1_ToolConfigSchema.__typemeta__, unknown=marshmallow.INCLUDE)
             self._configs_override.append(flatten_dict(config))
 
@@ -79,6 +80,20 @@ class Config:
                     self._configs.setdefault(f'_name={config_name}', []).append(config_flat)
                 else:
                     self._configs_default.append(config_flat)
+
+    def dump(self, f=sys.stdout):
+        self._dump_list(f, f'Default', self._configs_default)
+        self._dump_list(f, f'Override', self._configs_override)
+        for k, v in sorted(self._configs.items()):
+            self._dump_list(f, f'Selector {k}', v)
+
+    @classmethod
+    def _dump_list(cls, f, header, data):
+        for i, item in enumerate(i for i in data if i):
+            print(f'{header} ({i}):', file=f)
+            for key, value in sorted(item.items()):
+                print(f'    {key}: {value}', file=f)
+            print(file=f)
 
     def __getitem__(self, key):
         configs = []
