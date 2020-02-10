@@ -53,7 +53,7 @@ After the disk image is created you can try it with kvm, and wait 5s for the
 boot sequence to start:
 
 ```
-    # kvm -nic user,model=virtio -m1000 -hda genericcloud-buster-image.raw
+    # kvm -nic user,model=virtio -m 1024 -drive format=raw,file=image-buster-genericcloud-amd64.raw
 ```
 
 ## Supported image types
