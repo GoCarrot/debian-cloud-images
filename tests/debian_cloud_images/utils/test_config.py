@@ -123,3 +123,38 @@ test: section1
             'section': 'section1',
             'override': 'override',
         }
+
+    def test__getitem___precedence(self):
+        c = Config()
+        c._configs_default = [
+            {
+                'default': 'value1',
+            },
+            {
+                'default': 'value2',
+            }
+        ]
+        c._configs = {
+            '_name=section1': [
+                {
+                    'section': 'value1',
+                },
+                {
+                    'section': 'value2',
+                }
+            ]
+        }
+        c._configs_override = [
+            {
+                'override': 'value1',
+            },
+            {
+                'override': 'value2',
+            }
+        ]
+
+        assert c['_name=section1'] == {
+            'default': 'value1',
+            'section': 'value1',
+            'override': 'value1',
+        }
