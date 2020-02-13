@@ -308,7 +308,11 @@ class BuildCommand(BaseCommand):
             help='Type of image to build',
             metavar='TYPE',
         )
-        parser.add_argument('--noop', action='store_true')
+        parser.add_argument(
+            '--noop',
+            action='store_true',
+            help='print the commands which would be executed, but do not run them'
+        )
         parser.add_argument(
             '--localdebs',
             action='store_true',
