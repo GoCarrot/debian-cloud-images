@@ -97,10 +97,11 @@ class Config:
 
     def __getitem__(self, key):
         configs = []
-        configs.extend(self._configs_default)
+        # Reverse lists, so first value will have precedence
+        configs.extend(self._configs_default[::-1])
         if key is not None:
-            configs.extend(self._configs[key])
-        configs.extend(self._configs_override)
+            configs.extend(self._configs[key][::-1])
+        configs.extend(self._configs_override[::-1])
         ret = {}
         for c in configs:
             ret.update(c)
