@@ -29,12 +29,17 @@ class Arch:
 
 class Release:
     def __init__(self, kw):
-        def init(*, id, baseid, fai_classes, supports_linux_image_cloud=False):
+        def init(*, id, baseid, fai_classes, arch_supports_linux_image_cloud):
             self.id = id
             self.baseid = baseid
             self.fai_classes = fai_classes
-            self.supports_linux_image_cloud = supports_linux_image_cloud
+            self.arch_supports_linux_image_cloud = arch_supports_linux_image_cloud
         init(**kw)
+
+    def supports_linux_image_cloud_for_arch(self, arch):
+        if arch in self.arch_supports_linux_image_cloud:
+            return True
+        return False
 
 
 class Vendor:
@@ -82,36 +87,37 @@ ReleaseEnum = enum.Enum(  # type:ignore
             'id': '9',
             'baseid': '9',
             'fai_classes': ('STRETCH', ),
+            'arch_supports_linux_image_cloud': (),
         },
         'stretch-backports': {
             'id': '9-backports',
             'baseid': '9',
             'fai_classes': ('STRETCH', 'BACKPORTS_LINUX'),
-            'supports_linux_image_cloud': True,
+            'arch_supports_linux_image_cloud': ("amd64",),
         },
         'buster': {
             'id': '10',
             'baseid': '10',
             'fai_classes': ('BUSTER', 'EXTRAS'),
-            'supports_linux_image_cloud': True,
+            'arch_supports_linux_image_cloud': ('amd64',),
         },
         'buster-backports': {
             'id': '10-backports',
             'baseid': '10',
             'fai_classes': ('BUSTER', 'BACKPORTS_LINUX', 'EXTRAS'),
-            'supports_linux_image_cloud': True,
+            'arch_supports_linux_image_cloud': ('amd64',),
         },
         'bullseye': {
             'id': '11',
             'baseid': '11',
             'fai_classes': ('BULLSEYE', ),
-            'supports_linux_image_cloud': True,
+            'arch_supports_linux_image_cloud': ('amd64',),
         },
         'sid': {
             'id': 'sid',
             'baseid': 'sid',
             'fai_classes': ('SID', 'EXTRAS'),
-            'supports_linux_image_cloud': True,
+            'arch_supports_linux_image_cloud': ('amd64',),
         },
     },
     type=Release,
@@ -257,7 +263,7 @@ class Check:
             self.env['CLOUD_RELEASE_VERSION_AZURE'] = self.info['version_azure'] = self.version_azure
 
     def check(self):
-        if self.release.supports_linux_image_cloud and self.vendor.use_linux_image_cloud:
+        if self.release.supports_linux_image_cloud_for_arch(self.arch.name) and self.vendor.use_linux_image_cloud:
             self.classes.add('LINUX_IMAGE_CLOUD')
         else:
             self.classes.add('LINUX_IMAGE_BASE')
