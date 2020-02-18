@@ -13,8 +13,8 @@ class AzureImageVersion(collections.namedtuple('AzureImageVersion', ['major', 'm
 
     def __eq__(self, other):
         return (self.major == other.major
-                and self.minor == other.minor  # noqa:W503
-                and self.patch == other.patch) # noqa:W503
+                and self.minor == other.minor   # noqa:W503
+                and self.patch == other.patch)  # noqa:W503
 
     def __lt__(self, other):
         if self.major < other.major:
