@@ -81,7 +81,7 @@ if __name__ == '__main__':
         manifest.metadata.labels[wellknown.label_bcdo_build_id] = build_info['build_id']
         manifest.metadata.labels[wellknown.label_bcdo_type] = build_info['type']
 
-    with open('{}/{}.build.json'.format(args.output_dir, args.name), 'w') as f:
+    with open('{}/{}.build-fai.json'.format(args.output_dir, args.name), 'w') as f:
         json.dump(api_registry.dump(manifest), f, indent=4, separators=(',', ': '), sort_keys=True)
 
     if args.write:
