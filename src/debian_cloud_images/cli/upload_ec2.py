@@ -256,29 +256,19 @@ config options:
             help=argparse.SUPPRESS,
         )
         parser.add_argument(
-            '--access-key-id',
-            action=argparse_ext.ActionEnv,
-            env='AWS_ACCESS_KEY_ID',
-        )
-        parser.add_argument(
-            '--access-secret-key',
-            action=argparse_ext.ActionEnv,
-            env='AWS_SECRET_ACCESS_KEY',
-        )
-        parser.add_argument(
             '--permission-public',
             action='store_true',
             help='Make snapshot and image public',
         )
 
-    def __init__(self, *, access_key_id, access_secret_key, regions=[], add_tags={}, permission_public, **kw):
+    def __init__(self, *, regions=[], add_tags={}, permission_public, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderEc2(
             output=self.output,
             bucket=self.config_get('ec2.storage.name', 'ec2-bucket'),
-            key=access_key_id,
-            secret=access_secret_key,
+            key=self.config_get('ec2.auth.key'),
+            secret=self.config_get('ec2.auth.secret'),
             regions=self.config_get('ec2.image.regions', default=[]),
             add_tags=dict(tuple(i.split('=', 1)) for i in self.config_get('ec2.image.tags', default=[])),
             permission_public=permission_public,

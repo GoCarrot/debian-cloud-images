@@ -47,6 +47,10 @@ class Test_v1alpha1_ToolConfigSchema:
                 },
             },
             'ec2': {
+                'auth': {
+                    'key': 'test',
+                    'secret': 'test',
+                },
                 'storage': {
                     'name': 'test',
                 },

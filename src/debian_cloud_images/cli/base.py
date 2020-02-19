@@ -99,6 +99,10 @@ class BaseCommand:
         ret = {}
 
         self.__config_env_compat(
+            ret, 'AWS_ACCESS_KEY_ID', 'ec2.auth.key')
+        self.__config_env_compat(
+            ret, 'AWS_SECRET_ACCESS_KEY', 'ec2.auth.secret')
+        self.__config_env_compat(
             ret, 'GOOGLE_APPLICATION_CREDENTIALS', 'gce.auth.credentialsfile')
 
         for k, v in os.environ.items():
