@@ -54,7 +54,9 @@ class Test_v1alpha1_ToolConfigSchema:
                 },
             },
             'gce': {
-                'credentialsFile': 'test',
+                'auth': {
+                    'credentialsfile': 'test',
+                },
                 'image': {
                     'project': 'test',
                 },

@@ -34,9 +34,9 @@ class TestCommand:
     def test___init__(self, auth_file, config_files, mock_env, mock_uploader):
         UploadGceCommand(
             config={
+                'gce.auth.credentialsfile': auth_file,
                 'gce.image.project': 'project',
                 'gce.storage.name': 'bucket',
-                'gce.credentials_file': auth_file,
             },
             config_files=config_files,
             output='output',

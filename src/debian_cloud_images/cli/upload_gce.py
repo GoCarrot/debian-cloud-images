@@ -153,10 +153,10 @@ class UploadGceCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images to GCE'
     argparser_epilog = '''
 config options:
+  gce.auth.credentialsfile  use file for service account credentials
+                         (default: ${GOOGLE_APPLICATION_CREDENTIALS})
   gce.image.project    create images in this Google Cloud project
   gce.storage.name     create temporary image file in this Google Storage bucket
-  gce.credentials_file use file for service account credentials
-                         (default: ${GOOGLE_APPLICATION_CREDENTIALS})
 '''
 
     @classmethod
@@ -181,7 +181,7 @@ config options:
             '--auth',
             action=argparse_ext.HashItemAction,
             dest='config',
-            dest_key='gce.credentials_file',
+            dest_key='gce.auth.credentialsfile',
             help=argparse.SUPPRESS,
         )
 
@@ -190,7 +190,7 @@ config options:
 
         auth_file = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', None)
         if auth_file is None:
-            auth_file = self.config_get('gce.credentials_file')
+            auth_file = self.config_get('gce.auth.credentialsfile')
         with open(auth_file, 'r') as f:
             auth = json.load(f)
 
