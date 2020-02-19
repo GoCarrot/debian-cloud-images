@@ -154,7 +154,7 @@ class UploadGceCommand(UploadBaseCommand):
     argparser_epilog = '''
 config options:
   gce.project          create images in this Google Cloud project
-  gce.bucket           create temporary image file in this Google Storage bucket
+  gce.storage.name     create temporary image file in this Google Storage bucket
   gce.credentials_file use file for service account credentials
                          (default: ${GOOGLE_APPLICATION_CREDENTIALS})
 '''
@@ -174,7 +174,7 @@ config options:
             '--bucket',
             action=argparse_ext.HashItemAction,
             dest='config',
-            dest_key='gce.bucket',
+            dest_key='gce.storage.name',
             help=argparse.SUPPRESS,
         )
         parser.add_argument(
@@ -197,7 +197,7 @@ config options:
         self.uploader = ImageUploaderGce(
             output=self.output,
             project=self.config_get('gce.project', 'gce-project'),
-            bucket=self.config_get('gce.bucket', 'gce-bucket'),
+            bucket=self.config_get('gce.storage.name', 'gce-bucket'),
             auth=auth,
         )
 

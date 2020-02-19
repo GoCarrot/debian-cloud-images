@@ -35,7 +35,7 @@ class TestCommand:
         UploadGceCommand(
             config={
                 'gce.project': 'project',
-                'gce.bucket': 'bucket',
+                'gce.storage.name': 'bucket',
                 'gce.credentials_file': auth_file,
             },
             config_files=config_files,
@@ -55,7 +55,7 @@ class TestCommand:
         UploadGceCommand(
             config={
                 'gce.project': 'project',
-                'gce.bucket': 'bucket',
+                'gce.storage.name': 'bucket',
             },
             config_files=config_files,
             output='output',

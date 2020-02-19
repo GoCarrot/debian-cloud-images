@@ -125,8 +125,9 @@ ec2:
 ```
 ---
 gce:
-  bucket: bucket
   project: project
+  storage:
+    name: NAME
 ```
 
 ### Microsoft Azure

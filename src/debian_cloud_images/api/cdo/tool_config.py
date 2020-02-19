@@ -44,10 +44,14 @@ class v1alpha1_ToolConfigEc2Schema(Schema):
     image = fields.Nested(v1alpha1_ToolConfigEc2ImageSchema)
 
 
+class v1alpha1_ToolConfigGceStorageSchema(Schema):
+    name = fields.Str()
+
+
 class v1alpha1_ToolConfigGceSchema(Schema):
-    bucket = fields.Str()
     credentials_file = fields.Str(data_key='credentialsFile')
     project = fields.Str()
+    storage = fields.Nested(v1alpha1_ToolConfigGceStorageSchema)
 
 
 @_registry.register
