@@ -47,7 +47,9 @@ class Test_v1alpha1_ToolConfigSchema:
                 },
             },
             'ec2': {
-                'bucket': 'test',
+                'storage': {
+                    'name': 'test',
+                },
                 'image': {
                     'regions': ['all'],
                     'tags': ['Tag=Value'],

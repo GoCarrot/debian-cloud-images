@@ -241,7 +241,7 @@ class UploadEc2Command(UploadBaseCommand):
     argparser_help = 'upload Debian images to Amazon EC2'
     argparser_epilog = '''
 config options:
-  ec2.bucket           create temporary image file in this S3 bucket
+  ec2.storage.name     create temporary image file in this S3 bucket
 '''
 
     @classmethod
@@ -252,7 +252,7 @@ config options:
             '--bucket',
             action=argparse_ext.HashItemAction,
             dest='config',
-            dest_key='ec2.bucket',
+            dest_key='ec2.storage.name',
             help=argparse.SUPPRESS,
         )
         parser.add_argument(
@@ -276,7 +276,7 @@ config options:
 
         self.uploader = ImageUploaderEc2(
             output=self.output,
-            bucket=self.config_get('ec2.bucket', 'ec2-bucket'),
+            bucket=self.config_get('ec2.storage.name', 'ec2-bucket'),
             key=access_key_id,
             secret=access_secret_key,
             regions=self.config_get('ec2.image.regions', default=[]),

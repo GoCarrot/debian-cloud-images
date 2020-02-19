@@ -39,9 +39,13 @@ class v1alpha1_ToolConfigEc2ImageSchema(Schema):
     tags = fields.List(fields.Str())
 
 
+class v1alpha1_ToolConfigEc2StorageSchema(Schema):
+    name = fields.Str()
+
+
 class v1alpha1_ToolConfigEc2Schema(Schema):
-    bucket = fields.Str()
     image = fields.Nested(v1alpha1_ToolConfigEc2ImageSchema)
+    storage = fields.Nested(v1alpha1_ToolConfigEc2StorageSchema)
 
 
 class v1alpha1_ToolConfigGceAuthSchema(Schema):

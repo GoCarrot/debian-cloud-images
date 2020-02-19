@@ -23,7 +23,9 @@ class TestCommand:
         c = UploadEc2Command(
             config={
                 'ec2': {
-                    'bucket': 'bucket',
+                    'storage': {
+                        'name': 'bucket',
+                    },
                     'image': {
                         'regions': ['all'],
                         'tags': ['Tag=Value'],
