@@ -125,7 +125,8 @@ ec2:
 ```
 ---
 gce:
-  project: project
+  image:
+    project: project
   storage:
     name: NAME
 ```

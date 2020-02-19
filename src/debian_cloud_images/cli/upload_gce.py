@@ -153,7 +153,7 @@ class UploadGceCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images to GCE'
     argparser_epilog = '''
 config options:
-  gce.project          create images in this Google Cloud project
+  gce.image.project    create images in this Google Cloud project
   gce.storage.name     create temporary image file in this Google Storage bucket
   gce.credentials_file use file for service account credentials
                          (default: ${GOOGLE_APPLICATION_CREDENTIALS})
@@ -167,7 +167,7 @@ config options:
             '--project',
             action=argparse_ext.HashItemAction,
             dest='config',
-            dest_key='gce.project',
+            dest_key='gce.image.project',
             help=argparse.SUPPRESS,
         )
         parser.add_argument(
@@ -196,7 +196,7 @@ config options:
 
         self.uploader = ImageUploaderGce(
             output=self.output,
-            project=self.config_get('gce.project', 'gce-project'),
+            project=self.config_get('gce.image.project', 'gce-project'),
             bucket=self.config_get('gce.storage.name', 'gce-bucket'),
             auth=auth,
         )

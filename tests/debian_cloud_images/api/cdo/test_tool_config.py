@@ -55,7 +55,9 @@ class Test_v1alpha1_ToolConfigSchema:
             },
             'gce': {
                 'credentialsFile': 'test',
-                'project': 'test',
+                'image': {
+                    'project': 'test',
+                },
                 'storage': {
                     'name': 'test',
                 },
