@@ -1,4 +1,3 @@
-import argparse
 import logging
 import time
 
@@ -7,7 +6,6 @@ from libcloud.compute.types import VolumeSnapshotState
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
-from ..utils import argparse_ext
 from ..utils.libcloud.compute.ec2 import ExEC2NodeDriver
 from ..utils.libcloud.storage.s3 import S3BucketStorageDriver
 
@@ -249,13 +247,6 @@ config options:
         super()._argparse_register(parser)
 
         parser.add_argument(
-            '--bucket',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='ec2.storage.name',
-            help=argparse.SUPPRESS,
-        )
-        parser.add_argument(
             '--permission-public',
             action='store_true',
             help='Make snapshot and image public',
@@ -266,7 +257,7 @@ config options:
 
         self.uploader = ImageUploaderEc2(
             output=self.output,
-            bucket=self.config_get('ec2.storage.name', 'ec2-bucket'),
+            bucket=self.config_get('ec2.storage.name'),
             key=self.config_get('ec2.auth.key'),
             secret=self.config_get('ec2.auth.secret'),
             regions=self.config_get('ec2.image.regions', default=[]),
