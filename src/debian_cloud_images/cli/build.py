@@ -410,6 +410,7 @@ class BuildCommand(BaseCommand):
         self.manifest = CreateManifest(
             input_filename=manifest_fai,
             output_filename=manifest_final,
+            info=self.c.info,
         )
 
     def __call__(self):

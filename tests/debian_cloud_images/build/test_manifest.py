@@ -7,12 +7,22 @@ from debian_cloud_images.build.manifest import CreateManifest
 
 
 class TestCreateManifest:
+    info = {
+        'vendor': 'vendor',
+        'version': 'version',
+        'arch': 'arch',
+        'release': 'release',
+        'build_id': 'build_id',
+        'type': 'type',
+    }
+
     def test___call__(self, tmp_path):
         input_filename = tmp_path / 'in'
         output_filename = tmp_path / 'out'
         run = CreateManifest(
             input_filename=input_filename,
             output_filename=output_filename,
+            info=self.info,
         )
 
         with input_filename.open('w') as f:
@@ -22,7 +32,7 @@ class TestCreateManifest:
 
         with output_filename.open() as f:
             data = json.load(f)
-            assert data
+            assert data['data']['info'] == self.info
 
     def test___call___fail(self, tmp_path):
         input_filename = tmp_path / 'in'
@@ -30,6 +40,7 @@ class TestCreateManifest:
         run = CreateManifest(
             input_filename=input_filename,
             output_filename=output_filename,
+            info=self.info,
         )
 
         with pytest.raises(FileNotFoundError):
@@ -41,6 +52,7 @@ class TestCreateManifest:
         run = CreateManifest(
             input_filename=input_filename,
             output_filename=output_filename,
+            info=self.info,
         )
 
         run(False)

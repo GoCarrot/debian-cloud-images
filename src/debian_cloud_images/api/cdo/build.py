@@ -6,7 +6,7 @@ from ..registry import registry as _registry
 
 class Build:
     def __init__(self, info=None, packages=None, metadata=None):
-        self.info = info
+        self.info = info or {}
         self.packages = packages
         self.metadata = metadata or ObjectMeta()
 
