@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import zlib
 
 from .upload_base import UploadBaseCommand
@@ -160,9 +159,7 @@ config options:
     def __init__(self, **kw):
         super().__init__(**kw)
 
-        auth_file = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', None)
-        if auth_file is None:
-            auth_file = self.config_get('gce.auth.credentialsfile')
+        auth_file = self.config_get('gce.auth.credentialsfile')
         with open(auth_file, 'r') as f:
             auth = json.load(f)
 

@@ -87,8 +87,19 @@ class BaseCommand:
     def __call__(self):
         raise NotImplementedError
 
+    def __config_env_compat(self, subitem, kin, key):
+        v = os.environ.get(kin)
+        if v is not None:
+            kl = key.split('.')
+            for k in kl[:-1]:
+                subitem = subitem.setdefault(k, {})
+            subitem[kl[-1]] = v
+
     def config_env(self):
         ret = {}
+
+        self.__config_env_compat(
+            ret, 'GOOGLE_APPLICATION_CREDENTIALS', 'gce.auth.credentialsfile')
 
         for k, v in os.environ.items():
             if k.startswith('DCI_CONFIG_'):
