@@ -4,3 +4,8 @@ __pycache__/
 /src/*.egg-info/
 /*-image.raw
 /*-image.vhd
+/image-*.info
+/image-*.raw
+/image-*.tar
+/image-*.build.json
+/image-*.build.junit.xml
