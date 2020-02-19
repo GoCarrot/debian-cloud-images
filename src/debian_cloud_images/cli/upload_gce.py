@@ -1,4 +1,3 @@
-import argparse
 import json
 import logging
 import os
@@ -7,7 +6,6 @@ import zlib
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
-from ..utils import argparse_ext
 
 from libcloud.compute.types import Provider as ComputeProvider
 from libcloud.compute.providers import get_driver as compute_driver
@@ -159,32 +157,6 @@ config options:
   gce.storage.name     create temporary image file in this Google Storage bucket
 '''
 
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
-            '--project',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='gce.image.project',
-            help=argparse.SUPPRESS,
-        )
-        parser.add_argument(
-            '--bucket',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='gce.storage.name',
-            help=argparse.SUPPRESS,
-        )
-        parser.add_argument(
-            '--auth',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='gce.auth.credentialsfile',
-            help=argparse.SUPPRESS,
-        )
-
     def __init__(self, **kw):
         super().__init__(**kw)
 
@@ -196,8 +168,8 @@ config options:
 
         self.uploader = ImageUploaderGce(
             output=self.output,
-            project=self.config_get('gce.image.project', 'gce-project'),
-            bucket=self.config_get('gce.storage.name', 'gce-bucket'),
+            project=self.config_get('gce.image.project'),
+            bucket=self.config_get('gce.storage.name'),
             auth=auth,
         )
 
