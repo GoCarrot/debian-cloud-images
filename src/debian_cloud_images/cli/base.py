@@ -71,7 +71,10 @@ class BaseCommand:
             format='%(asctime)s %(levelname)s %(message)s',
         )
 
-        self._config = Config(overrides=[self.config_env(), config])
+        config_overrides = [config]
+        if argparser is not None:
+            config_overrides.insert(0, self.config_env())
+        self._config = Config(overrides=config_overrides)
         if config_files:
             self._config.read(*config_files)
         else:

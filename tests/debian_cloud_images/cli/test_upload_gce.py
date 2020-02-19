@@ -48,22 +48,3 @@ class TestCommand:
             output='output',
             project='project',
         )
-
-    def test___init___auth_env(self, auth_file, config_files, mock_env, mock_uploader):
-        mock_env.setenv('GOOGLE_APPLICATION_CREDENTIALS', auth_file)
-
-        UploadGceCommand(
-            config={
-                'gce.image.project': 'project',
-                'gce.storage.name': 'bucket',
-            },
-            config_files=config_files,
-            output='output',
-        )
-
-        mock_uploader.assert_called_once_with(
-            auth={},
-            bucket='bucket',
-            output='output',
-            project='project',
-        )
