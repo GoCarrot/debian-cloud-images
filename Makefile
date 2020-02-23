@@ -12,7 +12,7 @@ help:
 
 image-%:
 	umask 022; \
-	sudo ./bin/debian-cloud-images build \
+	./bin/debian-cloud-images build \
 	  $(subst -, ,$*) \
 	  --build-id manual \
 	  --version $(shell date '+%Y%m%d%H%M') \

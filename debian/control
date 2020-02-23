@@ -28,6 +28,7 @@ Depends:
  fai-client (>= 5.7),
  fai-setup-storage,
  qemu-utils,
+ sudo,
  dosfstools,
  ${python3:Depends},
  ${misc:Depends},

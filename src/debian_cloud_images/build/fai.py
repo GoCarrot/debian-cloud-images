@@ -8,6 +8,7 @@ import subprocess
 from typing import Dict, List
 
 
+dci_path = os.path.join(os.path.dirname(__file__), '../..')
 fai_config_path = os.path.join(os.path.dirname(__file__), 'fai_config')
 logger = logging.getLogger(__name__)
 
@@ -33,14 +34,14 @@ class RunFAI:
         self.env = env
         self.fai_filename = fai_filename
 
-    def __call__(self, run: bool, *, popen=subprocess.Popen) -> None:
-        cmd = self.command
+    def __call__(self, run: bool, *, popen=subprocess.Popen, dci_path=dci_path) -> None:
+        cmd = self.command(dci_path)
 
         if run:
             logger.info(f'Running FAI: {" ".join(cmd)}')
 
             try:
-                process = popen(cmd, env=self.env)
+                process = popen(cmd)
                 retcode = process.wait()
                 if retcode:
                     raise subprocess.CalledProcessError(retcode, cmd)
@@ -51,9 +52,12 @@ class RunFAI:
         else:
             logger.info(f'Would run FAI: {" ".join(cmd)}')
 
-    @property
-    def command(self) -> tuple:
+    def command(self, dci_path: str) -> tuple:
         return (
+            'sudo',
+            'env',
+            f'PYTHONPATH={dci_path}',
+        ) + tuple(f'{k}={v}' for k, v in sorted(self.env.items())) + (
             self.fai_filename,
             '--verbose',
             '--hostname', 'debian',

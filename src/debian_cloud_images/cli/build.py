@@ -3,7 +3,6 @@ import collections.abc
 import enum
 import json
 import logging
-import os
 import pathlib
 import re
 
@@ -382,8 +381,7 @@ class BuildCommand(BaseCommand):
             build_id=self.c.build_id,
         )
 
-        self.env = os.environ.copy()
-        self.env.update(self.c.env)
+        self.env = self.c.env
         self.env['CLOUD_BUILD_INFO'] = json.dumps(self.c.info)
         self.env['CLOUD_BUILD_NAME'] = name
         self.env['CLOUD_BUILD_OUTPUT_DIR'] = output.resolve()
