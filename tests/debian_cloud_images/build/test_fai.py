@@ -29,10 +29,15 @@ class TestRunFAI:
         popen_proc.wait = Mock(return_value=0)
         popen = Mock(return_value=popen_proc)
 
-        run(True, popen=popen)
+        run(True, popen=popen, dci_path='/nonexistent')
 
         popen.assert_called_with(
             (
+                'sudo',
+                'env',
+                'PYTHONPATH=/nonexistent',
+                'ENV1=env1',
+                'ENV2=env2',
                 tmp_path.as_posix(),
                 '--verbose',
                 '--hostname', 'debian',
@@ -41,7 +46,6 @@ class TestRunFAI:
                 '--cspace', fai_config_path,
                 tmp_path.as_posix(),
             ),
-            env=env,
         )
 
     def test___call___fail(self, tmp_path):
