@@ -57,8 +57,9 @@ class v1_ListSchema(v1_TypeMetaSchema):
 
 
 class ObjectMeta:
-    def __init__(self, name=None, labels=None, uid=None):
+    def __init__(self, name=None, annotations=None, labels=None, uid=None):
         self.name = name
+        self.annotations = annotations or {}
         self.labels = labels or {}
         self.uid = uid or uuid4()
 
@@ -70,6 +71,7 @@ class ObjectMeta:
 
 
 class v1_ObjectMetaSchema(SchemaNonempty):
+    annotations = fields.Dict(keys=fields.Str(), values=fields.Str())
     name = fields.String()
     labels = fields.Dict(keys=fields.Str(), values=fields.Str())
     uid = fields.UUID()

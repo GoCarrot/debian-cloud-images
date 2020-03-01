@@ -11,6 +11,7 @@ from datetime import datetime
 from .base import BaseCommand
 
 from ..build.fai import RunFAI
+from ..build.manifest import CreateManifest
 from ..build.tar import RunTar
 from ..data import data_path
 from ..utils import argparse_ext
@@ -391,6 +392,8 @@ class BuildCommand(BaseCommand):
 
         image_raw = output / '{}.raw'.format(name)
         image_tar = output / '{}.tar'.format(name)
+        manifest_fai = output / '{}.build-fai.json'.format(name)
+        manifest_final = output / '{}.build.json'.format(name)
 
         self.fai = RunFAI(
             output_filename=image_raw,
@@ -404,9 +407,16 @@ class BuildCommand(BaseCommand):
             output_filename=image_tar,
         )
 
+        self.manifest = CreateManifest(
+            input_filename=manifest_fai,
+            output_filename=manifest_final,
+            info=self.c.info,
+        )
+
     def __call__(self):
         self.fai(not self.noop)
-        self.tar(not self.noop)
+        digest = self.tar(not self.noop)
+        self.manifest(not self.noop, (digest,))
 
 
 if __name__ == '__main__':
