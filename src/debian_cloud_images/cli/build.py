@@ -415,8 +415,8 @@ class BuildCommand(BaseCommand):
 
     def __call__(self):
         self.fai(not self.noop)
-        self.tar(not self.noop)
-        self.manifest(not self.noop)
+        digest = self.tar(not self.noop)
+        self.manifest(not self.noop, (digest,))
 
 
 if __name__ == '__main__':

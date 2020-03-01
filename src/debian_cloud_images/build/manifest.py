@@ -4,7 +4,7 @@ import json
 import logging
 import pathlib
 
-from typing import Dict
+from typing import Dict, Iterable
 
 from ..api.registry import registry as api_registry
 from ..api import wellknown
@@ -28,7 +28,7 @@ class CreateManifest:
         self.output_filename = output_filename
         self.info = info
 
-    def __call__(self, run: bool) -> None:
+    def __call__(self, run: bool, digest: Iterable[str]) -> None:
         if not run:
             return
 
@@ -45,6 +45,8 @@ class CreateManifest:
         if self.info['type'] == 'dev':
             manifest.metadata.labels[wellknown.label_bcdo_build_id] = self.info['build_id']
             manifest.metadata.labels[wellknown.label_bcdo_type] = self.info['type']
+
+        manifest.metadata.annotations[wellknown.annotation_cdo_digest] = ','.join(digest)
 
         with self.output_filename.open('w') as f:
             json.dump(api_registry.dump(manifest), f, indent=4, separators=(',', ': '), sort_keys=True)

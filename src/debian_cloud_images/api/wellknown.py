@@ -1,3 +1,5 @@
+annotation_cdo_digest = "cloud.debian.org/digest"
+
 label_cdo_vendor = "cloud.debian.org/vendor"
 label_cdo_version = "cloud.debian.org/version"
 label_do_arch = "debian.org/arch"

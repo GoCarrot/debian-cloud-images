@@ -28,7 +28,7 @@ class TestCreateManifest:
         with input_filename.open('w') as f:
             f.write('{"apiVersion":"cloud.debian.org/v1alpha1","kind":"Build","metadata":{},"data":{}}')
 
-        run(True)
+        run(True, ['digest'])
 
         with output_filename.open() as f:
             data = json.load(f)
@@ -44,7 +44,7 @@ class TestCreateManifest:
         )
 
         with pytest.raises(FileNotFoundError):
-            run(True)
+            run(True, [])
 
     def test___call___noop(self, tmp_path):
         input_filename = tmp_path / 'in'
@@ -55,4 +55,4 @@ class TestCreateManifest:
             info=self.info,
         )
 
-        run(False)
+        run(False, [])
