@@ -399,11 +399,39 @@ nocloud sid amd64 build:
     CLOUD_RELEASE: sid
     CLOUD_VENDOR: nocloud
 
+nocloud buster arm64 build:
+  extends: .nocloud build
+  variables:
+    CLOUD_ARCH: arm64
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: nocloud
+
+nocloud bullseye arm64 build:
+  extends: .nocloud build
+  variables:
+    CLOUD_ARCH: arm64
+    CLOUD_RELEASE: bullseye
+    CLOUD_VENDOR: nocloud
+
 nocloud sid arm64 build:
   extends: .nocloud build
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: sid
+    CLOUD_VENDOR: nocloud
+
+nocloud buster ppc64el build:
+  extends: .nocloud build
+  variables:
+    CLOUD_ARCH: ppc64el
+    CLOUD_RELEASE: buster
+    CLOUD_VENDOR: nocloud
+
+nocloud bullseye ppc64el build:
+  extends: .nocloud build
+  variables:
+    CLOUD_ARCH: ppc64el
+    CLOUD_RELEASE: bullseye
     CLOUD_VENDOR: nocloud
 
 nocloud sid ppc64el build:
