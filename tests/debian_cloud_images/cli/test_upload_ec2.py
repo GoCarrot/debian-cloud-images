@@ -23,7 +23,13 @@ class TestCommand:
         c = UploadEc2Command(
             config={
                 'ec2': {
-                    'bucket': 'bucket',
+                    'auth': {
+                        'key': 'access_key_id',
+                        'secret': 'access_secret_key'
+                    },
+                    'storage': {
+                        'name': 'bucket',
+                    },
                     'image': {
                         'regions': ['all'],
                         'tags': ['Tag=Value'],
@@ -31,8 +37,6 @@ class TestCommand:
                 },
             },
             config_files=config_files,
-            access_key_id='access_key_id',
-            access_secret_key='access_secret_key',
             output='output',
             permission_public='permission_public',
         )

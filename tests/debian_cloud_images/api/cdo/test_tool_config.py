@@ -47,16 +47,28 @@ class Test_v1alpha1_ToolConfigSchema:
                 },
             },
             'ec2': {
-                'bucket': 'test',
+                'auth': {
+                    'key': 'test',
+                    'secret': 'test',
+                },
+                'storage': {
+                    'name': 'test',
+                },
                 'image': {
                     'regions': ['all'],
                     'tags': ['Tag=Value'],
                 },
             },
             'gce': {
-                'credentialsFile': 'test',
-                'bucket': 'test',
-                'project': 'test',
+                'auth': {
+                    'credentialsfile': 'test',
+                },
+                'image': {
+                    'project': 'test',
+                },
+                'storage': {
+                    'name': 'test',
+                },
             },
         }
 

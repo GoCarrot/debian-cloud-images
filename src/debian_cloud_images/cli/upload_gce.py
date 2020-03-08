@@ -1,13 +1,10 @@
-import argparse
 import json
 import logging
-import os
 import zlib
 
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
-from ..utils import argparse_ext
 
 from libcloud.compute.types import Provider as ComputeProvider
 from libcloud.compute.providers import get_driver as compute_driver
@@ -153,51 +150,23 @@ class UploadGceCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images to GCE'
     argparser_epilog = '''
 config options:
-  gce.project          create images in this Google Cloud project
-  gce.bucket           create temporary image file in this Google Storage bucket
-  gce.credentials_file use file for service account credentials
+  gce.auth.credentialsfile  use file for service account credentials
                          (default: ${GOOGLE_APPLICATION_CREDENTIALS})
+  gce.image.project    create images in this Google Cloud project
+  gce.storage.name     create temporary image file in this Google Storage bucket
 '''
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
-            '--project',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='gce.project',
-            help=argparse.SUPPRESS,
-        )
-        parser.add_argument(
-            '--bucket',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='gce.bucket',
-            help=argparse.SUPPRESS,
-        )
-        parser.add_argument(
-            '--auth',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='gce.credentials_file',
-            help=argparse.SUPPRESS,
-        )
 
     def __init__(self, **kw):
         super().__init__(**kw)
 
-        auth_file = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', None)
-        if auth_file is None:
-            auth_file = self.config_get('gce.credentials_file')
+        auth_file = self.config_get('gce.auth.credentialsfile')
         with open(auth_file, 'r') as f:
             auth = json.load(f)
 
         self.uploader = ImageUploaderGce(
             output=self.output,
-            project=self.config_get('gce.project', 'gce-project'),
-            bucket=self.config_get('gce.bucket', 'gce-bucket'),
+            project=self.config_get('gce.image.project'),
+            bucket=self.config_get('gce.storage.name'),
             auth=auth,
         )
 

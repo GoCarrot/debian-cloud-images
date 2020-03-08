@@ -107,12 +107,13 @@ Uploaders typically need some variables set with credentials or targets.
 ```
 ---
 ec2:
-  bucket: BUCKET
   image:
     regions:
     - REGION
     tags:
     - TAG=VALUE
+  storage:
+    name: BUCKET
 ```
 
 ### Google Compute Engine
@@ -125,8 +126,10 @@ ec2:
 ```
 ---
 gce:
-  bucket: bucket
-  project: project
+  image:
+    project: project
+  storage:
+    name: NAME
 ```
 
 ### Microsoft Azure

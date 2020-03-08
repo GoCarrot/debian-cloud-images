@@ -71,7 +71,10 @@ class BaseCommand:
             format='%(asctime)s %(levelname)s %(message)s',
         )
 
-        self._config = Config(overrides=[self.config_env(), config])
+        config_overrides = [config]
+        if argparser is not None:
+            config_overrides.insert(0, self.config_env())
+        self._config = Config(overrides=config_overrides)
         if config_files:
             self._config.read(*config_files)
         else:
@@ -87,8 +90,23 @@ class BaseCommand:
     def __call__(self):
         raise NotImplementedError
 
+    def __config_env_compat(self, subitem, kin, key):
+        v = os.environ.get(kin)
+        if v is not None:
+            kl = key.split('.')
+            for k in kl[:-1]:
+                subitem = subitem.setdefault(k, {})
+            subitem[kl[-1]] = v
+
     def config_env(self):
         ret = {}
+
+        self.__config_env_compat(
+            ret, 'AWS_ACCESS_KEY_ID', 'ec2.auth.key')
+        self.__config_env_compat(
+            ret, 'AWS_SECRET_ACCESS_KEY', 'ec2.auth.secret')
+        self.__config_env_compat(
+            ret, 'GOOGLE_APPLICATION_CREDENTIALS', 'gce.auth.credentialsfile')
 
         for k, v in os.environ.items():
             if k.startswith('DCI_CONFIG_'):

@@ -1,4 +1,3 @@
-import argparse
 import logging
 import time
 
@@ -7,7 +6,6 @@ from libcloud.compute.types import VolumeSnapshotState
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
-from ..utils import argparse_ext
 from ..utils.libcloud.compute.ec2 import ExEC2NodeDriver
 from ..utils.libcloud.storage.s3 import S3BucketStorageDriver
 
@@ -241,7 +239,7 @@ class UploadEc2Command(UploadBaseCommand):
     argparser_help = 'upload Debian images to Amazon EC2'
     argparser_epilog = '''
 config options:
-  ec2.bucket           create temporary image file in this S3 bucket
+  ec2.storage.name     create temporary image file in this S3 bucket
 '''
 
     @classmethod
@@ -249,36 +247,19 @@ config options:
         super()._argparse_register(parser)
 
         parser.add_argument(
-            '--bucket',
-            action=argparse_ext.HashItemAction,
-            dest='config',
-            dest_key='ec2.bucket',
-            help=argparse.SUPPRESS,
-        )
-        parser.add_argument(
-            '--access-key-id',
-            action=argparse_ext.ActionEnv,
-            env='AWS_ACCESS_KEY_ID',
-        )
-        parser.add_argument(
-            '--access-secret-key',
-            action=argparse_ext.ActionEnv,
-            env='AWS_SECRET_ACCESS_KEY',
-        )
-        parser.add_argument(
             '--permission-public',
             action='store_true',
             help='Make snapshot and image public',
         )
 
-    def __init__(self, *, access_key_id, access_secret_key, regions=[], add_tags={}, permission_public, **kw):
+    def __init__(self, *, regions=[], add_tags={}, permission_public, **kw):
         super().__init__(**kw)
 
         self.uploader = ImageUploaderEc2(
             output=self.output,
-            bucket=self.config_get('ec2.bucket', 'ec2-bucket'),
-            key=access_key_id,
-            secret=access_secret_key,
+            bucket=self.config_get('ec2.storage.name'),
+            key=self.config_get('ec2.auth.key'),
+            secret=self.config_get('ec2.auth.secret'),
             regions=self.config_get('ec2.image.regions', default=[]),
             add_tags=dict(tuple(i.split('=', 1)) for i in self.config_get('ec2.image.tags', default=[])),
             permission_public=permission_public,

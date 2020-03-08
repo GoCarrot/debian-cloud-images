@@ -34,20 +34,42 @@ class v1alpha1_ToolConfigAzureSchema(Schema):
     storage = fields.Nested(v1alpha1_ToolConfigAzureStorageSchema)
 
 
+class v1alpha1_ToolConfigEc2AuthSchema(Schema):
+    key = fields.Str()
+    secret = fields.Str()
+
+
 class v1alpha1_ToolConfigEc2ImageSchema(Schema):
     regions = fields.List(fields.Str())
     tags = fields.List(fields.Str())
 
 
+class v1alpha1_ToolConfigEc2StorageSchema(Schema):
+    name = fields.Str()
+
+
 class v1alpha1_ToolConfigEc2Schema(Schema):
-    bucket = fields.Str()
+    auth = fields.Nested(v1alpha1_ToolConfigEc2AuthSchema)
     image = fields.Nested(v1alpha1_ToolConfigEc2ImageSchema)
+    storage = fields.Nested(v1alpha1_ToolConfigEc2StorageSchema)
+
+
+class v1alpha1_ToolConfigGceAuthSchema(Schema):
+    credentialsfile = fields.Str()
+
+
+class v1alpha1_ToolConfigGceImageSchema(Schema):
+    project = fields.Str()
+
+
+class v1alpha1_ToolConfigGceStorageSchema(Schema):
+    name = fields.Str()
 
 
 class v1alpha1_ToolConfigGceSchema(Schema):
-    bucket = fields.Str()
-    credentials_file = fields.Str(data_key='credentialsFile')
-    project = fields.Str()
+    auth = fields.Nested(v1alpha1_ToolConfigGceAuthSchema)
+    image = fields.Nested(v1alpha1_ToolConfigGceImageSchema)
+    storage = fields.Nested(v1alpha1_ToolConfigGceStorageSchema)
 
 
 @_registry.register
