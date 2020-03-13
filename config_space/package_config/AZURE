@@ -6,3 +6,4 @@ python
 
 PACKAGES install-norec BULLSEYE SID
 cloud-init
+cloud-guest-utils
