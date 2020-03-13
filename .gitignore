@@ -8,4 +8,5 @@ __pycache__/
 /image-*.raw
 /image-*.tar
 /image-*.build.json
+/image-*.build-fai.json
 /image-*.build.junit.xml
