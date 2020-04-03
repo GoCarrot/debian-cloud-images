@@ -4,21 +4,21 @@ DESTDIR = .
 
 help:
 	@echo "To run this makefile, run:"
-	@echo "   make image-<DIST>-<CLOUD>-<ARCH>"
+	@echo "   make image_<DIST>_<CLOUD>_<ARCH>"
 	@echo "  WHERE <DIST> is bullseye, buster, stretch or sid"
 	@echo "    And <CLOUD> is azure, ec2, gce, generic, genericcloud, nocloud"
 	@echo "    And <ARCH> is amd64, arm64, ppc64el"
 	@echo "Set DESTDIR= to write images to given directory."
 
-image-%:
+image_%:
 	umask 022; \
 	./bin/debian-cloud-images build \
-	  $(subst -, ,$*) \
+	  $(subst _, ,$*) \
 	  --build-id manual \
 	  --version $(shell date '+%Y%m%d%H%M') \
 	  --localdebs \
 	  --output $(DESTDIR) \
-	  --override-name image-$*
+	  --override-name $@
 
 clean:
 	rm -rf image-*.*
