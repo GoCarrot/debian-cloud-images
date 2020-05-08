@@ -21,26 +21,26 @@ You also need python3-libcloud from Buster or newer.
 Example 1:
 
 ```
-   # make image-stretch-nocloud-amd64
+   # make image_stretch_nocloud_amd64
 ```
 
 This will create some log output and the following files:
 
-- image-stretch-nocloud-amd64.build.json
-- image-stretch-nocloud-amd64.info
-- image-stretch-nocloud-amd64.raw
-- image-stretch-nocloud-amd64.raw.tar
+- `image_stretch_nocloud_amd64.build.json`
+- `image_stretch_nocloud_amd64.info`
+- `image_stretch_nocloud_amd64.raw`
+- `image_stretch_nocloud_amd64.tar`
 
 Example 2:
 
 ```
-    # make image-buster-genericcloud-amd64
+    # make image_buster_genericcloud_amd64
 ```
 
-- image-buster-genericcloud-amd64.build.json
-- image-buster-genericcloud-amd64.info
-- image-buster-genericcloud-amd64.raw
-- image-buster-genericcloud-amd64.tar
+- `image_buster_genericcloud_amd64.build.json`
+- `image_buster_genericcloud_amd64.info`
+- `image_buster_genericcloud_amd64.raw`
+- `image_buster_genericcloud_amd64.tar`
 
 These images can be used with QEMU-KVM, Virtualbox or any other virtualization
 backend that support raw disk images.
@@ -62,7 +62,7 @@ As shown above, various types of images can be built for different use
 cases. Each type of image can be built with the following command:
 
 ```
-    # make <suite>-image-<type>
+    # make image_<suite>_<type>_<arch>
 ```
 
 where `<suite>` is one of `stretch`, `buster`, or `sid`. `<type>` can
