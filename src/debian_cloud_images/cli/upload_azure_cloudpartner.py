@@ -49,7 +49,7 @@ class AzureCloudPartnerOffer:
 
     def read(self):
         r = self._request()
-        self.data, self.etag = r.parse_body(), r.headers['etag']
+        self.data, self.etag = r.parse_body(), r.headers.get('etag', '*')
         self.plans = {i['planId']: i for i in self.data['definition']['plans']}
 
     def save(self):
