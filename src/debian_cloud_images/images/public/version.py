@@ -16,7 +16,8 @@ class Version:
         self.version = version
 
     def __enter__(self):
-        self.__pathtmp = tempfile.TemporaryDirectory(prefix=f'.{self.version}_', dir=self.basepath)
+        self.__dirtmp = tempfile.TemporaryDirectory(prefix=f'.{self.version}_', dir=self.basepath)
+        self.__pathtmp = pathlib.Path(self.__dirtmp.name)
         self.__path = self.basepath / self.version
         self.__ref = self.baseref + self.version + '/'
 
@@ -32,15 +33,16 @@ class Version:
         else:
             self._rollback()
 
+        del self.__dirtmp
         del self.__path
         del self.__pathtmp
         del self.__ref
 
     def _commit(self):
-        os.rename(self.__pathtmp.name, self.__path)
+        os.rename(self.__pathtmp, self.__path)
 
     def _rollback(self):
-        self.__pathtmp.cleanup()
+        self.__dirtmp.cleanup()
 
-    def add_image(self, name):
-        return Image(self.__path, self.__ref, name)
+    def add_image(self, name, provider):
+        return Image(self.__pathtmp, self.__ref, name, provider)

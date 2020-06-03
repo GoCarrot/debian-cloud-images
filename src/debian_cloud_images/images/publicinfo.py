@@ -6,6 +6,7 @@ class ImagePublicType(enum.Enum):
     dev = {
         'azure_offer': 'debian-test',
         'azure_sku': '{release_id}',
+        'name': 'debian-{release_id}-{vendor}-{arch}-dev-{build_id}-{version}',
         'path': '{release}/dev/{build_id}/debian-{release_id}-{vendor}-{arch}-dev-{build_id}-{version}',
         'vendor_family': 'debian-{release_id}-{arch}-dev-{build_id}',
         'vendor_description': 'Debian {release_id} (development build {build_id}-{version})',
@@ -13,6 +14,7 @@ class ImagePublicType(enum.Enum):
     daily = {
         'azure_offer': 'debian-{release_baseid}-daily',
         'azure_sku': '{release_id}',
+        'name': 'debian-{release_id}-{vendor}-{arch}-daily-{version}',
         'path': '{release}/daily/{version}/debian-{release_id}-{vendor}-{arch}-daily-{version}',
         'vendor_family': 'debian-{release_id}-{arch}-daily',
         'vendor_description': 'Debian {release_id} (daily build {version})',
@@ -20,6 +22,7 @@ class ImagePublicType(enum.Enum):
     release = {
         'azure_offer': 'debian-{release_baseid}',
         'azure_sku': '{release_id}',
+        'name': 'debian-{release_id}-{vendor}-{arch}-{version}',
         'path': '{release}/{version}/debian-{release_id}-{vendor}-{arch}-{version}',
         'vendor_family': 'debian-{release_id}-{arch}',
         'vendor_description': 'Debian {release_id} ({version})',

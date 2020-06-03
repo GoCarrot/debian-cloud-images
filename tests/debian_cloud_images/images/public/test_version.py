@@ -63,5 +63,5 @@ def test_contextmanager_output_success(tmp_path):
 def test_add_image(tmp_path):
     with patch('debian_cloud_images.images.public.version.Image', autospec=True) as mock:
         with Version(tmp_path, '/', 'version') as version:
-            assert version.add_image('image') is mock.return_value
-            mock.assert_called_with(tmp_path / 'version', '/version/', 'image')
+            assert version.add_image('image', 'provider') is mock.return_value
+            assert mock.call_args[0][1:] == ('/version/', 'image', 'provider')
