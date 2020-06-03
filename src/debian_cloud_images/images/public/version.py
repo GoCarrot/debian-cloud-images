@@ -1,8 +1,14 @@
+import logging
 import os
 import pathlib
 import tempfile
 
+from datetime import datetime
+
 from .image import Image
+
+
+logger = logging.getLogger(__name__)
 
 
 class Version:
@@ -16,9 +22,8 @@ class Version:
         self.version = version
 
     def __enter__(self):
-        self.__dirtmp = tempfile.TemporaryDirectory(prefix=f'.{self.version}_', dir=self.basepath)
-        self.__pathtmp = pathlib.Path(self.__dirtmp.name)
-        self.__path = self.basepath / self.version
+        self.__tmp = tempfile.TemporaryDirectory(prefix=f'.{self.version}_', dir=self.basepath)
+        self.__path = pathlib.Path(self.__tmp.name)
         self.__ref = self.baseref + self.version + '/'
 
         return self
@@ -33,16 +38,22 @@ class Version:
         else:
             self._rollback()
 
-        del self.__dirtmp
+        del self.__tmp
         del self.__path
-        del self.__pathtmp
         del self.__ref
 
     def _commit(self):
-        os.rename(self.__pathtmp, self.__path)
+        path = self.basepath / self.version
+        pathbak = self.basepath / f'.{self.version}_{datetime.now().isoformat()}'
+
+        if path.exists():
+            logger.warning(f'Moving away existing directory {path} to {pathbak}')
+            os.rename(path, pathbak)
+
+        os.rename(self.__path, path)
 
     def _rollback(self):
-        self.__dirtmp.cleanup()
+        self.__tmp.cleanup()
 
     def add_image(self, name, provider):
-        return Image(self.__pathtmp, self.__ref, name, provider)
+        return Image(self.__path, self.__ref, name, provider)
