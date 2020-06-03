@@ -1,10 +1,12 @@
+import itertools
 import logging
 import pathlib
-import shutil
 
 from .upload_base import UploadBaseCommand
-from ..api.cdo.upload import Upload
-from ..api.wellknown import label_ucdo_image_format, label_ucdo_type
+from ..images.public.release import Release
+
+
+logger = logging.getLogger(__name__)
 
 
 class ImageUploader:
@@ -13,54 +15,29 @@ class ImageUploader:
         self.provider = provider
         self.storage = storage
 
-    def __call__(self, image, public_info):
-        try:
-            base_path = self.storage / public_info.path
-            base_ref = pathlib.Path(public_info.path)
+    def __call__(self, images, public_info):
+        for name, images_release in self.groupby_complete(images.values(), key=lambda i: i.build_release):
+            with Release(self.storage, '', name, public_info.public_type.name) as s:
+                logging.debug(f'Handle release {name}')
+                self.do_release(s, images_release, public_info)
 
-            base_path.parent.mkdir(parents=True, exist_ok=True)
+    def do_release(self, release, images, public_info):
+        for name, images_version in self.groupby_complete(images, key=lambda i: i.build_version):
+            with release.add_version(name) as s:
+                logging.debug(f'Handle version {name}')
+                self.do_version(s, images_version, public_info)
 
-            manifests = []
-            manifests.append(self.copy(image, public_info, base_path, base_ref))
+    def do_version(self, version, images, public_info):
+        for image in images:
+            info = public_info.apply(image.build_info)
+            name = info.name
+            with version.add_image(name, self.provider) as s:
+                logging.debug(f'Handle image {name}')
+                s.write(image, info.public_type.name)
+                image.write_manifests('upload', s.manifests, output=self.output)
 
-            if image.build_vendor in ('generic', 'genericcloud', 'nocloud'):
-                manifests.append(self.copy_qcow2(image, public_info, base_path, base_ref))
-
-        finally:
-            with base_path.with_suffix('.json').open('w') as f:
-                image.write_merged_manifests(f, manifests)
-            image.write_manifests('upload', manifests, output=self.output)
-
-    def copy(self, image, public_info, base_path, base_ref):
-        with image.open_tar_raw() as f_in:
-            path = base_path.with_suffix(f_in.extension)
-            ref = base_ref.with_suffix(f_in.extension)
-            logging.info(f'Copy to {path.as_posix()} ({ref})')
-            with path.open('wb') as f:
-                shutil.copyfileobj(f_in, f)
-
-        return self.generate_manifest(image, public_info, ref, 'internal')
-
-    def copy_qcow2(self, image, public_info, base_path, base_ref):
-        with image.open_image('qcow2') as f_in:
-            path = base_path.with_suffix('.qcow2')
-            ref = base_ref.with_suffix('.qcow2')
-            logging.info(f'Copy as qcow2 to {path.as_posix()} ({ref})')
-            with path.open('wb') as f:
-                shutil.copyfileobj(f_in, f)
-
-        return self.generate_manifest(image, public_info, ref, 'qcow2')
-
-    def generate_manifest(self, image, public_info, ref, image_format):
-        metadata = image.build.metadata.copy()
-        metadata.labels[label_ucdo_image_format] = image_format
-        metadata.labels[label_ucdo_type] = public_info.public_type.name
-
-        return Upload(
-            metadata=metadata,
-            provider=self.provider,
-            ref=ref,
-        )
+    def groupby_complete(self, iterable, key):
+        return itertools.groupby(sorted(iterable, key=key), key=key)
 
 
 class UploadCommand(UploadBaseCommand):
@@ -92,6 +69,9 @@ class UploadCommand(UploadBaseCommand):
             provider=provider,
             storage=storage,
         )
+
+    def __call__(self):
+        self.uploader(self.images, self.image_public_info)
 
 
 if __name__ == '__main__':
