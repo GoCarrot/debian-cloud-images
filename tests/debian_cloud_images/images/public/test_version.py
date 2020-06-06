@@ -56,12 +56,16 @@ def test_contextmanager_output_success(tmp_path):
         pass
 
     tmp_path_version = tmp_path / 'version'
+    tmp_path_version_sha512 = tmp_path_version / 'SHA512SUMS'
     assert list(tmp_path.iterdir()) == [tmp_path_version]
-    assert list(tmp_path_version.iterdir()) == []
+    assert list(tmp_path_version.iterdir()) == [tmp_path_version_sha512]
 
 
 def test_add_image(tmp_path):
     with patch('debian_cloud_images.images.public.version.Image', autospec=True) as mock:
+        # autospec can't generate member variables
+        mock.return_value.files = {}
+
         with Version(tmp_path, '/', 'version') as version:
             assert version.add_image('image', 'provider') is mock.return_value
             assert mock.call_args[0][1:] == ('/version/', 'image', 'provider')

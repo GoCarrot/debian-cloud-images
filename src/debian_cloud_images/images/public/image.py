@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import base64
 import hashlib
 import json
 import logging
 import pathlib
+import typing
 
 from ...api.cdo.upload import Upload
 from ...api.registry import registry as api_registry
@@ -18,6 +21,9 @@ class Image:
     imagename: str
     provider: str
 
+    files: typing.Dict[str, hashlib._Hash]
+    manifests: typing.List
+
     def __init__(self, basepath: pathlib.Path, baseref: str, imagename: str, provider: str):
         self.basepath = basepath
         self.baseref = baseref
@@ -25,6 +31,7 @@ class Image:
         self.provider = provider
 
     def __enter__(self):
+        self.files = {}
         self.manifests = []
         self.__manifests_input = []
         self.__path = self.basepath / self.imagename
@@ -48,9 +55,16 @@ class Image:
 
     def _commit(self):
         manifests = self.__manifests_input + self.manifests
+        path = self.__path.with_suffix('.json')
+        output_hash = hashlib.sha512()
 
-        with self.__path.with_suffix('.json').open('w') as f:
-            json.dump(api_registry.dump(manifests), f, indent=4, separators=(',', ': '), sort_keys=True)
+        with path.with_suffix('.json').open('wb') as f:
+            s = json.dumps(api_registry.dump(manifests), indent=4, separators=(',', ': '), sort_keys=True)
+            s = s.encode('utf-8')
+            f.write(s)
+            output_hash.update(s)
+
+        self._append_file(path, output_hash)
 
     def _rollback(self):
         pass
@@ -72,6 +86,7 @@ class Image:
                 output_hash = self.__copy_hash(f_in, f_out)
 
         self._append_manifest(image, public_type, ref, 'qcow2', output_hash)
+        self._append_file(path, output_hash)
 
     def _copy_tar(self, image, public_type):
         with image.open_tar_raw() as f_in:
@@ -82,6 +97,7 @@ class Image:
                 output_hash = self.__copy_hash(f_in, f_out)
 
         self._append_manifest(image, public_type, ref, 'internal', output_hash)
+        self._append_file(path, output_hash)
 
     def __copy_hash(self, f_in, f_out, length=64 * 1024):
         output_hash = hashlib.sha512()
@@ -114,3 +130,6 @@ class Image:
             provider=self.provider,
             ref=ref,
         ))
+
+    def _append_file(self, path, output_hash):
+        self.files[path.name] = output_hash

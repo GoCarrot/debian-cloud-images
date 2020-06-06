@@ -25,6 +25,7 @@ class Version:
         self.__tmp = tempfile.TemporaryDirectory(prefix=f'.{self.version}_', dir=self.basepath)
         self.__path = pathlib.Path(self.__tmp.name)
         self.__ref = self.baseref + self.version + '/'
+        self.__images = []
 
         return self
 
@@ -41,8 +42,11 @@ class Version:
         del self.__tmp
         del self.__path
         del self.__ref
+        del self.__images
 
     def _commit(self):
+        self._write_digest()
+
         path = self.basepath / self.version
         pathbak = self.basepath / f'.{self.version}_{datetime.now().isoformat()}'
 
@@ -55,5 +59,16 @@ class Version:
     def _rollback(self):
         self.__tmp.cleanup()
 
+    def _write_digest(self):
+        files = {}
+        for i in self.__images:
+            files.update(i.files)
+
+        with (self.__path / 'SHA512SUMS').open('w') as f:
+            for n, d in sorted(files.items()):
+                print(f'{d.hexdigest()}  {n}', file=f)
+
     def add_image(self, name, provider):
-        return Image(self.__path, self.__ref, name, provider)
+        i = Image(self.__path, self.__ref, name, provider)
+        self.__images.append(i)
+        return i
