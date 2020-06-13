@@ -6,7 +6,7 @@ Uploaders:
  Thomas Goirand <zigo@debian.org>,
  Noah Meyerhans <noahm@debian.org>,
 Build-Depends:
- debhelper (>= 9),
+ debhelper (>= 12~),
  dh-python,
  python3,
  python3-libcloud,
