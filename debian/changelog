@@ -1,3 +1,9 @@
+debian-cloud-images (0.0.4) UNRELEASED; urgency=low
+
+  * Use secure copyright file specification URI.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Sat, 13 Jun 2020 11:26:06 -0000
+
 debian-cloud-images (0.0.3) unstable; urgency=medium
 
   * Fix Vcs links in debian/control
