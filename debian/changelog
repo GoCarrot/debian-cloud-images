@@ -3,6 +3,7 @@ debian-cloud-images (0.0.4) UNRELEASED; urgency=low
   * Use secure copyright file specification URI.
   * Bump debhelper from deprecated 9 to 12.
   * Set debhelper-compat version in Build-Depends.
+  * Update standards version to 4.2.1, no changes needed.
 
  -- Debian Janitor <janitor@jelmer.uk>  Sat, 13 Jun 2020 11:26:06 -0000
 
