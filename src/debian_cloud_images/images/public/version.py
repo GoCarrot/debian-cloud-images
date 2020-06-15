@@ -1,6 +1,7 @@
 import logging
 import os
 import pathlib
+import shutil
 import tempfile
 
 from datetime import datetime
@@ -22,8 +23,7 @@ class Version:
         self.version = version
 
     def __enter__(self):
-        self.__tmp = tempfile.TemporaryDirectory(prefix=f'.{self.version}_', dir=self.basepath)
-        self.__path = pathlib.Path(self.__tmp.name)
+        self.__path = pathlib.Path(tempfile.mkdtemp(prefix=f'.{self.version}_', dir=self.basepath))
         self.__ref = self.baseref + self.version + '/'
         self.__images = []
 
@@ -39,7 +39,6 @@ class Version:
         else:
             self._rollback()
 
-        del self.__tmp
         del self.__path
         del self.__ref
         del self.__images
@@ -57,7 +56,7 @@ class Version:
         os.rename(self.__path, path)
 
     def _rollback(self):
-        self.__tmp.cleanup()
+        shutil.rmtree(self.__path.as_posix())
 
     def _write_digest(self):
         files = {}
