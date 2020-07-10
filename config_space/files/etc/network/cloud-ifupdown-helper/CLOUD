@@ -15,10 +15,6 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# This script can be used to launch an instance for testing. It's
-# mostly just a convenience to avoid having to type in a lot of
-# command-line boilerplate.
-
 template="/etc/network/cloud-interfaces-template"
 cfgdir="/run/network/interfaces.d"
 mkdir -p "$cfgdir"
