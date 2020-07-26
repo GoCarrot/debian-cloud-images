@@ -21,10 +21,12 @@ class Release:
 
         pathrelease = self.basepath / self.name
         pathrelease.mkdir(exist_ok=True)
+        pathrelease.chmod(0o755)
 
         if self.uploadtype != 'release':
             self.__path = pathrelease / self.uploadtype
             self.__path.mkdir(exist_ok=True)
+            self.__path.chmod(0o755)
             self.__ref = self.baseref + self.name + '/' + self.uploadtype + '/'
         else:
             self.__path = pathrelease

@@ -45,6 +45,7 @@ class Version:
 
     def _commit(self):
         self._write_digest()
+        self.__path.chmod(0o755)
 
         path = self.basepath / self.version
         pathbak = self.basepath / f'.{self.version}_{datetime.now().isoformat()}'
@@ -63,9 +64,11 @@ class Version:
         for i in self.__images:
             files.update(i.files)
 
-        with (self.__path / 'SHA512SUMS').open('w') as f:
+        chfile = self.__path / 'SHA512SUMS'
+        with chfile.open('w') as f:
             for n, d in sorted(files.items()):
                 print(f'{d.hexdigest()}  {n}', file=f)
+        chfile.chmod(0o444)
 
     def add_image(self, name, provider):
         i = Image(self.__path, self.__ref, name, provider)
