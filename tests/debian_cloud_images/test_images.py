@@ -104,7 +104,7 @@ def test_Image_open_image(images_path_tar):
     image = images['test']
 
     with image.open_image('qcow2') as f:
-        assert f.read(8) == b'QFI\xfb\0\0\0\2'
+        assert f.read(8) == b'QFI\xfb\0\0\0\3'
 
     with image.open_image('vhd') as f:
         assert f.read(8) == b'1' * 8
