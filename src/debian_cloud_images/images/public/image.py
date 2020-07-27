@@ -58,11 +58,12 @@ class Image:
         path = self.__path.with_suffix('.json')
         output_hash = hashlib.sha512()
 
-        with path.with_suffix('.json').open('wb') as f:
+        with path.open('wb') as f:
             s = json.dumps(api_registry.dump(manifests), indent=4, separators=(',', ': '), sort_keys=True)
             s = s.encode('utf-8')
             f.write(s)
             output_hash.update(s)
+        path.chmod(0o444)
 
         self._append_file(path, output_hash)
 
@@ -84,6 +85,7 @@ class Image:
             logger.info(f'Copy to {ref}')
             with path.open('wb') as f_out:
                 output_hash = self.__copy_hash(f_in, f_out)
+            path.chmod(0o444)
 
         self._append_manifest(image, public_type, ref, 'qcow2', output_hash)
         self._append_file(path, output_hash)
@@ -95,6 +97,7 @@ class Image:
             logger.info(f'Copy to {ref}')
             with path.open('wb') as f_out:
                 output_hash = self.__copy_hash(f_in, f_out)
+            path.chmod(0o444)
 
         self._append_manifest(image, public_type, ref, 'internal', output_hash)
         self._append_file(path, output_hash)
