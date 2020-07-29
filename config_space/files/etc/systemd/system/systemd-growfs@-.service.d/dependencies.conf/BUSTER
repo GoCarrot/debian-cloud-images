@@ -1,0 +1,6 @@
+# As documented in https://bugs.debian.org/966451, systemd < 244.1 does not
+# ensure that the root filesystem is remounted in rw mode before attempting to
+# resize it with systemd-growfs. This drop-in adds the missing service
+# dependency.
+[Unit]
+After=systemd-remount-fs.service
