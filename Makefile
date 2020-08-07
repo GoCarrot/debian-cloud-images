@@ -21,4 +21,4 @@ image_%:
 	  --override-name $@
 
 clean:
-	rm -rf image-*.*
+	rm -rf image_*.*
