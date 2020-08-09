@@ -15,12 +15,15 @@ class AzureSku:
     _info: AzurePartnerInfo
     _name: str
 
-    def __init__(self, info: AzurePartnerInfo, name, str) -> None:
-        self._info = info
-        self._name = name
+    __api_data: typing.Any
 
-        # TODO: provide data
-        self.versions = AzureVersions(self._info, {})
+    def __init__(self, info: AzurePartnerInfo, api_data: typing.Any) -> None:
+        self._info = info
+        self.__api_data = api_data
+
+        self._name = api_data['planId']
+
+        self.versions = AzureVersions(self._info, api_data)
 
     def __enter__(self) -> 'AzureSku':
         return self
@@ -33,11 +36,10 @@ class AzureSkus(collections.abc.Mapping):
     _info: AzurePartnerInfo
     _children: typing.Dict[str, AzureSku]
 
-    def __init__(self, info: AzurePartnerInfo, data: typing.Any) -> None:
+    def __init__(self, info: AzurePartnerInfo, api_data: typing.Any) -> None:
         self._info = info
 
-        # TODO
-        self._children = {}
+        self._children = {i['planId']: AzureSku(self._info, i) for i in api_data}
 
     def __getitem__(self, name) -> AzureSku:
         return self._children[name]

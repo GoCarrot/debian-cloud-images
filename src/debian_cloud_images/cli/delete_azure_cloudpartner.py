@@ -2,10 +2,9 @@ import datetime
 import logging
 
 from collections import namedtuple
-from libcloud.common.exceptions import BaseHTTPError
 
 from .base import BaseCommand
-from ..utils.azure.image_version import AzureImageVersion
+from ..images.azure_partner import AzurePartnerImages
 from ..utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Connection
 from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
@@ -13,45 +12,6 @@ from ..utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDri
 AzureAuth = namedtuple('AzureAuth', ('client', 'secret'))
 AzureCloudpartner = namedtuple('AzureCloudpartner', ('tenant', 'publisher'))
 AzureStorage = namedtuple('AzureStorage', ('tenant', 'subscription', 'group', 'name'))
-
-
-class AzureCloudPartnerOffer:
-    def __init__(self, driver, publisher_id, offer_id):
-        self.driver = driver
-        self.publisher_id = publisher_id
-        self.offer_id = offer_id
-
-        self.offer_path = '/api/publishers/{}/offers/{}'.format(publisher_id, offer_id)
-
-        self.read()
-
-    def _request(self, params=None, headers=None, data=None, method='GET'):
-        return self.driver.request(self.offer_path, headers=headers, params=params, data=data, method=method)
-
-    def publish(self, email):
-        data = {
-            'metadata': {
-                'notification-emails': email,
-            },
-        }
-        try:
-            self.driver.request(self.offer_path + '/publish', data=data, method='POST')
-        except BaseHTTPError as e:
-            logging.error(f'Unable to publish offer: {e.message}')
-
-    def read(self):
-        r = self._request()
-        self.data, self.etag = r.parse_body(), r.headers['etag']
-        self.plans = {}
-        for plan in self.data['definition']['plans']:
-            images = {plan['planId']: plan['microsoft-azure-corevm.vmImagesPublicAzure']}
-            for generation in plan['diskGenerations']:
-                images[generation['planId']] = generation['microsoft-azure-corevm.vmImagesPublicAzure']
-            self.plans[plan['planId']] = images
-
-    def save(self):
-        r = self._request(data=self.data, method='PUT', headers={'If-Match': self.etag})
-        return r.parse_body()
 
 
 class DeleteAzureCloudpartnerCommand(BaseCommand):
@@ -137,7 +97,7 @@ config options:
     def __call__(self):
         if self.delete_date_offer:
             logging.info(f'Deleting images from offers before {self.delete_date_offer.strftime("%Y-%m-%d")}')
-            self.delete_from_offer()
+            AzurePartnerImages(None, self.cloudpartner.publisher, self.cloudpartner_obj).cleanup(self.offer_ids, self.delete_date_offer)
         else:
             logging.info(f'Not deleting images from offers')
 
@@ -175,57 +135,6 @@ config options:
                 resource_group=self.storage.group,
             )
         return ret
-
-    def delete_from_offer(self):
-        for offer_id in self.offer_ids:
-            self._delete_from_offer(offer_id)
-
-    def _delete_from_offer(self, offer_id):
-        logging.debug(f'Deleting images from offer {offer_id}')
-
-        offer = AzureCloudPartnerOffer(self.cloudpartner_obj, self.cloudpartner.publisher, offer_id)
-        changed = False
-        for plan in offer.plans.values():
-            changed |= self._delete_from_offer_plan(plan)
-
-        if changed:
-            if not self.no_op:
-                logging.info(f'Save offer {offer_id}')
-                offer.save()
-            else:
-                logging.info(f'Would save offer {offer_id}')
-        else:
-            logging.debug(f'Would not save unmodified offer {offer_id}')
-
-    def _delete_from_offer_plan(self, plan):
-        changed = False
-
-        for plan_id, images in plan.items():
-            logging.debug(f'Deleting images from plan {plan_id}')
-
-            versions_all = frozenset(AzureImageVersion.from_string(i) for i in images)
-            versions_remain = set()
-
-            for version in sorted(versions_all, reverse=True):
-                if version.minor == 0:
-                    logging.warning(f'Not deleting images from plan {plan_id}, undated images found')
-                    return False
-                date = datetime.datetime.strptime(str(version.minor), '%Y%m%d')
-                if date >= self.delete_date_offer:
-                    logging.debug(f'Not deleting image {version} from plan {plan_id}, too new')
-                    versions_remain.add(version)
-                else:
-                    break
-
-            for version in sorted(versions_all - versions_remain):
-                if len(images) > 1:
-                    logging.info(f'Deleting image {version} from plan {plan_id}')
-                    del images[str(version)]
-                    changed = True
-                else:
-                    logging.debug(f'Not deleting image {version} from plan {plan_id}, last remaining')
-
-        return changed
 
     def delete_from_storage(self):
         for c in self.storage_obj.iterate_containers():

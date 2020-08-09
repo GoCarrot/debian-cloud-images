@@ -3,6 +3,7 @@ import logging
 import typing
 
 from .info import AzurePartnerInfo
+from ...utils.azure.image_version import AzureImageVersion
 
 
 logger = logging.getLogger(__name__)
@@ -10,9 +11,9 @@ logger = logging.getLogger(__name__)
 
 class AzureVersion:
     _info: AzurePartnerInfo
-    _name: str
+    _name: AzureImageVersion
 
-    def __init__(self, info: AzurePartnerInfo, name: str) -> None:
+    def __init__(self, info: AzurePartnerInfo, name: AzureImageVersion) -> None:
         self._info = info
         self._name = name
 
@@ -23,18 +24,39 @@ class AzureVersion:
         pass
 
 
-class AzureVersions(collections.abc.Mapping):
+class AzureVersions(collections.abc.MutableMapping):
     _info: AzurePartnerInfo
     _children: typing.Dict[str, AzureVersion]
 
-    def __init__(self, info: AzurePartnerInfo, data: typing.Any) -> None:
+    def __init__(self, info: AzurePartnerInfo, api_data: typing.Any) -> None:
         self._info = info
 
-        # TODO
-        self._children = {}
+        generations = {
+            g['planId']: g['microsoft-azure-corevm.vmImagesPublicAzure']
+            for g in [api_data] + api_data['diskGenerations']
+        }
+
+        versions: typing.Dict[str, typing.Dict] = {}
+        for generation, images in generations.items():
+            for version, image in images.items():
+                i = versions.setdefault(AzureImageVersion.from_string(version), {})
+                i[generation] = image
+
+        children: typing.Dict[str, AzureVersion] = {}
+        for version, images in versions.items():
+            # TODO
+            children[version] = AzureVersion(info, version)
+
+        self._children = children
+
+    def __delitem__(self, name) -> None:
+        del self._children[name]
 
     def __getitem__(self, name) -> AzureVersion:
         return self._children[name]
+
+    def __setitem__(self, name, value) -> None:
+        raise NotImplementedError
 
     def __iter__(self) -> typing.Iterator:
         return iter(self._children)

@@ -15,18 +15,27 @@ class AzureOffer:
     _info: AzurePartnerInfo
     _name: str
 
+    __api_data: typing.Any
+    __api_etag: str
+
     def __init__(self, info: AzurePartnerInfo, name: str) -> None:
         self._info = info
         self._name = name
 
-        # TODO: provide data
-        self.skus = AzureSkus(self._info, {})
+        self._api_get()
+
+        self.skus = AzureSkus(self._info, self.__api_data['definition']['plans'])
 
     def __enter__(self) -> 'AzureOffer':
         return self
 
     def __exit__(self, type, value, tb) -> None:
         pass
+
+    def _api_get(self):
+        offer_path = f'/api/publishers/{self._info.publisher}/offers/{self._name}'
+        r = self._info.driver.request(offer_path)
+        self.__api_data, self.__api_etag = r.parse_body(), r.headers.get('etag', '*')
 
 
 class AzureOffers(collections.abc.Mapping):
