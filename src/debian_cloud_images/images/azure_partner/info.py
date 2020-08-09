@@ -3,16 +3,19 @@ from ...utils.libcloud.other.azure_cloudpartner import AzureCloudpartnerOAuth2Co
 
 
 class AzurePartnerInfo:
+    noop: bool
     public: ImagePublicInfo
     publisher: str
     driver: AzureCloudpartnerOAuth2Connection
 
     def __init__(
         self,
+        noop: bool,
         public: ImagePublicInfo,
         publisher: str,
         driver: AzureCloudpartnerOAuth2Connection,
     ) -> None:
+        self.noop = noop
         self.public = public
         self.publisher = publisher
         self.driver = driver

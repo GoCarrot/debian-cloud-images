@@ -23,6 +23,9 @@ class AzureVersion:
     def __exit__(self, type, value, tb) -> None:
         pass
 
+    def _rollback(self) -> None:
+        pass
+
 
 class AzureVersions(collections.abc.MutableMapping):
     _info: AzurePartnerInfo

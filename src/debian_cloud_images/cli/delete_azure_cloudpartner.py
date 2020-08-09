@@ -97,7 +97,7 @@ config options:
     def __call__(self):
         if self.delete_date_offer:
             logging.info(f'Deleting images from offers before {self.delete_date_offer.strftime("%Y-%m-%d")}')
-            AzurePartnerImages(None, self.cloudpartner.publisher, self.cloudpartner_obj).cleanup(self.offer_ids, self.delete_date_offer)
+            AzurePartnerImages(self.no_op, None, self.cloudpartner.publisher, self.cloudpartner_obj).cleanup(self.offer_ids, self.delete_date_offer)
         else:
             logging.info(f'Not deleting images from offers')
 

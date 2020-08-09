@@ -27,15 +27,29 @@ class AzureOffer:
         self.skus = AzureSkus(self._info, self.__api_data['definition']['plans'])
 
     def __enter__(self) -> 'AzureOffer':
+        self.__commited = False
         return self
 
     def __exit__(self, type, value, tb) -> None:
-        pass
+        if not self.__commited:
+            logger.debug('Rolling back')
+            self._rollback()
+        del self.__commited
+
+    def _rollback(self) -> None:
+        for i in self.skus.values():
+            try:
+                i._rollback()
+            except BaseException:
+                logger.exception('Failed to rollback')
 
     def _api_get(self):
         offer_path = f'/api/publishers/{self._info.publisher}/offers/{self._name}'
         r = self._info.driver.request(offer_path)
         self.__api_data, self.__api_etag = r.parse_body(), r.headers.get('etag', '*')
+
+    def commit(self) -> None:
+        self.__commited = True
 
 
 class AzureOffers(collections.abc.Mapping):

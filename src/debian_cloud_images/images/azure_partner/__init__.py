@@ -19,11 +19,12 @@ class AzurePartnerImages:
 
     def __init__(
         self,
+        noop: bool,
         public: ImagePublicInfo,
         publisher: str,
         driver: AzureCloudpartnerOAuth2Connection,
     ):
-        self.__info = AzurePartnerInfo(public, publisher, driver)
+        self.__info = AzurePartnerInfo(noop, public, publisher, driver)
 
     def add(self, images: typing.List) -> None:
         offers = AzureOffers(self.__info)
@@ -56,6 +57,9 @@ class AzurePartnerImages:
             logger.debug(f'Handle Azure offer {name!r}')
             with offers[name] as f:
                 self._cleanup_skus(f.skus, delete_after, name)
+                if not self.__info.noop:
+                    logging.info(f'Save offer {name}')
+                    f.commit()
 
     def _cleanup_skus(self, skus: AzureSkus, delete_after: datetime.datetime, name_offer: str) -> None:
         for name, sku in skus.items():

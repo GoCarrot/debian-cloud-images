@@ -31,6 +31,13 @@ class AzureSku:
     def __exit__(self, type, value, tb) -> None:
         pass
 
+    def _rollback(self) -> None:
+        for i in self.versions.values():
+            try:
+                i._rollback()
+            except BaseException:
+                logger.exception('Failed to rollback')
+
 
 class AzureSkus(collections.abc.Mapping):
     _info: AzurePartnerInfo
