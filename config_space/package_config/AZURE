@@ -1,6 +1,8 @@
 PACKAGES install-norec
 # Azure images require waagent 
 waagent
+
+PACKAGES install-norec BUSTER
 # Some waagent extensions still need python2.7, and break when it is not present
 python
 
