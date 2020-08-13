@@ -1,7 +1,8 @@
 import bisect
+import errno
 import io
+import itertools
 import os
-import pytest
 
 from debian_cloud_images.utils.files import ChunkedFile
 
@@ -12,8 +13,6 @@ class HoleFile(io.RawIOBase):
     def __init__(self, size, blocks):
         self.size = size
 
-        # Files end with an implicit hole
-        blocks[size] = False
         self.blocks = blocks
         self.__blocks_start = sorted(blocks.keys())
 
@@ -48,29 +47,41 @@ class HoleFile(io.RawIOBase):
                 return self.__current
 
         if whence == os.SEEK_DATA:
-            n, start = self._block_find(offset)
-            is_data = self.blocks[start]
-            if is_data:
-                # Returns self if within data
-                pass
-            else:
-                # Returns start of next block
-                n += 1
-            self.__current = self.__blocks_start[n]
-            self.__current_block = n
+            try:
+                n, start = self._block_find(offset)
+                is_data = self.blocks[start]
+                if is_data:
+                    # Returns self if within data
+                    pass
+                else:
+                    # Returns start of next block
+                    n += 1
+                self.__current_block = n
+                self.__current = self.__blocks_start[n]
+
+            except IndexError:
+                raise OSError(errno.ENXIO, 'Behind end of file')
+
             return self.__current
 
         if whence == os.SEEK_HOLE:
-            n, start = self._block_find(offset)
-            is_data = self.blocks[start]
-            if is_data:
-                # Returns start of next block
-                n += 1
-            else:
-                # Returns self if within hole
-                pass
-            self.__current = self.__blocks_start[n]
-            self.__current_block = n
+            try:
+                n, start = self._block_find(offset)
+                is_data = self.blocks[start]
+                if is_data:
+                    # Returns start of next block
+                    n += 1
+                else:
+                    # Returns self if within hole
+                    pass
+                self.__current_block = n
+                self.__current = self.__blocks_start[n]
+
+            except IndexError:
+                if offset >= self.size:
+                    raise OSError(errno.ENXIO, 'Behind end of file')
+                self.__current = self.size
+
             return self.__current
 
         raise io.UnsupportedOperation
@@ -82,43 +93,55 @@ class HoleFile(io.RawIOBase):
         raise io.UnsupportedOperation
 
 
-def test_ChunkedFile():
-    fileobj = HoleFile(12, {
+def test_ChunkedFile_1():
+    fileobj = HoleFile(8, {
         0: True,
         2: False,
         4: True,
-        9: False,
-        10: True,
+        7: False,
     })
 
+    result = [
+        (True, 0, 2),
+        (False, 2, 2),
+        (True, 4, 2),
+        (True, 6, 1),
+        (False, 7, 1),
+    ]
+
     with ChunkedFile(fileobj, 2) as f:
-        assert f.size == 12
-        it = iter(f)
+        assert f.size == 8
 
-        c = next(it)
-        assert c.offset == 0
-        assert c.size == 2
-        assert c.read(2) == b'11'
+        for chunk, (want_is_data, want_offset, want_size) in itertools.zip_longest(f, result):
+            assert chunk.is_data is want_is_data
+            assert chunk.is_hole is not want_is_data
+            assert chunk.offset == want_offset
+            assert chunk.size == want_size
+            assert len(chunk.read()) == want_size
 
-        c = next(it)
-        assert c.offset == 4
-        assert c.size == 2
-        assert c.read(2) == b'11'
 
-        c = next(it)
-        assert c.offset == 6
-        assert c.size == 2
-        assert c.read(2) == b'11'
+def test_ChunkedFile_2():
+    fileobj = HoleFile(8, {
+        0: False,
+        2: True,
+        4: False,
+        7: True,
+    })
 
-        c = next(it)
-        assert c.offset == 8
-        assert c.size == 1
-        assert c.read(2) == b'1'
+    result = [
+        (False, 0, 2),
+        (True, 2, 2),
+        (False, 4, 2),
+        (False, 6, 1),
+        (True, 7, 1),
+    ]
 
-        c = next(it)
-        assert c.offset == 10
-        assert c.size == 2
-        assert c.read(2) == b'11'
+    with ChunkedFile(fileobj, 2) as f:
+        assert f.size == 8
 
-        with pytest.raises(StopIteration):
-            next(it)
+        for chunk, (want_is_data, want_offset, want_size) in itertools.zip_longest(f, result):
+            assert chunk.is_data is want_is_data
+            assert chunk.is_hole is not want_is_data
+            assert chunk.offset == want_offset
+            assert chunk.size == want_size
+            assert len(chunk.read()) == want_size
