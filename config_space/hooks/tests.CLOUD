@@ -1,5 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 set -eux
+
+# Cleanup mounts before running tests
+umount -l $FAI_ROOT/dev
+umount -l $FAI_ROOT/proc
+umount -l $FAI_ROOT/run
+umount -l $FAI_ROOT/sys
+
 exec pytest-3 \
   -p debian_cloud_images.test.pytest.mount \
   -vrxXs \
