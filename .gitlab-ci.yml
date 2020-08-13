@@ -39,7 +39,7 @@ test mypy:
 
 test package:
   stage: source test
-  image: debian:buster
+  image: debian:bullseye
   script:
     - apt-get build-dep -y ./
     - >
