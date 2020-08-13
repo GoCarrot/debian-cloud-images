@@ -21,15 +21,15 @@ You also need python3-libcloud from Buster or newer.
 Example 1:
 
 ```
-   # make image_stretch_nocloud_amd64
+   # make image_sid_nocloud_amd64
 ```
 
 This will create some log output and the following files:
 
-- `image_stretch_nocloud_amd64.build.json`
-- `image_stretch_nocloud_amd64.info`
-- `image_stretch_nocloud_amd64.raw`
-- `image_stretch_nocloud_amd64.tar`
+- `image_sid_nocloud_amd64.build.json`
+- `image_sid_nocloud_amd64.info`
+- `image_sid_nocloud_amd64.raw`
+- `image_sid_nocloud_amd64.tar`
 
 Example 2:
 
@@ -65,7 +65,7 @@ cases. Each type of image can be built with the following command:
     # make image_<suite>_<type>_<arch>
 ```
 
-where `<suite>` is one of `stretch`, `buster`, or `sid`. `<type>` can
+where `<suite>` is one of `buster`, `bullseye`, or `sid`. `<type>` can
 be any of the following:
 
  * `azure`: Optimized for Microsoft's cloud computing platform Azure

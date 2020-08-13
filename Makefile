@@ -5,7 +5,7 @@ DESTDIR = .
 help:
 	@echo "To run this makefile, run:"
 	@echo "   make image_<DIST>_<CLOUD>_<ARCH>"
-	@echo "  WHERE <DIST> is bullseye, buster, stretch or sid"
+	@echo "  WHERE <DIST> is bullseye, buster, sid"
 	@echo "    And <CLOUD> is azure, ec2, gce, generic, genericcloud, nocloud"
 	@echo "    And <ARCH> is amd64, arm64, ppc64el"
 	@echo "Set DESTDIR= to write images to given directory."
