@@ -5,6 +5,9 @@ import pathlib
 
 class TestBase:
     @pytest.mark.parametrize('path', [
+        '/proc',
+        '/run',
+        '/sys',
         '/tmp',
         '/var/cache/apt',
         '/var/lib/apt/lists',
@@ -15,7 +18,9 @@ class TestBase:
         p = (image_path / path.relative_to('/'))
         assert p.exists(), '{} does not exist'.format(path.as_posix())
         assert p.is_dir(), '{} is no directory'.format(path.as_posix())
-        assert len(list(p.glob('*'))) == 0, '{} is not empty'.format(path.as_posix())
+
+        c = set(i.relative_to(p).as_posix() for i in p.glob('*'))
+        assert len(c) == 0, '{} contains unexpected files: {}'.format(path.as_posix(), ', '.join(c))
 
     @pytest.mark.parametrize('path', [
         '/etc/mailname',
