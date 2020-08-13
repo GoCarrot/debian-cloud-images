@@ -80,7 +80,7 @@ class Image:
             '-f', 'raw',
             '-O', 'qcow2',
             '-c',
-            '-o', 'compat=0.10',
+            '-o', 'compat=1.1',
             name_in,
             name_out,
         ))
