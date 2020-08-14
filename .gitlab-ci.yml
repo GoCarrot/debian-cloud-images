@@ -129,20 +129,6 @@ test pytest latest:
   - if: '$CI_MERGE_REQUEST_ID == null'
     when: manual
 
-azure stretch build:
-  extends: .azure build
-  variables:
-    CLOUD_ARCH: amd64
-    CLOUD_RELEASE: stretch
-    CLOUD_VENDOR: azure
-
-azure stretch-backports build:
-  extends: .azure build
-  variables:
-    CLOUD_ARCH: amd64
-    CLOUD_RELEASE: stretch-backports
-    CLOUD_VENDOR: azure
-
 azure buster build:
   extends: .azure build
   variables:
@@ -179,13 +165,6 @@ azure sid build:
   - if: '$CI_MERGE_REQUEST_ID == null'
     when: manual
 
-ec2 stretch amd64 build:
-  extends: .ec2 build
-  variables:
-    CLOUD_ARCH: amd64
-    CLOUD_RELEASE: stretch
-    CLOUD_VENDOR: ec2
-
 ec2 buster amd64 build:
   extends: .ec2 build
   variables:
@@ -205,13 +184,6 @@ ec2 sid amd64 build:
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: sid
-    CLOUD_VENDOR: ec2
-
-ec2 stretch arm64 build:
-  extends: .ec2 build
-  variables:
-    CLOUD_ARCH: arm64
-    CLOUD_RELEASE: stretch
     CLOUD_VENDOR: ec2
 
 ec2 buster arm64 build:
@@ -242,13 +214,6 @@ ec2 sid arm64 build:
     when: on_success
   - if: '$CI_MERGE_REQUEST_ID == null'
     when: manual
-
-gce stretch build:
-  extends: .gce build
-  variables:
-    CLOUD_ARCH: amd64
-    CLOUD_RELEASE: stretch
-    CLOUD_VENDOR: gce
 
 gce buster build:
   extends: .gce build
@@ -371,13 +336,6 @@ genericcloud sid amd64 build:
   - if: '$CI_MERGE_REQUEST_ID == null'
     when: manual
 
-nocloud stretch amd64 build:
-  extends: .nocloud build
-  variables:
-    CLOUD_ARCH: amd64
-    CLOUD_RELEASE: stretch
-    CLOUD_VENDOR: nocloud
-
 nocloud buster amd64 build:
   extends: .nocloud build
   variables:
@@ -454,8 +412,6 @@ azure upload:
       --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
   dependencies:
-    - azure stretch build
-    - azure stretch-backports build
     - azure buster build
     - azure buster-backports build
     - azure bullseye build
@@ -481,11 +437,9 @@ ec2 upload:
       --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
   dependencies:
-    - ec2 stretch amd64 build
     - ec2 buster amd64 build
     - ec2 bullseye amd64 build
     - ec2 sid amd64 build
-    - ec2 stretch arm64 build
     - ec2 buster arm64 build
     - ec2 bullseye arm64 build
     - ec2 sid arm64 build
@@ -510,7 +464,6 @@ gce upload:
       --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
   dependencies:
-    - gce stretch build
     - gce buster build
     - gce bullseye build
     - gce sid build

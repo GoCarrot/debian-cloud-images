@@ -83,18 +83,6 @@ ReleaseEnum = enum.Enum(  # type:ignore
                           # mypy is not able to parse functional Enum properly
     'ReleaseEnum',
     {
-        'stretch': {
-            'id': '9',
-            'baseid': '9',
-            'fai_classes': ('STRETCH', ),
-            'arch_supports_linux_image_cloud': (),
-        },
-        'stretch-backports': {
-            'id': '9-backports',
-            'baseid': '9',
-            'fai_classes': ('STRETCH', 'BACKPORTS_LINUX'),
-            'arch_supports_linux_image_cloud': ("amd64",),
-        },
         'buster': {
             'id': '10',
             'baseid': '10',
