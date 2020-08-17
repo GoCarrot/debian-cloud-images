@@ -1,4 +1,5 @@
 import collections.abc
+import copy
 import logging
 import typing
 
@@ -13,9 +14,13 @@ class AzureVersion:
     _info: AzurePartnerInfo
     _name: AzureImageVersion
 
-    def __init__(self, info: AzurePartnerInfo, name: AzureImageVersion) -> None:
+    __api_data: typing.Any
+
+    def __init__(self, info: AzurePartnerInfo, name: AzureImageVersion, api_data: typing.Any) -> None:
         self._info = info
         self._name = name
+
+        self.__api_data = api_data
 
     def __enter__(self) -> 'AzureVersion':
         return self
@@ -25,6 +30,9 @@ class AzureVersion:
 
     def _rollback(self) -> None:
         pass
+
+    def api_update(self) -> typing.Any:
+        return copy.deepcopy(self.__api_data)
 
 
 class AzureVersions(collections.abc.MutableMapping):
@@ -48,7 +56,7 @@ class AzureVersions(collections.abc.MutableMapping):
         children: typing.Dict[str, AzureVersion] = {}
         for version, images in versions.items():
             # TODO
-            children[version] = AzureVersion(info, version)
+            children[version] = AzureVersion(info, version, images)
 
         self._children = children
 
@@ -66,3 +74,20 @@ class AzureVersions(collections.abc.MutableMapping):
 
     def __len__(self) -> int:
         return len(self._children)
+
+    def api_update(self, api_data: typing.Any) -> None:
+        generations: typing.Dict[str, typing.Any] = {}
+
+        for name, version in self.items():
+            for generation, api_image in version.api_update().items():
+                generations.setdefault(generation, {})[str(name)] = api_image
+
+        api_generations = {
+            g['planId']: g
+            for g in [api_data] + api_data['diskGenerations']
+        }
+
+        # TODO: Handle added and removed generations
+        for name, g in api_generations.items():
+            g['microsoft-azure-corevm.vmImagesPublicAzure'] = generations.pop(name)
+        assert not generations

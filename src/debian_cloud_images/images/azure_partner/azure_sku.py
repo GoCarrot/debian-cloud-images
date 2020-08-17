@@ -1,4 +1,5 @@
 import collections.abc
+import copy
 import logging
 import typing
 
@@ -38,6 +39,11 @@ class AzureSku:
             except BaseException:
                 logger.exception('Failed to rollback')
 
+    def api_update(self) -> typing.Any:
+        api_data = copy.deepcopy(self.__api_data)
+        self.versions.api_update(api_data)
+        return api_data
+
 
 class AzureSkus(collections.abc.Mapping):
     _info: AzurePartnerInfo
@@ -56,3 +62,6 @@ class AzureSkus(collections.abc.Mapping):
 
     def __len__(self) -> int:
         return len(self._children)
+
+    def api_update(self, api_data: typing.Any) -> None:
+        api_data[:] = [j.api_update() for i, j in self.items()]

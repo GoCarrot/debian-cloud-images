@@ -1,4 +1,5 @@
 import collections.abc
+import copy
 import logging
 import typing
 
@@ -48,7 +49,19 @@ class AzureOffer:
         r = self._info.driver.request(offer_path)
         self.__api_data, self.__api_etag = r.parse_body(), r.headers.get('etag', '*')
 
+    def _api_write(self, api_data):
+        offer_path = f'/api/publishers/{self._info.publisher}/offers/{self._name}'
+        r = self._info.driver.request(offer_path, method='PUT', data=api_data, headers={'If-Match': self.__api_etag})
+        self.__api_data, self.__api_etag = r.parse_body(), r.headers.get('etag', '*')
+
+    def api_update(self) -> typing.Any:
+        api_data = copy.deepcopy(self.__api_data)
+        self.skus.api_update(api_data['definition']['plans'])
+        return api_data
+
     def commit(self) -> None:
+        api_data_updated = self.api_update()
+        self._api_write(api_data_updated)
         self.__commited = True
 
 
