@@ -18,3 +18,5 @@ mount -t tmpfs fai-run $FAI_ROOT/run
 mount --make-private $FAI_ROOT/run
 mount -t sysfs fai-sysfs $FAI_ROOT/sys
 mount --make-private $FAI_ROOT/sys
+
+$ROOTCMD apt-get -y update
