@@ -6,6 +6,8 @@ sudo
 # needed for any useful login session
 libpam-systemd
 
+libnss-resolve
+
 unattended-upgrades
 
 # We're going with chrony as our default ntp client in light of
