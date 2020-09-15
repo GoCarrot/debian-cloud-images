@@ -172,6 +172,13 @@ ec2 buster amd64 build:
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: ec2
 
+ec2 buster-backports amd64 build:
+  extends: .ec2 build
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster-backports
+    CLOUD_VENDOR: ec2
+
 ec2 bullseye amd64 build:
   extends: .ec2 build
   variables:
@@ -191,6 +198,13 @@ ec2 buster arm64 build:
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
+    CLOUD_VENDOR: ec2
+
+ec2 buster-backports arm64 build:
+  extends: .ec2 build
+  variables:
+    CLOUD_ARCH: arm64
+    CLOUD_RELEASE: buster-backports
     CLOUD_VENDOR: ec2
 
 ec2 bullseye arm64 build:
@@ -438,9 +452,11 @@ ec2 upload:
       *.build.json
   dependencies:
     - ec2 buster amd64 build
+    - ec2 buster-backports amd64 build
     - ec2 bullseye amd64 build
     - ec2 sid amd64 build
     - ec2 buster arm64 build
+    - ec2 buster-backports arm64 build
     - ec2 bullseye arm64 build
     - ec2 sid arm64 build
   artifacts:
