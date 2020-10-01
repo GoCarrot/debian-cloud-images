@@ -1,5 +1,6 @@
 PACKAGES install-norec
 cloud-init
+resolvconf
 bridge-utils
 ifenslave
 vlan

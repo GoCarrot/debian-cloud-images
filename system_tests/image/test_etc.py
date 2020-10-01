@@ -15,6 +15,10 @@ class TestEtc:
     def test_etc_fstab(self, image_path):
         assert (image_path / 'etc' / 'fstab').exists()
 
+    def test_etc_resolv_conf(self, image_path):
+        p = image_path / 'etc' / 'resolv.conf'
+        assert not p.exists() or p.is_symlink(), '/etc/resolv.conf does exist and is not a symlink'
+
     def test_passwd_name(self, image_passwd_entry):
         name = image_passwd_entry.name
         if name in (

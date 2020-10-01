@@ -24,7 +24,6 @@ class TestBase:
 
     @pytest.mark.parametrize('path', [
         '/etc/mailname',
-        '/etc/resolv.conf',
         '/initrd.img',
         '/vmlinux',
         '/vmlinuz',
