@@ -1,12 +1,9 @@
 PACKAGES install-norec
-# Azure images require waagent 
+cloud-init
+cloud-guest-utils
+hyperv-daemons
 waagent
 
 PACKAGES install-norec BUSTER
 # Some waagent extensions still need python2.7, and break when it is not present
 python
-
-PACKAGES install-norec BULLSEYE SID
-cloud-init
-cloud-guest-utils
-hyperv-daemons
