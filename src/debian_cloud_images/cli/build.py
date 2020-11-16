@@ -98,7 +98,7 @@ ReleaseEnum = enum.Enum(  # type:ignore
         'bullseye': {
             'id': '11',
             'baseid': '11',
-            'fai_classes': ('BULLSEYE', ),
+            'fai_classes': ('BULLSEYE', 'EXTRAS'),
             'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
         },
         'sid': {
