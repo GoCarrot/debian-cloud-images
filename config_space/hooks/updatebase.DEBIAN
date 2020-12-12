@@ -19,4 +19,6 @@ mount --make-private $FAI_ROOT/run
 mount -t sysfs fai-sysfs $FAI_ROOT/sys
 mount --make-private $FAI_ROOT/sys
 
+aptopt="-y -o Dpkg::Options::=--force-confnew"
 $ROOTCMD apt-get -y update
+$ROOTCMD apt-get $aptopt dist-upgrade < /dev/null
