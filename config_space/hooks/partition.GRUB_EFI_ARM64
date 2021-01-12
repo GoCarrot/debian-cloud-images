@@ -40,6 +40,6 @@ uuid_efi=$(blkid -s UUID -o value "$device_efi")
 
 cat > "$LOGDIR/fstab" <<EOF
 # /etc/fstab: static file system information
-UUID=${uuid_root} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 0
+UUID=${uuid_root} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
 UUID=${uuid_efi} /boot/efi vfat defaults 0 0
 EOF

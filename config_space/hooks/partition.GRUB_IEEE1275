@@ -35,5 +35,5 @@ uuid_root=$(blkid -s UUID -o value "$device_root")
 
 cat > "$LOGDIR/fstab" <<EOF
 # /etc/fstab: static file system information
-UUID=${uuid_root} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 0
+UUID=${uuid_root} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
 EOF
