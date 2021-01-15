@@ -88,14 +88,18 @@ test pytest latest:
   stage: build
   image: debian:bullseye
   script:
-    - >
-      apt-get install --no-install-recommends -y
-      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage fdisk make python3-pytest qemu-user-static qemu-utils sudo udev
     - |
       if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
         # Some of our build environments run with SELinux enabled, make sure it is detected by all the tools
         if [ -d /sys/fs/selinux ]; then mount -t selinuxfs none /sys/fs/selinux; mkdir -p /etc/selinux; touch /etc/selinux/config; fi
+        # Setup binfmt_misc for foreign binaries via qemu-user
+        if [ ! -e /proc/sys/fs/binfmt_misc/status ]; then
+          mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+        fi
       fi
+    - >
+      apt-get install --no-install-recommends -y
+      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage fdisk make python3-pytest qemu-user-static qemu-utils sudo udev
     - >
       echo
       debian-cloud-images build
