@@ -18,8 +18,8 @@ def _read_image_passwd_entry(metafunc):
     if path.exists():
         params = []
         with path.open() as f:
-            for l in f.readlines():
-                e = PasswdEntry(*l.strip().split(':'))
+            for line in f.readlines():
+                e = PasswdEntry(*line.strip().split(':'))
                 params.append(pytest.param(e, id=e.name))
         metafunc.parametrize('image_passwd_entry', params)
 
