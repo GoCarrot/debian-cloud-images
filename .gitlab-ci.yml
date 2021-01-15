@@ -440,7 +440,7 @@ nocloud sid ppc64el build:
 
 azure upload:
   stage: vendor upload
-  image: debian:buster
+  image: debian:bullseye
   script:
     - >
       ./bin/debian-cloud-images upload-azure
@@ -465,7 +465,7 @@ azure upload:
 
 ec2 upload:
   stage: vendor upload
-  image: debian:buster
+  image: debian:bullseye
   script:
     - >
       ./bin/debian-cloud-images upload-ec2
@@ -494,7 +494,7 @@ ec2 upload:
 
 gce upload:
   stage: vendor upload
-  image: debian:buster
+  image: debian:bullseye
   script:
     - >
       ./bin/debian-cloud-images upload-gce
