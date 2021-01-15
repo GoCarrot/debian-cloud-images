@@ -90,7 +90,7 @@ test pytest latest:
   script:
     - >
       apt-get install --no-install-recommends -y
-      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage make python3-pytest qemu-user-static qemu-utils sudo udev
+      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage fdisk make python3-pytest qemu-user-static qemu-utils sudo udev
     - |
       if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
         # Some of our build environments run with SELinux enabled, make sure it is detected by all the tools
