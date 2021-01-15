@@ -20,7 +20,7 @@ before_script:
 
 test flake8:
   stage: source test
-  image: debian:buster
+  image: debian:bullseye
   script:
     - >
       apt-get install --no-install-recommends -y
@@ -48,9 +48,8 @@ test package:
     - DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -us -uc
     - lintian ../*.changes
 
-test pytest:
+.test pytest:
   stage: source test
-  image: debian:buster
   script:
     - >
       apt-get install --no-install-recommends -y
@@ -68,6 +67,14 @@ test pytest:
       - coverage/
     reports:
       junit: junit.xml
+
+test pytest buster:
+  extends: .test pytest
+  image: debian:buster
+
+test pytest bullseye:
+  extends: .test pytest
+  image: debian:bullseye
 
 test pytest latest:
   stage: source test
