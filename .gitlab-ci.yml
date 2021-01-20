@@ -20,7 +20,7 @@ before_script:
 
 test flake8:
   stage: source test
-  image: debian:buster
+  image: debian:bullseye
   script:
     - >
       apt-get install --no-install-recommends -y
@@ -48,9 +48,8 @@ test package:
     - DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -us -uc
     - lintian ../*.changes
 
-test pytest:
+.test pytest:
   stage: source test
-  image: debian:buster
   script:
     - >
       apt-get install --no-install-recommends -y
@@ -69,6 +68,14 @@ test pytest:
     reports:
       junit: junit.xml
 
+test pytest buster:
+  extends: .test pytest
+  image: debian:buster
+
+test pytest bullseye:
+  extends: .test pytest
+  image: debian:bullseye
+
 test pytest latest:
   stage: source test
   image: python:slim
@@ -79,16 +86,20 @@ test pytest latest:
 
 .build:
   stage: build
-  image: debian:buster
+  image: debian:bullseye
   script:
-    - >
-      apt-get install --no-install-recommends -y
-      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage make python3-pytest qemu-user-static qemu-utils sudo udev
     - |
       if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
         # Some of our build environments run with SELinux enabled, make sure it is detected by all the tools
         if [ -d /sys/fs/selinux ]; then mount -t selinuxfs none /sys/fs/selinux; mkdir -p /etc/selinux; touch /etc/selinux/config; fi
+        # Setup binfmt_misc for foreign binaries via qemu-user
+        if [ ! -e /proc/sys/fs/binfmt_misc/status ]; then
+          mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
+        fi
       fi
+    - >
+      apt-get install --no-install-recommends -y
+      binfmt-support ca-certificates debsums dosfstools fai-server fai-setup-storage fdisk make python3-pytest qemu-user-static qemu-utils sudo udev
     - >
       echo
       debian-cloud-images build
@@ -131,6 +142,7 @@ test pytest latest:
 
 azure buster build:
   extends: .azure build
+  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -138,6 +150,7 @@ azure buster build:
 
 azure buster-backports build:
   extends: .azure build
+  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster-backports
@@ -167,6 +180,7 @@ azure sid build:
 
 ec2 buster amd64 build:
   extends: .ec2 build
+  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -174,6 +188,7 @@ ec2 buster amd64 build:
 
 ec2 buster-backports amd64 build:
   extends: .ec2 build
+  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster-backports
@@ -195,6 +210,7 @@ ec2 sid amd64 build:
 
 ec2 buster arm64 build:
   extends: .ec2 build
+  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
@@ -202,6 +218,7 @@ ec2 buster arm64 build:
 
 ec2 buster-backports arm64 build:
   extends: .ec2 build
+  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster-backports
@@ -231,6 +248,7 @@ ec2 sid arm64 build:
 
 gce buster build:
   extends: .gce build
+  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -260,6 +278,7 @@ gce sid build:
 
 generic buster amd64 build:
   extends: .generic build
+  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -281,6 +300,7 @@ generic sid amd64 build:
 
 generic buster arm64 build:
   extends: .generic build
+  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
@@ -302,6 +322,7 @@ generic sid arm64 build:
 
 generic buster ppc64el build:
   extends: .generic build
+  image: debian:buster
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: buster
@@ -323,6 +344,7 @@ generic sid ppc64el build:
 
 genericcloud buster amd64 build:
   extends: .generic build
+  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -352,6 +374,7 @@ genericcloud sid amd64 build:
 
 nocloud buster amd64 build:
   extends: .nocloud build
+  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -373,6 +396,7 @@ nocloud sid amd64 build:
 
 nocloud buster arm64 build:
   extends: .nocloud build
+  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
@@ -394,6 +418,7 @@ nocloud sid arm64 build:
 
 nocloud buster ppc64el build:
   extends: .nocloud build
+  image: debian:buster
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: buster
@@ -419,7 +444,7 @@ nocloud sid ppc64el build:
 
 azure upload:
   stage: vendor upload
-  image: debian:buster
+  image: debian:bullseye
   script:
     - >
       ./bin/debian-cloud-images upload-azure
@@ -444,7 +469,7 @@ azure upload:
 
 ec2 upload:
   stage: vendor upload
-  image: debian:buster
+  image: debian:bullseye
   script:
     - >
       ./bin/debian-cloud-images upload-ec2
@@ -473,7 +498,7 @@ ec2 upload:
 
 gce upload:
   stage: vendor upload
-  image: debian:buster
+  image: debian:bullseye
   script:
     - >
       ./bin/debian-cloud-images upload-gce

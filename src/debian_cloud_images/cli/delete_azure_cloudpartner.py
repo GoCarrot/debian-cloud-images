@@ -99,13 +99,13 @@ config options:
             logging.info(f'Deleting images from offers before {self.delete_date_offer.strftime("%Y-%m-%d")}')
             AzurePartnerImages(self.no_op, None, self.cloudpartner.publisher, self.cloudpartner_obj).cleanup(self.offer_ids, self.delete_date_offer)
         else:
-            logging.info(f'Not deleting images from offers')
+            logging.info('Not deleting images from offers')
 
         if self.delete_date_storage:
             logging.info(f'Deleting images from storage before {self.delete_date_storage.strftime("%Y-%m-%d")}')
             self.delete_from_storage()
         else:
-            logging.info(f'Not deleting images from storage')
+            logging.info('Not deleting images from storage')
 
     @property
     def cloudpartner_obj(self):

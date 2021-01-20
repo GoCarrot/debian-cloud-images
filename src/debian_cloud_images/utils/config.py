@@ -82,8 +82,8 @@ class Config:
                     self._configs_default.append(config_flat)
 
     def dump(self, f=sys.stdout):
-        self._dump_list(f, f'Default', self._configs_default)
-        self._dump_list(f, f'Override', self._configs_override)
+        self._dump_list(f, 'Default', self._configs_default)
+        self._dump_list(f, 'Override', self._configs_override)
         for k, v in sorted(self._configs.items()):
             self._dump_list(f, f'Selector {k}', v)
 

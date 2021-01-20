@@ -27,6 +27,7 @@ Depends:
  fai-server (>= 5.7),
  fai-client (>= 5.7),
  fai-setup-storage,
+ fdisk,
  qemu-utils,
  sudo,
  dosfstools,
