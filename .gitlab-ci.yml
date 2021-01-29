@@ -31,10 +31,11 @@ test mypy:
   stage: source test
   image: debian:bullseye
   script:
+    - apt-get build-dep -y ./
     - >
       apt-get install --no-install-recommends -y
       mypy
-    - mypy src
+    - mypy --namespace-packages src
   allow_failure: true
 
 test package:
