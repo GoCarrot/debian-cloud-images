@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 
 class AzureGenericOAuth2Connection(AzureResourceManagementConnection):
     def __init__(self, key=None, secret=None, secure=True, host=None, *,
-                 client_id, client_secret, tenant_id, login_resource, **kw):
+                 client_id, client_secret, tenant_id, subscription_id, login_resource, **kw):
         super().__init__(key=client_id, secret=client_secret)
         self.host = host
+        self.subscription_id = subscription_id
         self.tenant_id = tenant_id
         self.login_resource = login_resource
 
@@ -26,7 +27,7 @@ class AzureGenericOAuth2Connection(AzureResourceManagementConnection):
             'az',
             'account',
             'get-access-token',
-            f'--tenant={self.tenant_id}',
+            self.subscription_id and f'--subscription={self.subscription_id}' or f'--tenant={self.tenant_id}',
             f'--resource={self.login_resource}',
             '--output=json',
         )))

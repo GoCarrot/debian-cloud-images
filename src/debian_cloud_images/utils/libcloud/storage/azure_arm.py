@@ -26,6 +26,7 @@ class AzureResourceManagementStorageDriver(BaseDriver):
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'tenant_id': self.tenant_id,
+            'subscription_id': self.subscription_id,
         })
         return ret
 
@@ -48,6 +49,7 @@ class AzureResourceManagementStorageDriver(BaseDriver):
             client_id=self.client_id,
             client_secret=self.client_secret,
             tenant_id=self.tenant_id,
+            subscription_id=self.subscription_id,
             host=endpoint.netloc,
             extra=r.object,
         )

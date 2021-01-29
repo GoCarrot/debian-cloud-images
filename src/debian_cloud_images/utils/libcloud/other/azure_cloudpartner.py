@@ -7,6 +7,7 @@ class AzureCloudpartnerOAuth2Connection(AzureGenericOAuth2Connection):
         super().__init__(
             host='cloudpartner.azure.com',
             tenant_id=tenant_id,
+            subscription_id=None,
             client_id=client_id,
             client_secret=client_secret,
             login_host='login.microsoftonline.com',
