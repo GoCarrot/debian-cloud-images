@@ -176,8 +176,8 @@ class UploadAzureCommand(UploadBaseCommand):
     argparser_help = 'upload Debian images to Azure'
     argparser_epilog = '''
 config options:
-  azure.auth.client
-  azure.auth.secret
+  azure.auth.client     application ID of service account, or empty for using az
+  azure.auth.secret     secret of service account, or empty for using az
   azure.image.tenant
   azure.image.subscription
   azure.image.group
@@ -203,8 +203,8 @@ config options:
         super().__init__(**kw)
 
         auth = AzureAuth(
-            client=str(self.config_get('azure.auth.client')),
-            secret=self.config_get('azure.auth.secret'),
+            client=str(self.config_get('azure.auth.client', default=None)),
+            secret=self.config_get('azure.auth.secret', default=None),
         )
         image = AzureImage(
             tenant=str(self.config_get('azure.image.tenant', 'azure.storage.tenant')),

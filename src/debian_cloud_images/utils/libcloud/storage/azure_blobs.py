@@ -24,10 +24,11 @@ class AzureBlobsOAuth2StorageDriver(AzureBlobsStorageDriver):
     name = 'Microsoft Azure (blobs with OAuth2)'
     connectionCls: typing.Type = AzureStorageOAuth2Connection
 
-    def __init__(self, key, *, client_id, client_secret, tenant_id, host=None, extra=None):
+    def __init__(self, key, *, client_id, client_secret, tenant_id, subscription_id, host=None, extra=None):
         self.client_id = client_id
         self.client_secret = client_secret
         self.tenant_id = tenant_id
+        self.subscription_id = subscription_id
         self.extra = extra or {}
 
         super().__init__(key=key, secret='', host=host)
@@ -39,5 +40,6 @@ class AzureBlobsOAuth2StorageDriver(AzureBlobsStorageDriver):
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'tenant_id': self.tenant_id,
+            'subscription_id': self.subscription_id,
         })
         return ret
