@@ -7,3 +7,5 @@ waagent
 PACKAGES install-norec BUSTER
 # Some waagent extensions still need python2.7, and break when it is not present
 python
+# Includes not backported service changes to start as early as possible
+hyperv-daemons/buster-backports
