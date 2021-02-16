@@ -49,7 +49,6 @@ In these examples we replaced the directory to the config space with ...
 * `LINUX_IMAGE_CLOUD`: use the cloud kernel
 * `LINUX_IMAGE_BASE`: use the default Debian kernel
 * `LOCALDEBS`: for debugging/internal use, use packages from localdebs directory
-* `VAGRANT`: not yet used
 * `BACKPORTS_LINUX`: create apt preferences.d file for backports
 * `BACKPORTS`: enable backports repository
 
