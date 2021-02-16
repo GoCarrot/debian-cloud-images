@@ -1,3 +1,0 @@
-# Linux command line:
-grub-pc grub2/linux_cmdline_default string
-grub-pc grub2/linux_cmdline string consoleblank=0
