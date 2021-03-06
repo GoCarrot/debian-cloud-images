@@ -8,6 +8,7 @@ umount -l $FAI_ROOT/run
 umount -l $FAI_ROOT/sys
 
 exec pytest-3 \
+  -c "${CLOUD_BUILD_DATA}/system_tests/pytest.ini" \
   -p debian_cloud_images.test.pytest.mount \
   -vrxXs \
   --color=yes \
