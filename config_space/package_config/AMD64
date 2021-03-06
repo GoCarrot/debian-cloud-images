@@ -10,6 +10,3 @@ apparmor
 
 PACKAGES install-norec GRUB_CLOUD_AMD64
 grub-cloud-amd64
-
-PACKAGES install-norec GRUB_PC
-grub-pc

@@ -12,7 +12,6 @@ class_exclude = {
     'DEVEL',
     'EXTRAS',
     'GCE_SDK',
-    'GRUB_PC', # grub-pc and grub-cloud conflict
 }
 
 class_arch = {
