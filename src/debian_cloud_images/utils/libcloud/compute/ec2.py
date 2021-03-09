@@ -8,9 +8,10 @@ class ExEC2NodeDriver(BaseEC2NodeDriver):
     type = Provider.EC2
     name = 'Amazon EC2'
 
-    def __init__(self, key, secret=None, host=None, region='us-east-1', **kwargs):
+    def __init__(self, key, secret=None, token=None, host=None, region='us-east-1', **kwargs):
         self.signature_version = '4'
         self.region_name = region
+        self.token = token
         host = host or 'ec2.{}.amazonaws.com'.format(region)
         super().__init__(key=key, secret=secret, host=host, **kwargs)
 

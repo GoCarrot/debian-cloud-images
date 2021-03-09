@@ -37,6 +37,7 @@ class v1alpha1_ToolConfigAzureSchema(Schema):
 class v1alpha1_ToolConfigEc2AuthSchema(Schema):
     key = fields.Str()
     secret = fields.Str()
+    token = fields.Str()
 
 
 class v1alpha1_ToolConfigEc2ImageSchema(Schema):

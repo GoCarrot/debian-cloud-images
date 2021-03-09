@@ -25,7 +25,8 @@ class TestCommand:
                 'ec2': {
                     'auth': {
                         'key': 'access_key_id',
-                        'secret': 'access_secret_key'
+                        'secret': 'access_secret_key',
+                        'token': 'access_session_token',
                     },
                     'storage': {
                         'name': 'bucket',
@@ -50,4 +51,5 @@ class TestCommand:
             permission_public='permission_public',
             regions=['all'],
             secret='access_secret_key',
+            token='access_session_token',
         )

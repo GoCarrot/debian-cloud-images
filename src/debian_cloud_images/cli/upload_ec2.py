@@ -19,11 +19,12 @@ class ImageUploaderEc2:
         'arm64': 'arm64',
     }
 
-    def __init__(self, output, bucket, key, secret, regions, add_tags, permission_public):
+    def __init__(self, output, bucket, key, secret, token, regions, add_tags, permission_public):
         self.output = output
         self.bucket = bucket
         self.key = key
         self.secret = secret
+        self.token = token
         self.regions = regions
         self.add_tags = add_tags or {}
         self.permission_public = permission_public
@@ -35,8 +36,8 @@ class ImageUploaderEc2:
         ret = self.__compute
         if ret is None:
             ret = self.__compute = {
-                r.name: self.compute_cls(key=self.key, secret=self.secret, region=r.name)
-                for r in self.compute_cls(key=self.key, secret=self.secret, region='us-east-1').ex_list_regions()
+                r.name: self.compute_cls(key=self.key, secret=self.secret, token=self.token, region=r.name)
+                for r in self.compute_cls(key=self.key, secret=self.secret, token=self.token, region='us-east-1').ex_list_regions()
             }
         return ret
 
@@ -260,6 +261,7 @@ config options:
             bucket=self.config_get('ec2.storage.name'),
             key=self.config_get('ec2.auth.key'),
             secret=self.config_get('ec2.auth.secret'),
+            token=self.config_get('ec2.auth.token', default=None),
             regions=self.config_get('ec2.image.regions', default=[]),
             add_tags=dict(tuple(i.split('=', 1)) for i in self.config_get('ec2.image.tags', default=[])),
             permission_public=permission_public,
