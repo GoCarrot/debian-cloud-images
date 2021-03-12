@@ -1,11 +1,92 @@
-debian-cloud-images (0.0.4) UNRELEASED; urgency=low
+debian-cloud-images (0.0.4) unstable; urgency=medium
 
+  [ Debian Janitor ]
   * Use secure copyright file specification URI.
   * Bump debhelper from deprecated 9 to 12.
   * Set debhelper-compat version in Build-Depends.
   * Update standards version to 4.2.1, no changes needed.
 
- -- Debian Janitor <janitor@jelmer.uk>  Sat, 13 Jun 2020 11:26:06 -0000
+  [ Bastian Blank ]
+  * Add base implementation for public images
+  * Add image writing to public images
+  * Use new public images for uploading
+  * Move pre-existing versions out of the way
+  * Record digest of public images
+  * Write per-version file with sha512 checksums
+  * Handle temporary directory ourselves
+  * Set permissions for all files in public upload
+
+  [ Noah Meyerhans ]
+  * Install amazon-ec2-utils on bullsye and sid EC2 AMIs
+  * Remount root rw before running systemd-growfs
+  * makefile: fix clean rule
+
+  [ Bastian Blank ]
+  * Don't longer install python on Bullseye
+  * Use new qcow2 compatibility
+  * Test package on Bullseye
+  * Disable FAI ramdisk handling
+  * Override mount handling
+  * Check for empty /proc, /run and /sys
+  * Drop support for Stretch
+  * Make sure we actually run apt-get update
+  * Only apply io scheduler settings on Buster
+  * Don't override disk scheduler with only value
+
+  [ Noah Meyerhans ]
+  * [arm64] enable the use of the cloud kernel with buster-backports
+  * Add ec2 buster-backports builds to salsa pipeline cfg
+
+  [ Bastian Blank ]
+  * Add skeleton new Azure Partner image support
+  * Add base new Azure Partner cleanup support
+  * Prepare commit of Azure Partner offer
+  * Support commit of Azure Partner offer
+
+  [ Sven Bartscher ]
+  * Install resolvconf in GENERIC images
+  * Keep /etc/resolv.conf if it links to resolvconf
+  * Test absence or symlink state of /etc/resolv.conf
+
+  [ Bastian Blank ]
+  * Use cloud-init on Azure
+  * Also disable cloud-init network on Azure
+
+  [ Noah Meyerhans ]
+  * Enable EXTRAS for bullseye
+  * Call dist-upgrade in hooks/updatebase
+
+  [ Zach Marano ]
+  * Enable fsck checks on the root filesystem.
+
+  [ Bastian Blank ]
+  * Fix flake8 failures
+  * Run tests with Buster and Bullseye
+  * Run all Bullseye and Sid builds on Bullseye
+  * Run uploads on Bullseye
+  * Make sure we have sfdisk available
+  * Make sure binfmt-support can work
+  * Install all Python modules for mypy to check
+  * Ask mypy to read all namespace packages
+  * Add support for Azure auth via az tool
+  * Allow Azure auth against subscription alone
+  * Allow Azure usage without service account
+  * Pull in new hyperv-daemons package
+  * Drop all the unused debconf definitions
+
+  [ Zach Marano ]
+  * Update the google packages keyring.
+
+  [ Bastian Blank ]
+  * Remove old Vagrant stuff
+  * Drop all support for grub-pc
+  * Use modern xunit2 format for test result
+  * Support EC2 token auth
+  * Add image version abstraction
+  * Remove not required comparison
+  * Add EC2 cleanup support
+
+ -- Noah Meyerhans <noahm@debian.org>  Fri, 12 Mar 2021 10:45:56 -0800
 
 debian-cloud-images (0.0.3) unstable; urgency=medium
 
