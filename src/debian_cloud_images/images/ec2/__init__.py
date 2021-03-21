@@ -19,10 +19,11 @@ class Ec2Images:
         self,
         noop: bool,
         public: ImagePublicInfo,
+        account: str,
         drivers_compute: dict[str, ExEC2NodeDriver],
         driver_storage: S3BucketStorageDriver,
     ):
-        self.__info = Ec2Info(noop, public, drivers_compute, driver_storage)
+        self.__info = Ec2Info(noop, public, account, drivers_compute, driver_storage)
 
     def cleanup(self, delete_after: datetime.datetime):
         families = StepCloudFamilies(self.__info)

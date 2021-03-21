@@ -53,7 +53,7 @@ class StepCloudFamilies(collections.abc.Mapping):
         for region, driver in sorted(self._info.drivers_compute.items()):
             logger.debug(f'Reading from region {region}')
 
-            for image in driver.list_images(ex_owner='self'):
+            for image in driver.list_images(ex_owner=self._info.account):
                 tags = image.extra['tags']
                 family = tags.get('ImageFamily', None)
                 version = tags.get('ImageVersion', None)
@@ -63,7 +63,7 @@ class StepCloudFamilies(collections.abc.Mapping):
                 else:
                     logger.warning(f'Found image {image.name} without proper tags in region {region}')
 
-            for snapshot in driver.list_snapshots(owner='self'):
+            for snapshot in driver.list_snapshots(owner=self._info.account):
                 tags = snapshot.extra['tags']
                 family = tags.get('ImageFamily', None)
                 version = tags.get('ImageVersion', None)
