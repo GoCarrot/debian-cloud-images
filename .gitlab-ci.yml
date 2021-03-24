@@ -157,6 +157,14 @@ azure buster-backports build:
     CLOUD_RELEASE: buster-backports
     CLOUD_VENDOR: azure
 
+azure buster+pu build:
+  extends: .azure build
+  image: debian:buster
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster+pu
+    CLOUD_VENDOR: azure
+
 azure bullseye build:
   extends: .azure build
   variables:
@@ -193,6 +201,14 @@ ec2 buster-backports amd64 build:
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster-backports
+    CLOUD_VENDOR: ec2
+
+ec2 buster+pu amd64 build:
+  extends: .ec2 build
+  image: debian:buster
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster+pu
     CLOUD_VENDOR: ec2
 
 ec2 bullseye amd64 build:
@@ -255,6 +271,14 @@ gce buster build:
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: gce
 
+gce buster+pu build:
+  extends: .gce build
+  image: debian:buster
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster+pu
+    CLOUD_VENDOR: gce
+
 gce bullseye build:
   extends: .gce build
   variables:
@@ -285,6 +309,14 @@ generic buster amd64 build:
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: generic
 
+generic buster+pu amd64 build:
+  extends: .generic build
+  image: debian:buster
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster+pu
+    CLOUD_VENDOR: generic
+
 generic bullseye amd64 build:
   extends: .generic build
   variables:
@@ -305,6 +337,14 @@ generic buster arm64 build:
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
+    CLOUD_VENDOR: generic
+
+generic buster+pu arm64 build:
+  extends: .generic build
+  image: debian:buster
+  variables:
+    CLOUD_ARCH: arm64
+    CLOUD_RELEASE: buster+pu
     CLOUD_VENDOR: generic
 
 generic bullseye arm64 build:
@@ -351,6 +391,14 @@ genericcloud buster amd64 build:
     CLOUD_RELEASE: buster
     CLOUD_VENDOR: genericcloud
 
+genericcloud buster+pu amd64 build:
+  extends: .generic build
+  image: debian:buster
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster+pu
+    CLOUD_VENDOR: genericcloud
+
 genericcloud bullseye amd64 build:
   extends: .generic build
   variables:
@@ -379,6 +427,14 @@ nocloud buster amd64 build:
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
+    CLOUD_VENDOR: nocloud
+
+nocloud buster+pu amd64 build:
+  extends: .nocloud build
+  image: debian:buster
+  variables:
+    CLOUD_ARCH: amd64
+    CLOUD_RELEASE: buster+pu
     CLOUD_VENDOR: nocloud
 
 nocloud bullseye amd64 build:

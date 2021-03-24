@@ -1,0 +1,5 @@
+deb {%apt_cdn%}/debian buster main
+deb {%apt_cdn%}/debian buster-proposed-updates main
+deb {%apt_cdn%}/debian buster-backports main
+deb {%apt_cdn%}/debian buster-updates main
+deb {%apt_cdn%}/debian-security buster/updates main
