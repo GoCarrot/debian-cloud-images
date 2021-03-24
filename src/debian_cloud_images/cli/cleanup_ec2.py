@@ -23,6 +23,12 @@ config options:
         super()._argparse_register(parser)
 
         parser.add_argument(
+            '--account',
+            default='self',
+            help='Delete images from account (default: %(default)s)',
+            type=str,
+        )
+        parser.add_argument(
             '--delete-after',
             help='Delete images after X days',
             metavar='DAYS',
@@ -35,6 +41,7 @@ config options:
 
     def __init__(
             self, *,
+            account=None,
             delete_after=None,
             no_op=False,
             date_today=datetime.datetime.now(),
@@ -42,6 +49,7 @@ config options:
     ):
         super().__init__(**kw)
         self.no_op = no_op
+        self.account = account
 
         if delete_after:
             self.delete_date = date_today - datetime.timedelta(days=delete_after)
@@ -60,7 +68,7 @@ config options:
     def __call__(self):
         if self.delete_date:
             logging.info(f'Deleting images before {self.delete_date.strftime("%Y-%m-%d")}')
-            Ec2Images(self.no_op, None, self.drivers_compute, None).cleanup(self.delete_date)
+            Ec2Images(self.no_op, None, self.account, self.drivers_compute, None).cleanup(self.delete_date)
         else:
             logging.info('Not deleting images')
 
