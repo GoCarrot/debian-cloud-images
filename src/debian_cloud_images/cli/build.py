@@ -29,7 +29,8 @@ class Arch:
 
 class Release:
     def __init__(self, kw):
-        def init(*, id, baseid, fai_classes, arch_supports_linux_image_cloud):
+        def init(*, basename, id, baseid, fai_classes, arch_supports_linux_image_cloud):
+            self.basename = basename
             self.id = id
             self.baseid = baseid
             self.fai_classes = fai_classes
@@ -84,30 +85,35 @@ ReleaseEnum = enum.Enum(  # type:ignore
     'ReleaseEnum',
     {
         'buster': {
+            'basename': 'buster',
             'id': '10',
             'baseid': '10',
             'fai_classes': ('BUSTER', 'EXTRAS'),
             'arch_supports_linux_image_cloud': ('amd64',),
         },
         'buster+pu': {
+            'basename': 'buster',
             'id': '10',
             'baseid': '10',
             'fai_classes': ('BUSTER', 'BUSTER_PU', 'EXTRAS'),
             'arch_supports_linux_image_cloud': ('amd64',),
         },
         'buster-backports': {
+            'basename': 'buster-backports',
             'id': '10-backports',
             'baseid': '10',
             'fai_classes': ('BUSTER', 'BACKPORTS_LINUX', 'EXTRAS'),
             'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
         },
         'bullseye': {
+            'basename': 'bullseye',
             'id': '11',
             'baseid': '11',
             'fai_classes': ('BULLSEYE', 'EXTRAS'),
             'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
         },
         'sid': {
+            'basename': 'sid',
             'id': 'sid',
             'baseid': 'sid',
             'fai_classes': ('SID', 'EXTRAS'),
@@ -225,7 +231,7 @@ class Check:
 
     def set_release(self, release):
         self.release = release
-        self.info['release'] = self.release.name
+        self.info['release'] = self.release.basename
         self.info['release_id'] = self.release.id
         self.info['release_baseid'] = self.release.baseid
         self.classes |= self.release.fai_classes
