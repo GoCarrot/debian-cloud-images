@@ -13,8 +13,8 @@ class StepCloudVersion:
     _info: Ec2Info
     _name: ImageVersion
 
-    images: dict[str, typing.Any]
-    snapshots: dict[str, typing.Any]
+    images: typing.Dict[str, typing.Any]
+    snapshots: typing.Dict[str, typing.Any]
 
     def __init__(self, info: Ec2Info, name: ImageVersion) -> None:
         self._info = info
@@ -48,7 +48,7 @@ class StepCloudVersion:
 
 class StepCloudVersions(collections.abc.Mapping):
     _info: Ec2Info
-    _children: dict[ImageVersion, StepCloudVersion]
+    _children: typing.Dict[ImageVersion, StepCloudVersion]
 
     def __init__(self, info: Ec2Info) -> None:
         self._info = info
