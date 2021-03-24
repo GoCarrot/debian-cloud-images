@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 
 from .s1_cloud_family import StepCloudFamilies
 from .s2_cloud_version import StepCloudVersions
@@ -20,7 +21,7 @@ class Ec2Images:
         noop: bool,
         public: ImagePublicInfo,
         account: str,
-        drivers_compute: dict[str, ExEC2NodeDriver],
+        drivers_compute: typing.Dict[str, ExEC2NodeDriver],
         driver_storage: S3BucketStorageDriver,
     ):
         self.__info = Ec2Info(noop, public, account, drivers_compute, driver_storage)

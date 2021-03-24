@@ -31,7 +31,7 @@ class StepCloudFamily:
 
 class StepCloudFamilies(collections.abc.Mapping):
     _info: Ec2Info
-    _children: dict[str, StepCloudFamily]
+    _children: typing.Dict[str, StepCloudFamily]
 
     def __init__(self, info: Ec2Info) -> None:
         self._info = info
