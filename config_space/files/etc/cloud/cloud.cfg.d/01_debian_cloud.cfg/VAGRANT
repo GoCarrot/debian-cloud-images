@@ -1,0 +1,21 @@
+# This must be on a single line, because it's parsed adhoc by a shell script
+# which only looks at a single line at a time.
+#
+# The None source is not in the default list. We use it here to automatically
+# provision the vagrant user and manage /etc/hosts the same way a production
+# cloud would
+datasource_list: [NoCloud, None]
+
+apt_preserve_sources_list: true
+manage_etc_hosts: true
+system_info:
+  default_user:
+    name: vagrant
+    passwd: $y$j9T$L.UzZqPcjAdnLbgC/If5v/$R8qjqTH9OnTCzsdYBo44PL4NRkRABHg2MSF/l11vwu1
+    shell: /bin/bash
+    lock_passwd: False
+    gecos: Vagrant
+    groups: [adm, audio, cdrom, dialout, dip, floppy, netdev, plugdev, sudo, video]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key

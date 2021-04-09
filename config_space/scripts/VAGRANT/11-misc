@@ -1,0 +1,6 @@
+#! /bin/bash
+
+error=0; trap 'error=$(($?>$error?$?:$error))' ERR # save maximum error code
+
+# For Packer/Vagrant we want to enable SSH password auth
+sed -i -e 's/^PasswordAuthentication no/PasswordAuthentication yes/' $target/etc/ssh/sshd_config

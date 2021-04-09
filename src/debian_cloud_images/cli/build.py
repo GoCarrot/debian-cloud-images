@@ -177,6 +177,11 @@ VendorEnum = enum.Enum(  # type:ignore
             'fai_size': '2G',
             'fai_classes': ('NOCLOUD', ),
         },
+        'vagrant': {
+            'fai_size': '2G',
+            'fai_classes': ('EC2', 'VAGRANT', 'IPV6_DHCP'),
+            'use_linux_image_cloud': False,
+        },
     },
     type=Vendor,
 )
