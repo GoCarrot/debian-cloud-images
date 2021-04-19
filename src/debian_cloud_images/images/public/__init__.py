@@ -1,3 +1,4 @@
+import datetime
 import itertools
 import logging
 import pathlib
@@ -48,6 +49,39 @@ class PublicImages:
             name = self.__info.public.apply(image.build_info).name
             with step.add(name) as f:
                 f.write(image)
+
+    def cleanup(self, delete_after: datetime.datetime, releases: typing.List[str]) -> None:
+        step = StepDebianReleases(self.__info)
+        self._cleanup_debian_releases(step, delete_after, releases)
+
+    def _cleanup_debian_releases(self, step: StepDebianReleases, delete_after: datetime.datetime, releases: typing.List[str]) -> None:
+        for name in releases:
+            logger.debug(f'Handle Debian release {name!r}')
+            with step.setdefault(name) as f:
+                self._cleanup_cloud_versions(f.versions, delete_after, name)
+
+    def _cleanup_cloud_versions(self, versions: StepCloudVersions, delete_after: datetime.datetime, name: str) -> None:
+        versions.read()
+        versions_all = frozenset(versions.keys())
+        versions_remain = set()
+
+        for version in sorted(versions_all, reverse=True):
+            if version.date is None:
+                logger.warning(f'Not deleting images from {name}, undated images found')
+                return
+
+            if version.date >= delete_after:
+                logging.debug(f'Not deleting image {version} from {name}, too new')
+                versions_remain.add(version)
+            elif not versions_remain:
+                logging.debug(f'Not deleting image {version} from {name}, last remaining')
+                versions_remain.add(version)
+            else:
+                break
+
+        for version in sorted(versions_all - versions_remain):
+            logging.info(f'Deleting image {version} from {name}')
+            del versions[version]
 
     def _group(self, images: typing.List, key: typing.Callable) -> typing.Iterator:
         return itertools.groupby(sorted(images, key=key), key=key)

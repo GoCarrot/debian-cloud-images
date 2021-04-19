@@ -12,20 +12,21 @@ from datetime import datetime
 
 from .info import PublicInfo
 from .s3_cloud_image import StepCloudImages
+from ...utils.image_version import ImageVersion
 
 
 logger = logging.getLogger(__name__)
 
 
 class StepCloudVersion:
-    name: str
+    name: ImageVersion
     basepath: pathlib.Path
     baseref: str
     images: StepCloudImages
 
     _info: PublicInfo
 
-    def __init__(self, info: PublicInfo, name: str, basepath: pathlib.Path, baseref: str) -> None:
+    def __init__(self, info: PublicInfo, name: ImageVersion, basepath: pathlib.Path, baseref: str) -> None:
         self._info = info
         self.name = name
         self.basepath = basepath
@@ -37,11 +38,16 @@ class StepCloudVersion:
     def __exit__(self, type, value, tb) -> None:
         raise NotImplementedError
 
+    def delete(self) -> None:
+        if not self._info.noop:
+            path = self.basepath / str(self.name)
+            shutil.rmtree(path)
+
 
 class StepCloudVersionAdd(StepCloudVersion):
     def __enter__(self) -> StepCloudVersion:
         self.__path = path = pathlib.Path(tempfile.mkdtemp(prefix=f'.{self.name}_', dir=self.basepath))
-        ref = self.baseref + self.name + '/'
+        ref = self.baseref + str(self.name) + '/'
 
         self.images = StepCloudImages(self._info, path, ref)
 
@@ -96,7 +102,7 @@ class StepCloudVersions(collections.abc.Mapping):
     _info: PublicInfo
     _basepath: pathlib.Path
     _baseref: str
-    _children: typing.Dict[str, StepCloudVersion]
+    _children: typing.Dict[ImageVersion, StepCloudVersion]
 
     def __init__(self, info: PublicInfo, basepath: pathlib.Path, baseref: str) -> None:
         self._info = info
@@ -104,14 +110,31 @@ class StepCloudVersions(collections.abc.Mapping):
         self._baseref = baseref
         self._children = {}
 
-    def __getitem__(self, name) -> StepCloudVersion:
+    def __delitem__(self, name: ImageVersion) -> None:
+        self._children[name].delete()
+        del self._children[name]
+
+    def __getitem__(self, name: ImageVersion) -> StepCloudVersion:
         return self._children[name]
 
-    def __iter__(self) -> typing.Iterator[str]:
+    def __iter__(self) -> typing.Iterator[ImageVersion]:
         return iter(self._children)
 
     def __len__(self) -> int:
         return len(self._children)
 
-    def add(self, name: str) -> StepCloudVersion:
+    def add(self, name: ImageVersion) -> StepCloudVersion:
         return self._children.setdefault(name, StepCloudVersionAdd(self._info, name, self._basepath, self._baseref))
+
+    def read(self) -> None:
+        for path in self._basepath.iterdir():
+            if path.is_dir():
+                try:
+                    version = ImageVersion.from_string(path.name)
+                    self._children[version] = StepCloudVersion(self._info, version, self._basepath, self._baseref)
+
+                except Exception:
+                    logging.debug(f'Ignoring {path}, unparseable')
+
+            else:
+                logging.debug(f'Ignoring {path}, no dir')
