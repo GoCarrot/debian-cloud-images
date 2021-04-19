@@ -85,6 +85,12 @@ class StepCloudVersionAdd(StepCloudVersion):
 
         os.rename(self.__path, path)
 
+        path_latest_tmp = pathlib.Path(tempfile.mktemp(prefix='.latest_', dir=self.basepath))
+        path_latest = self.basepath / 'latest'
+
+        path_latest_tmp.symlink_to(pathlib.Path(path.name) / '.latest')
+        path_latest_tmp.rename(path_latest)
+
     def _rollback(self):
         logging.warning('Rolling back')
         shutil.rmtree(self.__path.as_posix())
