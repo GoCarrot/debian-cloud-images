@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import collections.abc
 import hashlib
 import json
 import logging
@@ -12,31 +13,32 @@ from ...api.registry import registry as api_registry
 from ...api.wellknown import annotation_cdo_digest, label_ucdo_image_format, label_ucdo_type
 from ...utils.files import ChunkedFile
 
+from .info import PublicInfo
+
 
 logger = logging.getLogger(__name__)
 
 
-class Image:
+class StepCloudImage:
+    name: str
     basepath: pathlib.Path
     baseref: str
-    imagename: str
-    provider: str
 
     files: typing.Dict[str, hashlib._Hash]
     manifests: typing.List
 
-    def __init__(self, basepath: pathlib.Path, baseref: str, imagename: str, provider: str):
+    def __init__(self, info: PublicInfo, name: str, basepath: pathlib.Path, baseref: str) -> None:
+        self._info = info
+        self.name = name
         self.basepath = basepath
         self.baseref = baseref
-        self.imagename = imagename
-        self.provider = provider
 
     def __enter__(self):
         self.files = {}
         self.manifests = []
         self.__manifests_input = []
-        self.__path = self.basepath / self.imagename
-        self.__ref = self.baseref + self.imagename
+        self.__path = self.basepath / self.name
+        self.__ref = self.baseref + self.name
 
         return self
 
@@ -71,20 +73,20 @@ class Image:
     def _rollback(self):
         pass
 
-    def write(self, image, public_type):
+    def write(self, image):
         self.__manifests_input.append(image.build)
 
-        self._copy_tar(image, public_type)
+        self._copy_tar(image)
 
         if image.build_vendor in ('generic', 'genericcloud', 'nocloud'):
-            self._copy_converted(image, public_type)
+            self._copy_converted(image)
 
-    def _copy_converted(self, image, public_type):
+    def _copy_converted(self, image):
         with image.open_image(None, 'qcow2') as (f_in_raw, f_in_qcow2):
-            self._copy_raw(f_in_raw, image, public_type)
-            self._copy_qcow2(f_in_qcow2, image, public_type)
+            self._copy_raw(f_in_raw, image)
+            self._copy_qcow2(f_in_qcow2, image)
 
-    def _copy_qcow2(self, f_in, image, public_type):
+    def _copy_qcow2(self, f_in, image):
         path = self.__path.with_suffix('.qcow2')
         ref = self.__ref + '.qcow2'
         logger.info(f'Copy to {ref}')
@@ -92,10 +94,10 @@ class Image:
             output_hash = self.__copy_hash(f_in, f_out)
         path.chmod(0o444)
 
-        self._append_manifest(image, public_type, ref, 'qcow2', output_hash)
+        self._append_manifest(image, ref, 'qcow2', output_hash)
         self._append_file(path, output_hash)
 
-    def _copy_raw(self, f_in, image, public_type):
+    def _copy_raw(self, f_in, image):
         path = self.__path.with_suffix('.raw')
         ref = self.__ref + '.raw'
         logger.info(f'Copy to {ref}')
@@ -111,10 +113,10 @@ class Image:
             f_out.truncate(chunked.size)
         path.chmod(0o444)
 
-        self._append_manifest(image, public_type, ref, 'raw', output_hash)
+        self._append_manifest(image, ref, 'raw', output_hash)
         self._append_file(path, output_hash)
 
-    def _copy_tar(self, image, public_type):
+    def _copy_tar(self, image):
         with image.open_tar_raw() as f_in:
             path = self.__path.with_suffix(f_in.extension)
             ref = self.__ref + f_in.extension
@@ -123,7 +125,7 @@ class Image:
                 output_hash = self.__copy_hash(f_in, f_out)
             path.chmod(0o444)
 
-        self._append_manifest(image, public_type, ref, 'internal', output_hash)
+        self._append_manifest(image, ref, 'internal', output_hash)
         self._append_file(path, output_hash)
 
     def __copy_hash(self, f_in, f_out, length=64 * 1024):
@@ -144,19 +146,44 @@ class Image:
 
         return output_hash
 
-    def _append_manifest(self, image, public_type, ref, image_format, output_hash):
+    def _append_manifest(self, image, ref, image_format, output_hash):
         output_digest = base64.b64encode(output_hash.digest()).decode().rstrip('=')
 
         metadata = image.build.metadata.copy()
         metadata.annotations[annotation_cdo_digest] = f'{output_hash.name}:{output_digest}'
         metadata.labels[label_ucdo_image_format] = image_format
-        metadata.labels[label_ucdo_type] = public_type
+        metadata.labels[label_ucdo_type] = self._info.public_type
 
         self.manifests.append(Upload(
             metadata=metadata,
-            provider=self.provider,
+            provider=self._info.provider,
             ref=ref,
         ))
 
     def _append_file(self, path, output_hash):
         self.files[path.name] = output_hash
+
+
+class StepCloudImages(collections.abc.Mapping):
+    _info: PublicInfo
+    _basepath: pathlib.Path
+    _baseref: str
+    _children: typing.Dict[str, StepCloudImage]
+
+    def __init__(self, info: PublicInfo, basepath: pathlib.Path, baseref: str) -> None:
+        self._info = info
+        self._basepath = basepath
+        self._baseref = baseref
+        self._children = {}
+
+    def __getitem__(self, name) -> StepCloudImage:
+        return self._children[name]
+
+    def __iter__(self) -> typing.Iterator[str]:
+        return iter(self._children)
+
+    def __len__(self) -> int:
+        return len(self._children)
+
+    def add(self, name: str) -> StepCloudImage:
+        return self._children.setdefault(name, StepCloudImage(self._info, name, self._basepath, self._baseref))

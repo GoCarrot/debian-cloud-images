@@ -3,7 +3,7 @@ import pytest
 import json
 import pathlib
 
-from ...utils import argparse_ext
+from debian_cloud_images.utils import argparse_ext
 
 
 def pytest_addoption(parser):
