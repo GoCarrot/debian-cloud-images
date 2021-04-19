@@ -49,6 +49,9 @@ class StepCloudVersionAdd(StepCloudVersion):
         self.__path = path = pathlib.Path(tempfile.mkdtemp(prefix=f'.{self.name}_', dir=self.basepath))
         ref = self.baseref + str(self.name) + '/'
 
+        self.__path_latest = self.__path / '.latest'
+        self.__path_latest.mkdir(0o755, exist_ok=True)
+
         self.images = StepCloudImages(self._info, path, ref)
 
         return self
@@ -88,12 +91,20 @@ class StepCloudVersionAdd(StepCloudVersion):
 
     def _write_digest(self):
         files = {}
+        files_latest = {}
         for i in self.images.values():
             files.update(i.files)
+            files_latest.update(i.files_latest)
 
         chfile = self.__path / 'SHA512SUMS'
         with chfile.open('w') as f:
             for n, d in sorted(files.items()):
+                print(f'{d.hexdigest()}  {n}', file=f)
+        chfile.chmod(0o444)
+
+        chfile = self.__path_latest / 'SHA512SUMS'
+        with chfile.open('w') as f:
+            for n, d in sorted(files_latest.items()):
                 print(f'{d.hexdigest()}  {n}', file=f)
         chfile.chmod(0o444)
 
