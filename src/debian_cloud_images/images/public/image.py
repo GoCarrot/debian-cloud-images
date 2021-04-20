@@ -10,6 +10,7 @@ import typing
 from ...api.cdo.upload import Upload
 from ...api.registry import registry as api_registry
 from ...api.wellknown import annotation_cdo_digest, label_ucdo_image_format, label_ucdo_type
+from ...utils.files import ChunkedFile
 
 
 logger = logging.getLogger(__name__)
@@ -76,18 +77,41 @@ class Image:
         self._copy_tar(image, public_type)
 
         if image.build_vendor in ('generic', 'genericcloud', 'nocloud'):
-            self._copy_qcow2(image, public_type)
+            self._copy_converted(image, public_type)
 
-    def _copy_qcow2(self, image, public_type):
-        with image.open_image('qcow2') as f_in:
-            path = self.__path.with_suffix('.qcow2')
-            ref = self.__ref + '.qcow2'
-            logger.info(f'Copy to {ref}')
-            with path.open('wb') as f_out:
-                output_hash = self.__copy_hash(f_in, f_out)
-            path.chmod(0o444)
+    def _copy_converted(self, image, public_type):
+        with image.open_image(None, 'qcow2') as (f_in_raw, f_in_qcow2):
+            self._copy_raw(f_in_raw, image, public_type)
+            self._copy_qcow2(f_in_qcow2, image, public_type)
+
+    def _copy_qcow2(self, f_in, image, public_type):
+        path = self.__path.with_suffix('.qcow2')
+        ref = self.__ref + '.qcow2'
+        logger.info(f'Copy to {ref}')
+        with path.open('wb') as f_out:
+            output_hash = self.__copy_hash(f_in, f_out)
+        path.chmod(0o444)
 
         self._append_manifest(image, public_type, ref, 'qcow2', output_hash)
+        self._append_file(path, output_hash)
+
+    def _copy_raw(self, f_in, image, public_type):
+        path = self.__path.with_suffix('.raw')
+        ref = self.__ref + '.raw'
+        logger.info(f'Copy to {ref}')
+        with path.open('wb') as f_out:
+            output_hash = hashlib.sha512()
+            chunked = ChunkedFile(f_in, 4 * 1024 * 1024)
+            for chunk in chunked:
+                data = chunk.read()
+                output_hash.update(data)
+                if chunk.is_data:
+                    f_out.seek(chunk.offset)
+                    f_out.write(data)
+            f_out.truncate(chunked.size)
+        path.chmod(0o444)
+
+        self._append_manifest(image, public_type, ref, 'raw', output_hash)
         self._append_file(path, output_hash)
 
     def _copy_tar(self, image, public_type):

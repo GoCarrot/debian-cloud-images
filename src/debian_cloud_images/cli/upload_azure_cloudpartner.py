@@ -303,7 +303,8 @@ class ImageUploaderAzureCloudpartner:
                     raise RuntimeError('Error creating file: {0.error} ({0.status})'.format(r))
 
                 for chunk in chunked:
-                    self.upload_file_chunk(path, lease, chunk)
+                    if chunk.is_data:
+                        self.upload_file_chunk(path, lease, chunk)
 
     def upload_file_chunk(self, path, lease, chunk):
         """ Upload a single block up to 4MB to Azure storage """

@@ -108,22 +108,33 @@ class Image:
         ))
 
     @contextlib.contextmanager
-    def open_image(self, format):
-        convert = self._convert_image_f(format)
-
+    def open_image(self, *formats):
         with self.open_tar() as tar:
             with tempfile.TemporaryDirectory() as tempdirname:
+                names = []
+
                 name_raw = os.path.join(tempdirname, 'disk.raw')
-                name_converted = os.path.join(tempdirname, 'disk.{}'.format(format))
 
                 logger.debug('Extract image to %s', name_raw)
                 tar.extract('disk.raw', path=tempdirname, set_attrs=False)
 
-                logger.debug('Converting image %s to %s as %s', name_raw, name_converted, format)
-                convert(name_raw, name_converted)
+                for format in formats:
+                    if format:
+                        name_converted = os.path.join(tempdirname, 'disk.{}'.format(format))
+                        names.append(name_converted)
 
-                with open(name_converted, mode='rb', buffering=0) as fout_converted:
-                    yield fout_converted
+                        convert = self._convert_image_f(format)
+                        logger.debug('Converting image %s to %s as %s', name_raw, name_converted, format)
+                        convert(name_raw, name_converted)
+                    else:
+                        names.append(name_raw)
+
+                files = [open(i, mode='rb', buffering=0) for i in names]
+                if len(files) == 1:
+                    yield files[0]
+                else:
+                    yield files
+                [f.close() for f in files]
 
     def open_tar(self):
         return tarfile.open(fileobj=self.open_tar_raw(), mode='r:*')
