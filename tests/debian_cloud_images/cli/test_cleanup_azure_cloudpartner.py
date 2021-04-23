@@ -1,7 +1,7 @@
 import pytest
 
-from debian_cloud_images.cli.delete_azure_cloudpartner import (
-    DeleteAzureCloudpartnerCommand,
+from debian_cloud_images.cli.cleanup_azure_cloudpartner import (
+    CleanupAzureCloudpartnerCommand,
     AzureAuth,
     AzureCloudpartner,
     AzureStorage,
@@ -17,7 +17,7 @@ class TestCommand:
         return [p.as_posix()]
 
     def test___init__(self, config_files):
-        c = DeleteAzureCloudpartnerCommand(
+        c = CleanupAzureCloudpartnerCommand(
             config={
                 'azure': {
                     'auth': {

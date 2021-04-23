@@ -14,9 +14,9 @@ AzureCloudpartner = namedtuple('AzureCloudpartner', ('tenant', 'publisher'))
 AzureStorage = namedtuple('AzureStorage', ('tenant', 'subscription', 'group', 'name'))
 
 
-class DeleteAzureCloudpartnerCommand(BaseCommand):
-    argparser_name = 'delete-azure-cloudpartner'
-    argparser_help = 'delete Debian images published via Azure Cloud Partner interface'
+class CleanupAzureCloudpartnerCommand(BaseCommand):
+    argparser_name = 'cleanup-azure-cloudpartner'
+    argparser_help = 'cleanup Debian images published via Azure Cloud Partner interface'
     argparser_epilog = '''
 config options:
   azure.cloudpartner.publisher
@@ -161,4 +161,4 @@ config options:
 
 
 if __name__ == '__main__':
-    DeleteAzureCloudpartnerCommand._main()
+    CleanupAzureCloudpartnerCommand._main()
