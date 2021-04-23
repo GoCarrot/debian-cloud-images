@@ -27,12 +27,10 @@ class StepDebianRelease:
 
         pathrelease = self._info.path / self.name
         pathrelease.mkdir(exist_ok=True)
-        pathrelease.chmod(0o755)
 
         if self._info.public_type != 'release':
             path = pathrelease / self._info.public_type
             path.mkdir(exist_ok=True)
-            path.chmod(0o755)
             ref = self.name + '/' + self._info.public_type + '/'
         else:
             path = pathrelease
