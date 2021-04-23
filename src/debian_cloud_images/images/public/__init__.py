@@ -47,7 +47,8 @@ class PublicImages:
     def _add_images(self, step: StepCloudImages, images: typing.List) -> None:
         for image in images:
             name = self.__info.public.apply(image.build_info).name
-            with step.add(name) as f:
+            family = self.__info.public.apply(image.build_info).family
+            with step.add(name, family) as f:
                 f.write(image)
 
     def cleanup(self, delete_after: datetime.datetime, releases: typing.List[str]) -> None:

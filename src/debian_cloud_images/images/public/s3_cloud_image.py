@@ -21,24 +21,30 @@ logger = logging.getLogger(__name__)
 
 class StepCloudImage:
     name: str
+    family: str
     basepath: pathlib.Path
     baseref: str
 
     files: typing.Dict[str, hashlib._Hash]
     manifests: typing.List
 
-    def __init__(self, info: PublicInfo, name: str, basepath: pathlib.Path, baseref: str) -> None:
+    def __init__(self, info: PublicInfo, name: str, family: str, basepath: pathlib.Path, baseref: str) -> None:
         self._info = info
         self.name = name
+        self.family = family
         self.basepath = basepath
         self.baseref = baseref
 
     def __enter__(self):
         self.files = {}
+        self.files_latest = {}
         self.manifests = []
         self.__manifests_input = []
         self.__path = self.basepath / self.name
         self.__ref = self.baseref + self.name
+
+        path_latest = self.basepath / '.latest'
+        self.__path_latest = path_latest / self.family
 
         return self
 
@@ -59,6 +65,7 @@ class StepCloudImage:
     def _commit(self):
         manifests = self.__manifests_input + self.manifests
         path = self.__path.with_suffix('.json')
+        path_latest = self.__path_latest.with_suffix('.json')
         output_hash = hashlib.sha512()
 
         with path.open('wb') as f:
@@ -68,7 +75,9 @@ class StepCloudImage:
             output_hash.update(s)
         path.chmod(0o444)
 
-        self._append_file(path, output_hash)
+        path_latest.symlink_to(pathlib.Path('..') / path.name)
+
+        self._append_file(path, path_latest, output_hash)
 
     def _rollback(self):
         pass
@@ -88,17 +97,21 @@ class StepCloudImage:
 
     def _copy_qcow2(self, f_in, image):
         path = self.__path.with_suffix('.qcow2')
+        path_latest = self.__path_latest.with_suffix('.qcow2')
         ref = self.__ref + '.qcow2'
         logger.info(f'Copy to {ref}')
         with path.open('wb') as f_out:
             output_hash = self.__copy_hash(f_in, f_out)
         path.chmod(0o444)
 
+        path_latest.symlink_to(pathlib.Path('..') / path.name)
+
         self._append_manifest(image, ref, 'qcow2', output_hash)
-        self._append_file(path, output_hash)
+        self._append_file(path, path_latest, output_hash)
 
     def _copy_raw(self, f_in, image):
         path = self.__path.with_suffix('.raw')
+        path_latest = self.__path_latest.with_suffix('.raw')
         ref = self.__ref + '.raw'
         logger.info(f'Copy to {ref}')
         with path.open('wb') as f_out:
@@ -113,20 +126,26 @@ class StepCloudImage:
             f_out.truncate(chunked.size)
         path.chmod(0o444)
 
+        path_latest.symlink_to(pathlib.Path('..') / path.name)
+
         self._append_manifest(image, ref, 'raw', output_hash)
-        self._append_file(path, output_hash)
+        self._append_file(path, path_latest, output_hash)
 
     def _copy_tar(self, image):
         with image.open_tar_raw() as f_in:
             path = self.__path.with_suffix(f_in.extension)
+            path_latest = self.__path_latest.with_suffix(f_in.extension)
             ref = self.__ref + f_in.extension
+
             logger.info(f'Copy to {ref}')
             with path.open('wb') as f_out:
                 output_hash = self.__copy_hash(f_in, f_out)
             path.chmod(0o444)
 
+            path_latest.symlink_to(pathlib.Path('..') / path.name)
+
         self._append_manifest(image, ref, 'internal', output_hash)
-        self._append_file(path, output_hash)
+        self._append_file(path, path_latest, output_hash)
 
     def __copy_hash(self, f_in, f_out, length=64 * 1024):
         output_hash = hashlib.sha512()
@@ -160,8 +179,9 @@ class StepCloudImage:
             ref=ref,
         ))
 
-    def _append_file(self, path, output_hash):
+    def _append_file(self, path, path_latest, output_hash):
         self.files[path.name] = output_hash
+        self.files_latest[path_latest.name] = output_hash
 
 
 class StepCloudImages(collections.abc.Mapping):
@@ -185,5 +205,5 @@ class StepCloudImages(collections.abc.Mapping):
     def __len__(self) -> int:
         return len(self._children)
 
-    def add(self, name: str) -> StepCloudImage:
-        return self._children.setdefault(name, StepCloudImage(self._info, name, self._basepath, self._baseref))
+    def add(self, name: str, family: str) -> StepCloudImage:
+        return self._children.setdefault(name, StepCloudImage(self._info, name, family, self._basepath, self._baseref))
