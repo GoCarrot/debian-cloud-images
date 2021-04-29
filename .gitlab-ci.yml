@@ -279,13 +279,6 @@ gce buster+pu build:
     CLOUD_RELEASE: buster+pu
     CLOUD_VENDOR: gce
 
-gce bullseye build:
-  extends: .gce build
-  variables:
-    CLOUD_ARCH: amd64
-    CLOUD_RELEASE: bullseye
-    CLOUD_VENDOR: gce
-
 gce sid build:
   extends: .gce build
   variables:
@@ -563,7 +556,6 @@ gce upload:
       *.build.json
   dependencies:
     - gce buster build
-    - gce bullseye build
     - gce sid build
   artifacts:
     name: upload-gce
