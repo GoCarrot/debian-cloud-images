@@ -10,6 +10,7 @@ from .upload_azure import UploadAzureCommand
 from .upload_azure_cloudpartner import UploadAzureCloudpartnerCommand
 from .upload_ec2 import UploadEc2Command
 from .upload_gce import UploadGceCommand
+from .put_ssm import PutSSMCommand
 
 
 def main():
@@ -33,6 +34,7 @@ def main():
     UploadAzureCloudpartnerCommand._argparse_init_sub(subparsers)
     UploadEc2Command._argparse_init_sub(subparsers)
     UploadGceCommand._argparse_init_sub(subparsers)
+    PutSSMCommand._argparse_init_sub(subparsers)
 
     args = parser.parse_args()
     args.cls(argparser=parser, **vars(args))()

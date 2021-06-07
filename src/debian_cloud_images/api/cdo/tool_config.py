@@ -49,10 +49,15 @@ class v1alpha1_ToolConfigEc2StorageSchema(Schema):
     name = fields.Str()
 
 
+class v1alpha1_ToolConfigEc2SSMSchema(Schema):
+    prefix = fields.Str()
+
+
 class v1alpha1_ToolConfigEc2Schema(Schema):
     auth = fields.Nested(v1alpha1_ToolConfigEc2AuthSchema)
     image = fields.Nested(v1alpha1_ToolConfigEc2ImageSchema)
     storage = fields.Nested(v1alpha1_ToolConfigEc2StorageSchema)
+    ssm = fields.Nested(v1alpha1_ToolConfigEc2SSMSchema)
 
 
 class v1alpha1_ToolConfigGceAuthSchema(Schema):
