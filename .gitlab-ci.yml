@@ -97,8 +97,6 @@ test pytest latest:
         if [ ! -e /proc/sys/fs/binfmt_misc/status ]; then
           mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
         fi
-        # e2fsprogs in Buster requires an existing /etc/mtab
-        ln -sf /proc/self/mounts /etc/mtab
       fi
     - >
       apt-get install --no-install-recommends -y
