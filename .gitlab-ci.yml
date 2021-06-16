@@ -97,8 +97,6 @@ test pytest latest:
         if [ ! -e /proc/sys/fs/binfmt_misc/status ]; then
           mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
         fi
-        # e2fsprogs in Buster requires an existing /etc/mtab
-        ln -sf /proc/self/mounts /etc/mtab
       fi
     - >
       apt-get install --no-install-recommends -y
@@ -145,7 +143,6 @@ test pytest latest:
 
 azure buster build:
   extends: .azure build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -153,7 +150,6 @@ azure buster build:
 
 azure buster-backports build:
   extends: .azure build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster-backports
@@ -161,7 +157,6 @@ azure buster-backports build:
 
 azure buster+pu build:
   extends: .azure build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster+pu
@@ -191,7 +186,6 @@ azure sid build:
 
 ec2 buster amd64 build:
   extends: .ec2 build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -199,7 +193,6 @@ ec2 buster amd64 build:
 
 ec2 buster-backports amd64 build:
   extends: .ec2 build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster-backports
@@ -207,7 +200,6 @@ ec2 buster-backports amd64 build:
 
 ec2 buster+pu amd64 build:
   extends: .ec2 build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster+pu
@@ -229,7 +221,6 @@ ec2 sid amd64 build:
 
 ec2 buster arm64 build:
   extends: .ec2 build
-  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
@@ -237,7 +228,6 @@ ec2 buster arm64 build:
 
 ec2 buster-backports arm64 build:
   extends: .ec2 build
-  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster-backports
@@ -267,7 +257,6 @@ ec2 sid arm64 build:
 
 gce buster build:
   extends: .gce build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -275,7 +264,6 @@ gce buster build:
 
 gce buster+pu build:
   extends: .gce build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster+pu
@@ -298,7 +286,6 @@ gce sid build:
 
 generic buster amd64 build:
   extends: .generic build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -306,7 +293,6 @@ generic buster amd64 build:
 
 generic buster+pu amd64 build:
   extends: .generic build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster+pu
@@ -328,7 +314,6 @@ generic sid amd64 build:
 
 generic buster arm64 build:
   extends: .generic build
-  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
@@ -336,7 +321,6 @@ generic buster arm64 build:
 
 generic buster+pu arm64 build:
   extends: .generic build
-  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster+pu
@@ -358,7 +342,6 @@ generic sid arm64 build:
 
 generic buster ppc64el build:
   extends: .generic build
-  image: debian:buster
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: buster
@@ -380,7 +363,6 @@ generic sid ppc64el build:
 
 genericcloud buster amd64 build:
   extends: .generic build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -388,7 +370,6 @@ genericcloud buster amd64 build:
 
 genericcloud buster+pu amd64 build:
   extends: .generic build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster+pu
@@ -418,7 +399,6 @@ genericcloud sid amd64 build:
 
 nocloud buster amd64 build:
   extends: .nocloud build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster
@@ -426,7 +406,6 @@ nocloud buster amd64 build:
 
 nocloud buster+pu amd64 build:
   extends: .nocloud build
-  image: debian:buster
   variables:
     CLOUD_ARCH: amd64
     CLOUD_RELEASE: buster+pu
@@ -448,7 +427,6 @@ nocloud sid amd64 build:
 
 nocloud buster arm64 build:
   extends: .nocloud build
-  image: debian:buster
   variables:
     CLOUD_ARCH: arm64
     CLOUD_RELEASE: buster
@@ -470,7 +448,6 @@ nocloud sid arm64 build:
 
 nocloud buster ppc64el build:
   extends: .nocloud build
-  image: debian:buster
   variables:
     CLOUD_ARCH: ppc64el
     CLOUD_RELEASE: buster
