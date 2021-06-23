@@ -8,13 +8,14 @@ from ..utils.libcloud.other.aws_ssm import SSMConnection
 
 class SSMVariableSetter:
 
-    def __init__(self, access_key_id, secret_key, token, images, prefix, force_overwrite=False):
+    def __init__(self, access_key_id, secret_key, token, images, prefix, force_overwrite=False, dry_run=False):
         self.images = images
         self.access_key_id = access_key_id
         self.secret_key = secret_key
         self.token = token
         self.prefix = prefix
         self.force_overwrite = force_overwrite
+        self.dry_run = dry_run
         self.__regional_connections = {}
 
     def __call__(self):
@@ -46,7 +47,10 @@ class SSMVariableSetter:
                         value = upload.ref
                         logging.info("Setting {}={} (region={}, overwrite={})".format(
                             key, value, region, overwrite))
-                        self.connection(region).set_variable(key, value, overwrite=overwrite)
+                        if self.dry_run:
+                            logging.info("Dry-run: set {}={}, overwrite={}".format(key, value, overwrite))
+                        else:
+                            self.connection(region).set_variable(key, value, overwrite=overwrite)
 
     def connection(self, region):
         if region not in self.__regional_connections:
@@ -81,13 +85,20 @@ config options:
         )
 
         parser.add_argument(
+            '--dry-run',
+            help="Dry run mode, don't actually do anything",
+            action='store_true',
+            dest='dry_run',
+        )
+
+        parser.add_argument(
             '--force-overwrite',
             help='forcibly overwrite any existing value',
             action='store_true',
             dest='force_overwrite',
         )
 
-    def __init__(self, manifests=[], prefix=None, regions=[], force_overwrite=False, **kw):
+    def __init__(self, manifests=[], prefix=None, regions=[], force_overwrite=False, dry_run=False, **kw):
         super().__init__(**kw)
 
         self.ssm_prefix = self.config_get('ec2.ssm.prefix')
@@ -101,6 +112,7 @@ config options:
             images=self.images,
             prefix=self.ssm_prefix,
             force_overwrite=force_overwrite,
+            dry_run=dry_run,
         )
 
     def __call__(self):
