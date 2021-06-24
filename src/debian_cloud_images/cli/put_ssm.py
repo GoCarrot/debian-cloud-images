@@ -33,6 +33,14 @@ class SSMVariableSetter:
             else:
                 raise RuntimeError("No build info in manifest")
             for upload in image.uploads:
+
+                # Note that some currently unsupported AWS regions
+                # will likely require a more sophisticated check.  For
+                # example, regions in China are under the .cn ccTLD
+                if not upload.provider.endswith("amazonaws.com"):
+                    logging.info(f'Skipping {upload.provider} upload')
+                    continue
+
                 region = upload.metadata.labels['aws.amazon.com/region']
                 if region not in regional_keys.keys():
                     regional_keys[region] = {}
