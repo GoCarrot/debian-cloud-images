@@ -14,10 +14,11 @@ class SSMConnection(SignedAWSConnection):
     version = '2014-11-06'
     driver = SSMDriver
     service_name = 'ssm'
+    region_name = ''
 
     def __init__(self, access_key_id, secret_key, region, token, signature_version=4):
         self.token = token
-        self.driver.region_name = region
+        self.region_name = region
         host = "ssm.{}.amazonaws.com".format(region)
         super(SSMConnection, self).__init__(access_key_id, secret_key, host=host,
                                             token=self.token, signature_version=signature_version)
@@ -26,6 +27,8 @@ class SSMConnection(SignedAWSConnection):
         overwrite_param = 'false'
         if overwrite:
             overwrite_param = 'true'
+
+        self.driver.region_name = self.region_name
 
         params = {'Action': 'PutParameter',
                   'Type': type,
