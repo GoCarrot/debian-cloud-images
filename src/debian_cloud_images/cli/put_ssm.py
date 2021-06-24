@@ -21,6 +21,10 @@ class SSMVariableSetter:
     def __call__(self):
         release_id = None
         release_name = None
+
+        # Keep track of keys we've already set, per region
+        regional_keys = {}
+
         for image in self.images.values():
             if image.build:
                 release_id = image.build_release_id
@@ -30,6 +34,8 @@ class SSMVariableSetter:
                 raise RuntimeError("No build info in manifest")
             for upload in image.uploads:
                 region = upload.metadata.labels['aws.amazon.com/region']
+                if region not in regional_keys.keys():
+                    regional_keys[region] = {}
                 logging.debug("Region: {}".format(region))
                 for version, overwrite in [['latest',
                                             True],
@@ -45,6 +51,11 @@ class SSMVariableSetter:
                             release_arch,
                         )
                         value = upload.ref
+                        if key in regional_keys[region]:
+                            logging.info("Skipping already set key {}".format(key))
+                            continue
+
+                        regional_keys[region][key] = value
                         logging.info("Setting {}={} (region={}, overwrite={})".format(
                             key, value, region, overwrite))
                         if self.dry_run:
