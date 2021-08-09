@@ -155,7 +155,7 @@ VendorEnum = enum.Enum(  # type:ignore
             'use_linux_image_cloud': True,
         },
         'ec2': {
-            'fai_size': '8G',
+            'fai_size': '2G',
             'fai_classes': ('EC2', 'IPV6_DHCP'),
             'use_linux_image_cloud': True,
         },
