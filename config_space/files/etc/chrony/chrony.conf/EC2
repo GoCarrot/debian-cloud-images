@@ -2,8 +2,8 @@
 # information about usuable directives.
 
 # Use the AWS time sync service per
-# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html
-server 169.254.169.123 prefer iburst
+# https://web.archive.org/web/20210506122933if_/https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html#configure-amazon-time-service-ubuntu
+server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4
 
 # This directive specify the location of the file containing ID/key pairs for
 # NTP authentication.
