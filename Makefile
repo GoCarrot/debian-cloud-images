@@ -20,5 +20,10 @@ image_%:
 	  --output $(DESTDIR) \
 	  --override-name $@
 
+vmware_%: image_%
+	umask 022; \
+	qemu-img convert -f raw -O vmdk image_$*.raw $@.vmdk
+
 clean:
 	rm -rf image_*.*
+	rm -rf vmware_*.*
