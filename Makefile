@@ -18,7 +18,8 @@ image_%:
 	  --version $(shell date '+%Y%m%d%H%M') \
 	  --localdebs \
 	  --output $(DESTDIR) \
-	  --override-name $@
+	  --override-name $@ \
+	  --build-type official
 
 vmware_%: image_%
 	umask 022; \
