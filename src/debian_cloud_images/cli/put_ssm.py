@@ -26,12 +26,13 @@ class SSMVariableSetter:
         regional_keys = {}
 
         for image in self.images.values():
-            if image.build:
+            try:
                 release_id = image.build_release_id
                 release_name = image.build_release
                 release_arch = image.build_arch
-            else:
-                raise RuntimeError("No build info in manifest")
+            except IndexError:
+                logging.info(f'no builds for {image.name}')
+
             for upload in image.uploads:
 
                 # Note that some currently unsupported AWS regions
