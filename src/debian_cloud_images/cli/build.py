@@ -145,11 +145,11 @@ VendorEnum = enum.Enum(  # type:ignore
         },
         'generic': {
             'fai_size': '2G',
-            'fai_classes': ('GENERIC', 'IPV6_DHCP'),
+            'fai_classes': ('GENERIC', ),
         },
         'genericcloud': {
             'fai_size': '2G',
-            'fai_classes': ('GENERIC', 'IPV6_DHCP'),
+            'fai_classes': ('GENERIC', ),
             'use_linux_image_cloud': True,
         },
         'nocloud': {
