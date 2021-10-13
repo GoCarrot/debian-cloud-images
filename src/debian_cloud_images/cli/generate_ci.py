@@ -18,6 +18,8 @@ class GenerateCiCommand(BaseCommand):
         out = {}
 
         for vendor_name, vendor in VendorEnum.__members__.items():
+            builds = []
+
             for release_name, release in ReleaseEnum.__members__.items():
                 for arch_name, arch in ArchEnum.__members__.items():
                     # XXX: Better arch selection
@@ -33,6 +35,7 @@ class GenerateCiCommand(BaseCommand):
                     name = ' '.join((vendor_name, release_name, arch_name, 'build'))
                     extends = '.' + ' '.join((vendor_name, 'build'))
 
+                    builds.append(name)
                     out[name] = {
                         'extends': extends,
                         'variables': {
@@ -41,6 +44,15 @@ class GenerateCiCommand(BaseCommand):
                             'CLOUD_VENDOR': vendor_name,
                         }
                     }
+
+            # XXX: Better selection
+            if vendor_name in ('azure', 'ec2', 'gce'):
+                name = ' '.join((vendor_name, 'upload'))
+                extends = '.' + name
+                out[name] = {
+                    'extends': extends,
+                    'dependencies': builds,
+                }
 
         print('# Generated with "python3 -m debian_cloud_images.cli.generate_ci"', file=sys.stdout)
         json.dump(out, sys.stdout, indent=2)

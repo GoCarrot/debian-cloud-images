@@ -185,7 +185,7 @@ test pytest latest:
 # Provider uploads for developer pushs
 ####
 
-azure upload:
+.azure upload:
   stage: vendor upload
   image: debian:bullseye
   script:
@@ -193,11 +193,6 @@ azure upload:
       ./bin/debian-cloud-images upload-azure
       --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
-  dependencies:
-    - azure buster amd64 build
-    - azure buster-backports amd64 build
-    - azure bullseye amd64 build
-    - azure sid amd64 build
   artifacts:
     name: upload-azure
     expire_in: 7 days
@@ -210,7 +205,7 @@ azure upload:
     when: manual
   allow_failure: true
 
-ec2 upload:
+.ec2 upload:
   stage: vendor upload
   image: debian:bullseye
   script:
@@ -218,15 +213,6 @@ ec2 upload:
       ./bin/debian-cloud-images upload-ec2
       --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
-  dependencies:
-    - ec2 buster amd64 build
-    - ec2 buster-backports amd64 build
-    - ec2 bullseye amd64 build
-    - ec2 sid amd64 build
-    - ec2 buster arm64 build
-    - ec2 buster-backports arm64 build
-    - ec2 bullseye arm64 build
-    - ec2 sid arm64 build
   artifacts:
     name: upload-ec2
     expire_in: 7 days
@@ -239,7 +225,7 @@ ec2 upload:
     when: manual
   allow_failure: true
 
-gce upload:
+.gce upload:
   stage: vendor upload
   image: debian:bullseye
   script:
@@ -247,9 +233,6 @@ gce upload:
       ./bin/debian-cloud-images upload-gce
       --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
       *.build.json
-  dependencies:
-    - gce buster amd64 build
-    - gce sid amd64 build
   artifacts:
     name: upload-gce
     expire_in: 7 days
