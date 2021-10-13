@@ -1,0 +1,523 @@
+# Generated with "python3 -m debian_cloud_images.cli.generate_ci"
+{
+  "azure buster amd64 build": {
+    "extends": ".azure build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure buster+pu amd64 build": {
+    "extends": ".azure build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure buster-backports amd64 build": {
+    "extends": ".azure build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye amd64 build": {
+    "extends": ".azure build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure sid amd64 build": {
+    "extends": ".azure build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "ec2 buster amd64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 buster arm64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 buster+pu amd64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 buster+pu arm64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 buster-backports amd64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 buster-backports arm64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye amd64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye arm64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 sid amd64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 sid arm64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "gce buster amd64 build": {
+    "extends": ".gce build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "gce"
+    }
+  },
+  "gce buster+pu amd64 build": {
+    "extends": ".gce build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "gce"
+    }
+  },
+  "gce buster-backports amd64 build": {
+    "extends": ".gce build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "gce"
+    }
+  },
+  "gce bullseye amd64 build": {
+    "extends": ".gce build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "gce"
+    }
+  },
+  "gce sid amd64 build": {
+    "extends": ".gce build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "gce"
+    }
+  },
+  "generic buster amd64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic buster arm64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic buster ppc64el build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic buster+pu amd64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic buster+pu arm64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic buster+pu ppc64el build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic buster-backports amd64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic buster-backports arm64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic buster-backports ppc64el build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye amd64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye arm64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye ppc64el build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic sid amd64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic sid arm64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic sid ppc64el build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "genericcloud buster amd64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud buster arm64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud buster ppc64el build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud buster+pu amd64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud buster+pu arm64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud buster+pu ppc64el build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud buster-backports amd64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud buster-backports arm64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud buster-backports ppc64el build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye amd64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye arm64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye ppc64el build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud sid amd64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud sid arm64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud sid ppc64el build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "nocloud buster amd64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud buster arm64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud buster ppc64el build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud buster+pu amd64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud buster+pu arm64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud buster+pu ppc64el build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster+pu",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud buster-backports amd64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud buster-backports arm64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud buster-backports ppc64el build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "buster-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye amd64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye arm64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye ppc64el build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud sid amd64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud sid arm64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud sid ppc64el build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  }
+}
