@@ -21,6 +21,10 @@ class GenerateCiCommand(BaseCommand):
             builds = []
 
             for release_name, release in ReleaseEnum.__members__.items():
+                # XXX: Better selection
+                if vendor_name == 'gce' and release_name == 'bullseye':
+                    continue
+
                 for arch_name, arch in ArchEnum.__members__.items():
                     # XXX: Better arch selection
                     if vendor_name in ('azure', 'ec2', 'gce'):

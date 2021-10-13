@@ -169,14 +169,6 @@
       "CLOUD_VENDOR": "gce"
     }
   },
-  "gce bullseye amd64 build": {
-    "extends": ".gce build",
-    "variables": {
-      "CLOUD_ARCH": "amd64",
-      "CLOUD_RELEASE": "bullseye",
-      "CLOUD_VENDOR": "gce"
-    }
-  },
   "gce sid amd64 build": {
     "extends": ".gce build",
     "variables": {
@@ -191,7 +183,6 @@
       "gce buster amd64 build",
       "gce buster+pu amd64 build",
       "gce buster-backports amd64 build",
-      "gce bullseye amd64 build",
       "gce sid amd64 build"
     ]
   },
