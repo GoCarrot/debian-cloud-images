@@ -112,6 +112,13 @@ ReleaseEnum = enum.Enum(  # type:ignore
             'fai_classes': ('BULLSEYE', 'EXTRAS'),
             'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
         },
+        'bullseye-backports': {
+            'basename': 'bullseye-backports',
+            'id': '11-backports',
+            'baseid': '11',
+            'fai_classes': ('BULLSEYE', 'BACKPORTS_LINUX', 'EXTRAS'),
+            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
+        },
         'sid': {
             'basename': 'sid',
             'id': 'sid',
