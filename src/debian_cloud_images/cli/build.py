@@ -126,6 +126,13 @@ ReleaseEnum = enum.Enum(  # type:ignore
             'fai_classes': ('BOOKWORM', 'EXTRAS'),
             'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
         },
+        'bookworm-backports': {
+            'basename': 'bookworm-backports',
+            'id': '12-backports',
+            'baseid': '12',
+            'fai_classes': ('BOOKWORM', 'BACKPORTS_LINUX', 'EXTRAS'),
+            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
+        },
         'sid': {
             'basename': 'sid',
             'id': 'sid',

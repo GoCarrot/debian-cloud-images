@@ -48,6 +48,14 @@
       "CLOUD_VENDOR": "azure"
     }
   },
+  "azure bookworm-backports amd64 build": {
+    "extends": ".azure build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
   "azure sid amd64 build": {
     "extends": ".azure build",
     "variables": {
@@ -65,6 +73,7 @@
       "azure bullseye amd64 build",
       "azure bullseye-backports amd64 build",
       "azure bookworm amd64 build",
+      "azure bookworm-backports amd64 build",
       "azure sid amd64 build"
     ]
   },
@@ -164,6 +173,22 @@
       "CLOUD_VENDOR": "ec2"
     }
   },
+  "ec2 bookworm-backports amd64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports arm64 build": {
+    "extends": ".ec2 build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
   "ec2 sid amd64 build": {
     "extends": ".ec2 build",
     "variables": {
@@ -195,6 +220,8 @@
       "ec2 bullseye-backports arm64 build",
       "ec2 bookworm amd64 build",
       "ec2 bookworm arm64 build",
+      "ec2 bookworm-backports amd64 build",
+      "ec2 bookworm-backports arm64 build",
       "ec2 sid amd64 build",
       "ec2 sid arm64 build"
     ]
@@ -239,6 +266,14 @@
       "CLOUD_VENDOR": "gce"
     }
   },
+  "gce bookworm-backports amd64 build": {
+    "extends": ".gce build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "gce"
+    }
+  },
   "gce sid amd64 build": {
     "extends": ".gce build",
     "variables": {
@@ -255,6 +290,7 @@
       "gce buster-backports amd64 build",
       "gce bullseye-backports amd64 build",
       "gce bookworm amd64 build",
+      "gce bookworm-backports amd64 build",
       "gce sid amd64 build"
     ]
   },
@@ -399,6 +435,30 @@
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports amd64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports arm64 build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports ppc64el build": {
+    "extends": ".generic build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm-backports",
       "CLOUD_VENDOR": "generic"
     }
   },
@@ -570,6 +630,30 @@
       "CLOUD_VENDOR": "genericcloud"
     }
   },
+  "genericcloud bookworm-backports amd64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm-backports arm64 build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm-backports ppc64el build": {
+    "extends": ".genericcloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
   "genericcloud sid amd64 build": {
     "extends": ".genericcloud build",
     "variables": {
@@ -735,6 +819,30 @@
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports amd64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports arm64 build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports ppc64el build": {
+    "extends": ".nocloud build",
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm-backports",
       "CLOUD_VENDOR": "nocloud"
     }
   },
