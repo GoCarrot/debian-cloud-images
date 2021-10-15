@@ -5,6 +5,7 @@ import typing
 
 from ..utils import argparse_ext
 from ..utils.config import Config
+from ..utils.config_image import ConfigImageLoader
 
 
 class BaseCommand:
@@ -84,6 +85,10 @@ class BaseCommand:
             self.config = self._config[f'_name={config_section}']
         else:
             self.config = self._config[None]
+
+        self._config_image = ConfigImageLoader()
+        self._config_image.read_defaults()
+        self.config_image = self._config_image.config
 
         self.argparser = argparser
 

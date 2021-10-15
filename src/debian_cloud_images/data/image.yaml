@@ -1,0 +1,3 @@
+---
+apiVersion: cloud.debian.org/v1alpha1
+kind: ImageConfig
