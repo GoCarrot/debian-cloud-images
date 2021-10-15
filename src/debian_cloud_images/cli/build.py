@@ -20,13 +20,6 @@ from ..utils import argparse_ext
 logger = logging.getLogger()
 
 
-class Arch:
-    def __init__(self, kw):
-        def init(*, fai_classes):
-            self.fai_classes = fai_classes
-        init(**kw)
-
-
 class Release:
     def __init__(self, kw):
         def init(*, basename, id, baseid, fai_classes, arch_supports_linux_image_cloud):
@@ -60,24 +53,6 @@ class BuildType:
             self.output_version = output_version
             self.output_version_azure = output_version_azure
         init(**kw)
-
-
-ArchEnum = enum.Enum(  # type:ignore
-                       # mypy is not able to parse functional Enum properly
-    'ArchEnum',
-    {
-        'amd64': {
-            'fai_classes': ('AMD64', 'GRUB_CLOUD_AMD64'),
-        },
-        'arm64': {
-            'fai_classes': ('ARM64', 'GRUB_EFI_ARM64'),
-        },
-        'ppc64el': {
-            'fai_classes': ('PPC64EL', 'GRUB_IEEE1275'),
-        },
-    },
-    type=Arch,
-)
 
 
 ReleaseEnum = enum.Enum(  # type:ignore
@@ -264,8 +239,8 @@ class Check:
 
     def set_arch(self, arch):
         self.arch = arch
-        self.info['arch'] = self.arch.name
-        self.classes |= self.arch.fai_classes
+        self.info['arch'] = arch.name
+        self.classes |= arch.fai_classes
 
     def set_version(self, version, version_date, build_id):
         self.build_id = self.info['build_id'] = build_id.id
@@ -314,10 +289,8 @@ class BuildCommand(BaseCommand):
             help='Vendor to build image for',
             metavar='VENDOR',
         )
-        parser.add_argument(
-            'arch',
-            action=argparse_ext.ActionEnum,
-            enum=ArchEnum,
+        cls.argparser_argument_arch = parser.add_argument(
+            'arch_name',
             help='Architecture or sub-architecture to build image for',
             metavar='ARCH',
         )
@@ -379,8 +352,14 @@ class BuildCommand(BaseCommand):
             msg = "Given date ({0}) is not valid. Expected format: 'YYYY-MM-DD'".format(s)
             raise argparse.ArgumentTypeError(msg)
 
-    def __init__(self, *, release=None, vendor=None, arch=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
+    def __init__(self, *, release=None, vendor=None, arch_name=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
         super().__init__(**kw)
+
+        arch = self.config_image.archs.get(arch_name)
+        if arch is None:
+            raise argparse.ArgumentError(
+                self.argparser_argument_arch,
+                f'invalid value: {arch_name}, select one of {", ".join(self.config_image.archs)}')
 
         self.noop = noop
 
