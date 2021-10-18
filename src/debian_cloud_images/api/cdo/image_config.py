@@ -41,20 +41,29 @@ class ImageConfigRelease:
     def __init__(
         self,
         name=None,
+        basename=None,
         id=None,
         baseid=None,
-
         fai_classes=None,
+        arch_supports_linux_image_cloud=None,
     ):
         self.name = name
+        self.basename = basename
+        self.id = id
+        self.baseid = baseid
         self.fai_classes = fai_classes
+        self.arch_supports_linux_image_cloud = arch_supports_linux_image_cloud
 
 
-class v1alpha1_ImageConfigArchSchema(Schema):
-    __model__ = ImageConfigArch
+class v1alpha1_ImageConfigReleaseSchema(Schema):
+    __model__ = ImageConfigRelease
 
     name = fields.Str(required=True)
+    basename = fields.Str(required=True)
+    id = fields.Str(required=True)
+    baseid = fields.Str(required=True)
     fai_classes = fields.List(fields.Str())
+    arch_supports_linux_image_cloud = fields.List(fields.Str())
 
     @post_load
     def load_obj(self, data, **kw):
@@ -94,12 +103,14 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
     __typemeta__ = TypeMeta('ImageConfig', 'cloud.debian.org/v1alpha1')
 
     _archs_list = fields.Nested(v1alpha1_ImageConfigArchSchema, data_key='archs', many=True)
+    _releases_list = fields.Nested(v1alpha1_ImageConfigReleaseSchema, data_key='releases', many=True)
     _vendors_list = fields.Nested(v1alpha1_ImageConfigVendorSchema, data_key='vendors', many=True)
 
     @pre_dump
     def dump_obj(self, obj, **kw):
         data = obj.__dict__.copy()
         data['_archs_list'] = data['archs'].values()
+        data['_releases_list'] = data['releases'].values()
         data['_vendors_list'] = data['vendors'].values()
         return data
 
@@ -108,5 +119,6 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
         data.pop('api_version', None)
         data.pop('kind', None)
         data['archs'] = {c.name: c for c in data.pop('_archs_list', [])}
+        data['releases'] = {c.name: c for c in data.pop('_releases_list', [])}
         data['vendors'] = {c.name: c for c in data.pop('_vendors_list', [])}
         return self.__model__(**data)

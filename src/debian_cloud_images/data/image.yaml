@@ -10,6 +10,56 @@ archs:
 - name: ppc64el
   fai_classes: [PPC64EL, GRUB_IEEE1275]
 
+releases:
+- name: buster
+  basename: buster
+  id: '10'
+  baseid: '10'
+  fai_classes: [BUSTER, EXTRAS]
+  arch_supports_linux_image_cloud: [amd64]
+- name: buster+pu
+  basename: buster
+  id: '10'
+  baseid: '10'
+  fai_classes: [BUSTER, BUSTER_PU, EXTRAS]
+  arch_supports_linux_image_cloud: [amd64]
+- name: buster-backports
+  basename: buster-backports
+  id: 10-backports
+  baseid: '10'
+  fai_classes: [BUSTER, BACKPORTS_LINUX, EXTRAS]
+  arch_supports_linux_image_cloud: [amd64, arm64]
+- name: bullseye
+  basename: bullseye
+  id: '11'
+  baseid: '11'
+  fai_classes: [BULLSEYE, EXTRAS]
+  arch_supports_linux_image_cloud: [amd64, arm64]
+- name: bullseye-backports
+  basename: bullseye-backports
+  id: 11-backports
+  baseid: '11'
+  fai_classes: [BULLSEYE, BACKPORTS_LINUX, EXTRAS]
+  arch_supports_linux_image_cloud: [amd64, arm64]
+- name: bookworm
+  basename: bookworm
+  id: '12'
+  baseid: '12'
+  fai_classes: [BOOKWORM, EXTRAS]
+  arch_supports_linux_image_cloud: [amd64, arm64]
+- name: bookworm-backports
+  basename: bookworm-backports
+  id: 12-backports
+  baseid: '12'
+  fai_classes: [BOOKWORM, BACKPORTS_LINUX, EXTRAS]
+  arch_supports_linux_image_cloud: [amd64, arm64]
+- name: sid
+  basename: sid
+  id: sid
+  baseid: sid
+  fai_classes: [SID, EXTRAS]
+  arch_supports_linux_image_cloud: [amd64, arm64]
+
 vendors:
 - name: azure
   fai_classes: [AZURE, IPV6_DHCP]

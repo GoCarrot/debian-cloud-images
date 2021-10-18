@@ -20,22 +20,6 @@ from ..utils import argparse_ext
 logger = logging.getLogger()
 
 
-class Release:
-    def __init__(self, kw):
-        def init(*, basename, id, baseid, fai_classes, arch_supports_linux_image_cloud):
-            self.basename = basename
-            self.id = id
-            self.baseid = baseid
-            self.fai_classes = fai_classes
-            self.arch_supports_linux_image_cloud = arch_supports_linux_image_cloud
-        init(**kw)
-
-    def supports_linux_image_cloud_for_arch(self, arch):
-        if arch in self.arch_supports_linux_image_cloud:
-            return True
-        return False
-
-
 class BuildType:
     def __init__(self, kw):
         def init(*, fai_classes, output_name, output_version, output_version_azure):
@@ -44,71 +28,6 @@ class BuildType:
             self.output_version = output_version
             self.output_version_azure = output_version_azure
         init(**kw)
-
-
-ReleaseEnum = enum.Enum(  # type:ignore
-                          # mypy is not able to parse functional Enum properly
-    'ReleaseEnum',
-    {
-        'buster': {
-            'basename': 'buster',
-            'id': '10',
-            'baseid': '10',
-            'fai_classes': ('BUSTER', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64',),
-        },
-        'buster+pu': {
-            'basename': 'buster',
-            'id': '10',
-            'baseid': '10',
-            'fai_classes': ('BUSTER', 'BUSTER_PU', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64',),
-        },
-        'buster-backports': {
-            'basename': 'buster-backports',
-            'id': '10-backports',
-            'baseid': '10',
-            'fai_classes': ('BUSTER', 'BACKPORTS_LINUX', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'bullseye': {
-            'basename': 'bullseye',
-            'id': '11',
-            'baseid': '11',
-            'fai_classes': ('BULLSEYE', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'bullseye-backports': {
-            'basename': 'bullseye-backports',
-            'id': '11-backports',
-            'baseid': '11',
-            'fai_classes': ('BULLSEYE', 'BACKPORTS_LINUX', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'bookworm': {
-            'basename': 'bookworm',
-            'id': '12',
-            'baseid': '12',
-            'fai_classes': ('BOOKWORM', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'bookworm-backports': {
-            'basename': 'bookworm-backports',
-            'id': '12-backports',
-            'baseid': '12',
-            'fai_classes': ('BOOKWORM', 'BACKPORTS_LINUX', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'sid': {
-            'basename': 'sid',
-            'id': 'sid',
-            'baseid': 'sid',
-            'fai_classes': ('SID', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-    },
-    type=Release,
-)
 
 
 BuildTypeEnum = enum.Enum(  # type:ignore
@@ -213,7 +132,7 @@ class Check:
             self.env['CLOUD_RELEASE_VERSION_AZURE'] = self.info['version_azure'] = self.version_azure
 
     def check(self):
-        if self.release.supports_linux_image_cloud_for_arch(self.arch.name) and self.vendor.use_linux_image_cloud:
+        if self.arch.name in self.release.arch_supports_linux_image_cloud and self.vendor.use_linux_image_cloud:
             self.classes.add('LINUX_IMAGE_CLOUD')
         else:
             self.classes.add('LINUX_IMAGE_BASE')
@@ -229,10 +148,8 @@ class BuildCommand(BaseCommand):
     def _argparse_register(cls, parser):
         super()._argparse_register(parser)
 
-        parser.add_argument(
-            'release',
-            action=argparse_ext.ActionEnum,
-            enum=ReleaseEnum,
+        cls.argparser_argument_release = parser.add_argument(
+            'release_name',
             help='Debian release to build',
             metavar='RELEASE',
         )
@@ -304,10 +221,11 @@ class BuildCommand(BaseCommand):
             msg = "Given date ({0}) is not valid. Expected format: 'YYYY-MM-DD'".format(s)
             raise argparse.ArgumentTypeError(msg)
 
-    def __init__(self, *, release=None, vendor_name=None, arch_name=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
+    def __init__(self, *, release_name=None, vendor_name=None, arch_name=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
         super().__init__(**kw)
 
         arch = self.config_image.archs.get(arch_name)
+        release = self.config_image.releases.get(release_name)
         vendor = self.config_image.vendors.get(vendor_name)
 
         if arch is None:
@@ -319,6 +237,11 @@ class BuildCommand(BaseCommand):
             raise argparse.ArgumentError(
                 self.argparser_argument_vendor,
                 f'invalid value: {vendor_name}, select one of {", ".join(self.config_image.vendors)}')
+
+        if release is None:
+            raise argparse.ArgumentError(
+                self.argparser_argument_release,
+                f'invalid value: {release_name}, select one of {", ".join(self.config_image.releases)}')
 
         self.noop = noop
 
