@@ -3,7 +3,7 @@ import logging
 import sys
 
 from .base import BaseCommand
-from .build import ReleaseEnum, VendorEnum
+from .build import ReleaseEnum
 
 
 logger = logging.getLogger()
@@ -17,7 +17,7 @@ class GenerateCiCommand(BaseCommand):
     def __call__(self) -> None:
         out = {}
 
-        for vendor_name, vendor in VendorEnum.__members__.items():
+        for vendor_name, vendor in self.config_image.vendors.items():
             builds = []
 
             for release_name, release in ReleaseEnum.__members__.items():

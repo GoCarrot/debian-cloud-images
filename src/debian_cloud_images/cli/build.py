@@ -36,15 +36,6 @@ class Release:
         return False
 
 
-class Vendor:
-    def __init__(self, kw):
-        def init(*, fai_size, fai_classes, use_linux_image_cloud=False):
-            self.fai_size = fai_size
-            self.fai_classes = fai_classes
-            self.use_linux_image_cloud = use_linux_image_cloud
-        init(**kw)
-
-
 class BuildType:
     def __init__(self, kw):
         def init(*, fai_classes, output_name, output_version, output_version_azure):
@@ -117,43 +108,6 @@ ReleaseEnum = enum.Enum(  # type:ignore
         },
     },
     type=Release,
-)
-
-
-VendorEnum = enum.Enum(  # type:ignore
-                         # mypy is not able to parse functional Enum properly
-    'VendorEnum',
-    {
-        'azure': {
-            'fai_size': '30G',
-            'fai_classes': ('AZURE', 'IPV6_DHCP'),
-            'use_linux_image_cloud': True,
-        },
-        'ec2': {
-            'fai_size': '8G',
-            'fai_classes': ('EC2', 'IPV6_DHCP'),
-            'use_linux_image_cloud': True,
-        },
-        'gce': {
-            'fai_size': '10G',
-            'fai_classes': ('GCE', ),
-            'use_linux_image_cloud': True,
-        },
-        'generic': {
-            'fai_size': '2G',
-            'fai_classes': ('GENERIC', ),
-        },
-        'genericcloud': {
-            'fai_size': '2G',
-            'fai_classes': ('GENERIC', ),
-            'use_linux_image_cloud': True,
-        },
-        'nocloud': {
-            'fai_size': '2G',
-            'fai_classes': ('NOCLOUD', ),
-        },
-    },
-    type=Vendor,
 )
 
 
@@ -282,10 +236,8 @@ class BuildCommand(BaseCommand):
             help='Debian release to build',
             metavar='RELEASE',
         )
-        parser.add_argument(
-            'vendor',
-            action=argparse_ext.ActionEnum,
-            enum=VendorEnum,
+        cls.argparser_argument_vendor = parser.add_argument(
+            'vendor_name',
             help='Vendor to build image for',
             metavar='VENDOR',
         )
@@ -352,14 +304,21 @@ class BuildCommand(BaseCommand):
             msg = "Given date ({0}) is not valid. Expected format: 'YYYY-MM-DD'".format(s)
             raise argparse.ArgumentTypeError(msg)
 
-    def __init__(self, *, release=None, vendor=None, arch_name=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
+    def __init__(self, *, release=None, vendor_name=None, arch_name=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
         super().__init__(**kw)
 
         arch = self.config_image.archs.get(arch_name)
+        vendor = self.config_image.vendors.get(vendor_name)
+
         if arch is None:
             raise argparse.ArgumentError(
                 self.argparser_argument_arch,
                 f'invalid value: {arch_name}, select one of {", ".join(self.config_image.archs)}')
+
+        if vendor is None:
+            raise argparse.ArgumentError(
+                self.argparser_argument_vendor,
+                f'invalid value: {vendor_name}, select one of {", ".join(self.config_image.vendors)}')
 
         self.noop = noop
 
@@ -398,7 +357,7 @@ class BuildCommand(BaseCommand):
         self.fai = RunFAI(
             output_filename=image_raw,
             classes=self.c.classes,
-            size_gb=self.c.vendor.fai_size,
+            size_gb=self.c.vendor.size,
             env=self.env,
         )
 

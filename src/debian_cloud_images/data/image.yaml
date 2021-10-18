@@ -9,3 +9,27 @@ archs:
   fai_classes: [ARM64, GRUB_EFI_ARM64]
 - name: ppc64el
   fai_classes: [PPC64EL, GRUB_IEEE1275]
+
+vendors:
+- name: azure
+  fai_classes: [AZURE, IPV6_DHCP]
+  size: 30
+  use_linux_image_cloud: true
+- name: ec2
+  fai_classes: [EC2, IPV6_DHCP]
+  size: 8
+  use_linux_image_cloud: true
+- name: gce
+  fai_classes: [GCE]
+  size: 10
+  use_linux_image_cloud: true
+- name: generic
+  fai_classes: [GENERIC]
+  size: 2
+- name: genericcloud
+  fai_classes: [GENERIC]
+  size: 2
+  use_linux_image_cloud: true
+- name: nocloud
+  fai_classes: [NOCLOUD]
+  size: 2
