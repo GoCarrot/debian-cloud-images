@@ -1,0 +1,3 @@
+Package: open-vm-tools
+Pin: release a=experimental
+Pin-Priority: 1
