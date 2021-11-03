@@ -1,2 +1,4 @@
 deb {%apt_cdn%}/debian experimental main
 deb-src {%apt_cdn%}/debian experimental main
+deb {%apt_cdn%}/debian sid main
+deb-src {%apt_cdn%}/debian sid main

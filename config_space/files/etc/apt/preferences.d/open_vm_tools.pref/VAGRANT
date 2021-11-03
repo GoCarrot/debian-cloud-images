@@ -1,11 +1,11 @@
 Package: open-vm-tools
 Pin: release a=experimental
-Pin-Priority: 1
+Pin-Priority: 500
 
 Package: libxmlsec1
-Pin: release a=experimental
-Pin-Priority: 1
+Pin: release a=unstable
+Pin-Priority: 500
 
 Package: libxmlsec1-openssl
-Pin: release a=experimental
-Pin-Priority: 1
+Pin: release a=unstable
+Pin-Priority: 500
