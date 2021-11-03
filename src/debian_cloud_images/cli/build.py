@@ -1,6 +1,5 @@
 import argparse
 import collections.abc
-import enum
 import json
 import logging
 import pathlib
@@ -18,37 +17,6 @@ from ..utils import argparse_ext
 
 
 logger = logging.getLogger()
-
-
-class BuildType:
-    def __init__(self, kw):
-        def init(*, fai_classes, output_name, output_version, output_version_azure):
-            self.fai_classes = fai_classes
-            self.output_name = output_name
-            self.output_version = output_version
-            self.output_version_azure = output_version_azure
-        init(**kw)
-
-
-BuildTypeEnum = enum.Enum(  # type:ignore
-                            # mypy is not able to parse functional Enum properly
-    'BuildTypeEnum',
-    {
-        'dev': {
-            'fai_classes': ('TYPE_DEV', ),
-            'output_name': 'debian-{release}-{vendor}-{arch}-{build_type}-{build_id}-{version}',
-            'output_version': '{version}',
-            'output_version_azure': '0.0.{version!s}',
-        },
-        'official': {
-            'fai_classes': (),
-            'output_name': 'debian-{release}-{vendor}-{arch}-{build_type}-{version}',
-            'output_version': '{date}-{version}',
-            'output_version_azure': '0.{date!s}.{version!s}',
-        },
-    },
-    type=BuildType,
-)
 
 
 class BuildId:
@@ -169,11 +137,10 @@ class BuildCommand(BaseCommand):
             required=True,
             type=BuildId,
         )
-        parser.add_argument(
+        cls.argparser_argument_build_type = parser.add_argument(
             '--build-type',
-            action=argparse_ext.ActionEnum,
-            enum=BuildTypeEnum,
             default='dev',
+            dest='build_type_name',
             help='Type of image to build',
             metavar='TYPE',
         )
@@ -221,10 +188,11 @@ class BuildCommand(BaseCommand):
             msg = "Given date ({0}) is not valid. Expected format: 'YYYY-MM-DD'".format(s)
             raise argparse.ArgumentTypeError(msg)
 
-    def __init__(self, *, release_name=None, vendor_name=None, arch_name=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
+    def __init__(self, *, release_name=None, vendor_name=None, arch_name=None, version=None, build_id=None, build_type_name=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
         super().__init__(**kw)
 
         arch = self.config_image.archs.get(arch_name)
+        build_type = self.config_image.types.get(build_type_name)
         release = self.config_image.releases.get(release_name)
         vendor = self.config_image.vendors.get(vendor_name)
 
@@ -232,6 +200,11 @@ class BuildCommand(BaseCommand):
             raise argparse.ArgumentError(
                 self.argparser_argument_arch,
                 f'invalid value: {arch_name}, select one of {", ".join(self.config_image.archs)}')
+
+        if build_type is None:
+            raise argparse.ArgumentError(
+                self.argparser_argument_build_type,
+                f'invalid value: {build_type_name}, select one of {", ".join(self.config_image.types)}')
 
         if vendor is None:
             raise argparse.ArgumentError(

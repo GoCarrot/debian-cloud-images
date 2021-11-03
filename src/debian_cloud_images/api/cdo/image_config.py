@@ -9,10 +9,12 @@ class ImageConfig:
         self,
         archs=None,
         releases=None,
+        types=None,
         vendors=None,
     ):
         self.archs = archs
         self.releases = releases
+        self.types = types
         self.vendors = vendors
 
 
@@ -70,6 +72,36 @@ class v1alpha1_ImageConfigReleaseSchema(Schema):
         return self.__model__(**data)
 
 
+class ImageConfigType:
+    def __init__(
+        self,
+        name=None,
+        fai_classes=None,
+        output_name=None,
+        output_version=None,
+        output_version_azure=None,
+    ):
+        self.name = name
+        self.fai_classes = fai_classes
+        self.output_name = output_name
+        self.output_version = output_version
+        self.output_version_azure = output_version_azure
+
+
+class v1alpha1_ImageConfigTypeSchema(Schema):
+    __model__ = ImageConfigType
+
+    name = fields.Str(required=True)
+    fai_classes = fields.List(fields.Str())
+    output_name = fields.Str(required=True)
+    output_version = fields.Str(required=True)
+    output_version_azure = fields.Str(required=True)
+
+    @post_load
+    def load_obj(self, data, **kw):
+        return self.__model__(**data)
+
+
 class ImageConfigVendor:
     def __init__(
         self,
@@ -104,6 +136,7 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
 
     _archs_list = fields.Nested(v1alpha1_ImageConfigArchSchema, data_key='archs', many=True)
     _releases_list = fields.Nested(v1alpha1_ImageConfigReleaseSchema, data_key='releases', many=True)
+    _types_list = fields.Nested(v1alpha1_ImageConfigTypeSchema, data_key='types', many=True)
     _vendors_list = fields.Nested(v1alpha1_ImageConfigVendorSchema, data_key='vendors', many=True)
 
     @pre_dump
@@ -111,6 +144,7 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
         data = obj.__dict__.copy()
         data['_archs_list'] = data['archs'].values()
         data['_releases_list'] = data['releases'].values()
+        data['_types_list'] = data['types'].values()
         data['_vendors_list'] = data['vendors'].values()
         return data
 
@@ -120,5 +154,6 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
         data.pop('kind', None)
         data['archs'] = {c.name: c for c in data.pop('_archs_list', [])}
         data['releases'] = {c.name: c for c in data.pop('_releases_list', [])}
+        data['types'] = {c.name: c for c in data.pop('_types_list', [])}
         data['vendors'] = {c.name: c for c in data.pop('_vendors_list', [])}
         return self.__model__(**data)

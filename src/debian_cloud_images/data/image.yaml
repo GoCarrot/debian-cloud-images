@@ -83,3 +83,15 @@ vendors:
 - name: nocloud
   fai_classes: [NOCLOUD]
   size: 2
+
+types:
+- name: dev
+  fai_classes: [TYPE_DEV]
+  output_name: 'debian-{release}-{vendor}-{arch}-{build_type}-{build_id}-{version}'
+  output_version: '{version}'
+  output_version_azure: '0.0.{version!s}'
+- name: official
+  fai_classes: []
+  output_name: 'debian-{release}-{vendor}-{arch}-{build_type}-{version}'
+  output_version: '{date}-{version}'
+  output_version_azure: '0.{date!s}.{version!s}'
