@@ -1,10 +1,10 @@
-# Modified by Teak.io, Inc. on 2021-08-09
+# Modified by Teak.io, Inc. on 2021-08-09, 2021-12-25
 
 # The "EXTRAS" class defines an (admittedly opinionated) list of
 # packages that are commonly useful on a full-featured remote virtual
 # machine or cloud instance.
 
-PACKAGES install
+PACKAGES install-norec
 ca-certificates
 ethtool
 less
