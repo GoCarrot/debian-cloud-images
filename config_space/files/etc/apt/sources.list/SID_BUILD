@@ -1,1 +1,1 @@
-deb {%apt_cdn%}/debian sid main
+deb {%apt_cdn%}/debian {%SUITE%} main
