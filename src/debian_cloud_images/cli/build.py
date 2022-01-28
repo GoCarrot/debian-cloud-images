@@ -1,6 +1,5 @@
 import argparse
 import collections.abc
-import enum
 import json
 import logging
 import pathlib
@@ -18,189 +17,6 @@ from ..utils import argparse_ext
 
 
 logger = logging.getLogger()
-
-
-class Arch:
-    def __init__(self, kw):
-        def init(*, fai_classes):
-            self.fai_classes = fai_classes
-        init(**kw)
-
-
-class Release:
-    def __init__(self, kw):
-        def init(*, basename, id, baseid, fai_classes, arch_supports_linux_image_cloud):
-            self.basename = basename
-            self.id = id
-            self.baseid = baseid
-            self.fai_classes = fai_classes
-            self.arch_supports_linux_image_cloud = arch_supports_linux_image_cloud
-        init(**kw)
-
-    def supports_linux_image_cloud_for_arch(self, arch):
-        if arch in self.arch_supports_linux_image_cloud:
-            return True
-        return False
-
-
-class Vendor:
-    def __init__(self, kw):
-        def init(*, fai_size, fai_classes, use_linux_image_cloud=False):
-            self.fai_size = fai_size
-            self.fai_classes = fai_classes
-            self.use_linux_image_cloud = use_linux_image_cloud
-        init(**kw)
-
-
-class BuildType:
-    def __init__(self, kw):
-        def init(*, fai_classes, output_name, output_version, output_version_azure):
-            self.fai_classes = fai_classes
-            self.output_name = output_name
-            self.output_version = output_version
-            self.output_version_azure = output_version_azure
-        init(**kw)
-
-
-ArchEnum = enum.Enum(  # type:ignore
-                       # mypy is not able to parse functional Enum properly
-    'ArchEnum',
-    {
-        'amd64': {
-            'fai_classes': ('AMD64', 'GRUB_CLOUD_AMD64'),
-        },
-        'arm64': {
-            'fai_classes': ('ARM64', 'GRUB_EFI_ARM64'),
-        },
-        'ppc64el': {
-            'fai_classes': ('PPC64EL', 'GRUB_IEEE1275'),
-        },
-    },
-    type=Arch,
-)
-
-
-ReleaseEnum = enum.Enum(  # type:ignore
-                          # mypy is not able to parse functional Enum properly
-    'ReleaseEnum',
-    {
-        'buster': {
-            'basename': 'buster',
-            'id': '10',
-            'baseid': '10',
-            'fai_classes': ('BUSTER', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64',),
-        },
-        'buster+pu': {
-            'basename': 'buster',
-            'id': '10',
-            'baseid': '10',
-            'fai_classes': ('BUSTER', 'BUSTER_PU', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64',),
-        },
-        'buster-backports': {
-            'basename': 'buster-backports',
-            'id': '10-backports',
-            'baseid': '10',
-            'fai_classes': ('BUSTER', 'BACKPORTS_LINUX', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'bullseye': {
-            'basename': 'bullseye',
-            'id': '11',
-            'baseid': '11',
-            'fai_classes': ('BULLSEYE', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'bullseye-backports': {
-            'basename': 'bullseye-backports',
-            'id': '11-backports',
-            'baseid': '11',
-            'fai_classes': ('BULLSEYE', 'BACKPORTS_LINUX', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'bookworm': {
-            'basename': 'bookworm',
-            'id': '12',
-            'baseid': '12',
-            'fai_classes': ('BOOKWORM', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'bookworm-backports': {
-            'basename': 'bookworm-backports',
-            'id': '12-backports',
-            'baseid': '12',
-            'fai_classes': ('BOOKWORM', 'BACKPORTS_LINUX', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-        'sid': {
-            'basename': 'sid',
-            'id': 'sid',
-            'baseid': 'sid',
-            'fai_classes': ('SID', 'EXTRAS'),
-            'arch_supports_linux_image_cloud': ('amd64', 'arm64',),
-        },
-    },
-    type=Release,
-)
-
-
-VendorEnum = enum.Enum(  # type:ignore
-                         # mypy is not able to parse functional Enum properly
-    'VendorEnum',
-    {
-        'azure': {
-            'fai_size': '30G',
-            'fai_classes': ('AZURE', 'IPV6_DHCP'),
-            'use_linux_image_cloud': True,
-        },
-        'ec2': {
-            'fai_size': '8G',
-            'fai_classes': ('EC2', 'IPV6_DHCP'),
-            'use_linux_image_cloud': True,
-        },
-        'gce': {
-            'fai_size': '10G',
-            'fai_classes': ('GCE', ),
-            'use_linux_image_cloud': True,
-        },
-        'generic': {
-            'fai_size': '2G',
-            'fai_classes': ('GENERIC', ),
-        },
-        'genericcloud': {
-            'fai_size': '2G',
-            'fai_classes': ('GENERIC', ),
-            'use_linux_image_cloud': True,
-        },
-        'nocloud': {
-            'fai_size': '2G',
-            'fai_classes': ('NOCLOUD', ),
-        },
-    },
-    type=Vendor,
-)
-
-
-BuildTypeEnum = enum.Enum(  # type:ignore
-                            # mypy is not able to parse functional Enum properly
-    'BuildTypeEnum',
-    {
-        'dev': {
-            'fai_classes': ('TYPE_DEV', ),
-            'output_name': 'debian-{release}-{vendor}-{arch}-{build_type}-{build_id}-{version}',
-            'output_version': '{version}',
-            'output_version_azure': '0.0.{version!s}',
-        },
-        'official': {
-            'fai_classes': (),
-            'output_name': 'debian-{release}-{vendor}-{arch}-{build_type}-{version}',
-            'output_version': '{date}-{version}',
-            'output_version_azure': '0.{date!s}.{version!s}',
-        },
-    },
-    type=BuildType,
-)
 
 
 class BuildId:
@@ -264,8 +80,8 @@ class Check:
 
     def set_arch(self, arch):
         self.arch = arch
-        self.info['arch'] = self.arch.name
-        self.classes |= self.arch.fai_classes
+        self.info['arch'] = arch.name
+        self.classes |= arch.fai_classes
 
     def set_version(self, version, version_date, build_id):
         self.build_id = self.info['build_id'] = build_id.id
@@ -284,7 +100,7 @@ class Check:
             self.env['CLOUD_RELEASE_VERSION_AZURE'] = self.info['version_azure'] = self.version_azure
 
     def check(self):
-        if self.release.supports_linux_image_cloud_for_arch(self.arch.name) and self.vendor.use_linux_image_cloud:
+        if self.arch.name in self.release.arch_supports_linux_image_cloud and self.vendor.use_linux_image_cloud:
             self.classes.add('LINUX_IMAGE_CLOUD')
         else:
             self.classes.add('LINUX_IMAGE_BASE')
@@ -300,24 +116,18 @@ class BuildCommand(BaseCommand):
     def _argparse_register(cls, parser):
         super()._argparse_register(parser)
 
-        parser.add_argument(
-            'release',
-            action=argparse_ext.ActionEnum,
-            enum=ReleaseEnum,
+        cls.argparser_argument_release = parser.add_argument(
+            'release_name',
             help='Debian release to build',
             metavar='RELEASE',
         )
-        parser.add_argument(
-            'vendor',
-            action=argparse_ext.ActionEnum,
-            enum=VendorEnum,
+        cls.argparser_argument_vendor = parser.add_argument(
+            'vendor_name',
             help='Vendor to build image for',
             metavar='VENDOR',
         )
-        parser.add_argument(
-            'arch',
-            action=argparse_ext.ActionEnum,
-            enum=ArchEnum,
+        cls.argparser_argument_arch = parser.add_argument(
+            'arch_name',
             help='Architecture or sub-architecture to build image for',
             metavar='ARCH',
         )
@@ -327,11 +137,10 @@ class BuildCommand(BaseCommand):
             required=True,
             type=BuildId,
         )
-        parser.add_argument(
+        cls.argparser_argument_build_type = parser.add_argument(
             '--build-type',
-            action=argparse_ext.ActionEnum,
-            enum=BuildTypeEnum,
             default='dev',
+            dest='build_type_name',
             help='Type of image to build',
             metavar='TYPE',
         )
@@ -379,8 +188,33 @@ class BuildCommand(BaseCommand):
             msg = "Given date ({0}) is not valid. Expected format: 'YYYY-MM-DD'".format(s)
             raise argparse.ArgumentTypeError(msg)
 
-    def __init__(self, *, release=None, vendor=None, arch=None, version=None, build_id=None, build_type=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
+    def __init__(self, *, release_name=None, vendor_name=None, arch_name=None, version=None, build_id=None, build_type_name=None, localdebs=False, output=None, noop=False, override_name=None, version_date=None, **kw):
         super().__init__(**kw)
+
+        arch = self.config_image.archs.get(arch_name)
+        build_type = self.config_image.types.get(build_type_name)
+        release = self.config_image.releases.get(release_name)
+        vendor = self.config_image.vendors.get(vendor_name)
+
+        if arch is None:
+            raise argparse.ArgumentError(
+                self.argparser_argument_arch,
+                f'invalid value: {arch_name}, select one of {", ".join(self.config_image.archs)}')
+
+        if build_type is None:
+            raise argparse.ArgumentError(
+                self.argparser_argument_build_type,
+                f'invalid value: {build_type_name}, select one of {", ".join(self.config_image.types)}')
+
+        if vendor is None:
+            raise argparse.ArgumentError(
+                self.argparser_argument_vendor,
+                f'invalid value: {vendor_name}, select one of {", ".join(self.config_image.vendors)}')
+
+        if release is None:
+            raise argparse.ArgumentError(
+                self.argparser_argument_release,
+                f'invalid value: {release_name}, select one of {", ".join(self.config_image.releases)}')
 
         self.noop = noop
 
@@ -419,7 +253,7 @@ class BuildCommand(BaseCommand):
         self.fai = RunFAI(
             output_filename=image_raw,
             classes=self.c.classes,
-            size_gb=self.c.vendor.fai_size,
+            size_gb=self.c.vendor.size,
             env=self.env,
         )
 

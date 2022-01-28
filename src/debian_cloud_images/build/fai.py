@@ -62,7 +62,7 @@ class RunFAI:
             '--verbose',
             '--hostname', 'debian',
             '--class', ','.join(self.classes),
-            '--size', str(self.size_gb),
+            '--size', f'{self.size_gb}G',
             '--cspace', fai_config_path,
             self.output_filename.as_posix(),
         )

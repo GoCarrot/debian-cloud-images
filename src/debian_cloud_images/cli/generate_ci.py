@@ -3,7 +3,6 @@ import logging
 import sys
 
 from .base import BaseCommand
-from .build import ArchEnum, ReleaseEnum, VendorEnum
 
 
 logger = logging.getLogger()
@@ -17,15 +16,15 @@ class GenerateCiCommand(BaseCommand):
     def __call__(self) -> None:
         out = {}
 
-        for vendor_name, vendor in VendorEnum.__members__.items():
+        for vendor_name, vendor in self.config_image.vendors.items():
             builds = []
 
-            for release_name, release in ReleaseEnum.__members__.items():
+            for release_name, release in self.config_image.releases.items():
                 # XXX: Better selection
                 if vendor_name == 'gce' and release_name == 'bullseye':
                     continue
 
-                for arch_name, arch in ArchEnum.__members__.items():
+                for arch_name, arch in self.config_image.archs.items():
                     # XXX: Better arch selection
                     if vendor_name in ('azure', 'ec2', 'gce'):
                         if arch_name == 'amd64':

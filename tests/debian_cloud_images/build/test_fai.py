@@ -42,7 +42,7 @@ class TestRunFAI:
                 '--verbose',
                 '--hostname', 'debian',
                 '--class', 'CLASS1,CLASS2',
-                '--size', '23',
+                '--size', '23G',
                 '--cspace', fai_config_path,
                 tmp_path.as_posix(),
             ),
