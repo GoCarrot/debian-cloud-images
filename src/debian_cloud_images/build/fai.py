@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class RunFAI:
-    output_filenam: pathlib.Path
+    output_filename: pathlib.Path
     classes: List[str]
     size_gb: int
     env: Dict[str, str]
