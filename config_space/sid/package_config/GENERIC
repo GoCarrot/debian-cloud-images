@@ -1,4 +1,3 @@
 PACKAGES install-norec
 cloud-init
-resolvconf
 cloud-guest-utils
