@@ -1,7 +1,5 @@
 from debian_cloud_images.utils.config_image import ConfigImageLoader
 
-from debian_cloud_images.data import data_path
-
 
 class TestConfigImage:
     def test_default_filenames(self, monkeypatch):
@@ -15,5 +13,4 @@ class TestConfigImage:
             '/home2/root/debian-cloud-images/name',
             '/dirs1/root/debian-cloud-images/name',
             '/dirs2/root/debian-cloud-images/name',
-            data_path + '/name',
         ]
