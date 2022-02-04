@@ -241,7 +241,7 @@ class BuildCommand(BaseCommand):
         self.env['CLOUD_BUILD_INFO'] = json.dumps(self.c.info)
         self.env['CLOUD_BUILD_NAME'] = name
         self.env['CLOUD_BUILD_OUTPUT_DIR'] = output.resolve()
-        self.env['CLOUD_BUILD_SYSTEM_TESTS'] = str(resource_path('system_tests'))
+        self.env['CLOUD_BUILD_SYSTEM_TESTS'] = resources_path('system_tests').as_posix()
 
         output.mkdir(parents=True, exist_ok=True)
 

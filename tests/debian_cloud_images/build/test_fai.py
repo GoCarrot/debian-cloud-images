@@ -6,13 +6,9 @@ import subprocess
 from unittest.mock import Mock
 
 from debian_cloud_images.build.fai import (
-    fai_config_path,
     RunFAI,
 )
-
-
-def test_fai_config_path():
-    assert fai_config_path
+from debian_cloud_images.resources import path as resources_path
 
 
 class TestRunFAI:
@@ -31,22 +27,23 @@ class TestRunFAI:
 
         run(True, popen=popen, dci_path='/nonexistent')
 
-        popen.assert_called_with(
-            (
-                'sudo',
-                'env',
-                'PYTHONPATH=/nonexistent',
-                'ENV1=env1',
-                'ENV2=env2',
-                tmp_path.as_posix(),
-                '--verbose',
-                '--hostname', 'debian',
-                '--class', 'CLASS1,CLASS2',
-                '--size', '23G',
-                '--cspace', fai_config_path,
-                tmp_path.as_posix(),
-            ),
-        )
+        with resources_path('fai_config') as config_path:
+            popen.assert_called_with(
+                (
+                    'sudo',
+                    'env',
+                    'PYTHONPATH=/nonexistent',
+                    'ENV1=env1',
+                    'ENV2=env2',
+                    tmp_path.as_posix(),
+                    '--verbose',
+                    '--hostname', 'debian',
+                    '--class', 'CLASS1,CLASS2',
+                    '--size', '23G',
+                    '--cspace', config_path.as_posix(),
+                    tmp_path.as_posix(),
+                ),
+            )
 
     def test___call___fail(self, tmp_path):
         env = {'ENV1': 'env1', 'ENV2': 'env2'}
