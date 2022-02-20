@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# Modified by Teak.io, Inc. on 2022-02-19
+
 rm -f $target/etc/mailname \
       $target/etc/machine-id \
       $target/etc/apt/sources.list.d/localdebs.list \
@@ -19,7 +21,7 @@ then
     rm -f $target/etc/resolv.conf
 fi
 
-rm -rf $target/var/cache/apt/*
+rm -rf $target/var/cache/*
 rm -rf $target/var/lib/apt/lists/*
 rm -rf $target/var/log/fai
 rm -f $target/var/lib/dpkg/available*
