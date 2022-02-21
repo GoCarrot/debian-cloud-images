@@ -1,4 +1,4 @@
-# Modified by Teak.io, Inc. on 2021-08-09, 2021-12-25
+# Modified by Teak.io, Inc. on 2021-08-09, 2021-12-25, 2022-02-21
 
 PACKAGES install-norec
 openssh-server
@@ -6,7 +6,7 @@ cloud-initramfs-growroot
 sudo
 
 # needed for any useful login session
-libpam-systemd
+libpam-systemd/bullseye-backports
 
 # We're going with chrony as our default ntp client in light of
 # https://lwn.net/Articles/735211/
