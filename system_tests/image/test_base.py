@@ -1,3 +1,5 @@
+# Modified by Teak.io, Inc. on 2022-02-21
+
 import pytest
 
 import pathlib
@@ -9,7 +11,7 @@ class TestBase:
         '/run',
         '/sys',
         '/tmp',
-        '/var/cache/apt',
+        '/var/cache/',
         '/var/lib/apt/lists',
         '/var/tmp',
     ])
