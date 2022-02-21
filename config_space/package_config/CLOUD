@@ -6,6 +6,7 @@ cloud-initramfs-growroot
 sudo
 
 # needed for any useful login session
+libsystemd0/bullseye-backports
 libpam-systemd/bullseye-backports
 
 # We're going with chrony as our default ntp client in light of
