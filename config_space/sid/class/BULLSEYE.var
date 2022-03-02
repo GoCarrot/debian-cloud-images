@@ -1,3 +1,1 @@
-SUITE=bullseye
-SUITE_SECURITY="${SUITE}-security"
-FAI_DEBOOTSTRAP="$SUITE $apt_cdn/debian/"
+exit 1
