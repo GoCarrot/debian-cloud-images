@@ -16,6 +16,7 @@ class TestRunFAI:
         env = {'ENV1': 'env1', 'ENV2': 'env2'}
         run = RunFAI(
             output_filename=tmp_path,
+            release='release',
             classes=['CLASS1', 'CLASS2'],
             size_gb=23,
             env=env,
@@ -28,6 +29,8 @@ class TestRunFAI:
         run(True, popen=popen, dci_path='/nonexistent')
 
         with resources_path('fai_config') as config_path:
+            release_config_path = config_path / 'release'
+
             popen.assert_called_with(
                 (
                     'sudo',
@@ -40,7 +43,7 @@ class TestRunFAI:
                     '--hostname', 'debian',
                     '--class', 'CLASS1,CLASS2',
                     '--size', '23G',
-                    '--cspace', config_path.as_posix(),
+                    '--cspace', release_config_path.as_posix(),
                     tmp_path.as_posix(),
                 ),
             )
@@ -49,6 +52,7 @@ class TestRunFAI:
         env = {'ENV1': 'env1', 'ENV2': 'env2'}
         run = RunFAI(
             output_filename=tmp_path,
+            release='release',
             classes=['CLASS1', 'CLASS2'],
             size_gb=23,
             env=env,
@@ -67,6 +71,7 @@ class TestRunFAI:
         env = {'ENV1': 'env1', 'ENV2': 'env2'}
         run = RunFAI(
             output_filename=tmp_path,
+            release='release',
             classes=['CLASS1', 'CLASS2'],
             size_gb=23,
             env=env,

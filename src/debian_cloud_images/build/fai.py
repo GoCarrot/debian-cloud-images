@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class RunFAI:
     output_filename: pathlib.Path
+    release: str
     classes: List[str]
     size_gb: int
     env: Dict[str, str]
@@ -24,12 +25,14 @@ class RunFAI:
     def __init__(
             self, *,
             output_filename: pathlib.Path,
+            release: str,
             classes: List[str],
             size_gb: int,
             env: Dict[str, str],
             fai_filename: str='fai-diskimage',  # noqa:E252
     ):
         self.output_filename = output_filename
+        self.release = release
         self.classes = classes
         self.size_gb = size_gb
         self.env = env
@@ -37,7 +40,9 @@ class RunFAI:
 
     def __call__(self, run: bool, *, popen=subprocess.Popen, dci_path=dci_path) -> None:
         with resources_path('fai_config') as config_path:
-            cmd = self.command(dci_path, config_path.as_posix())
+            release_config_path = config_path / self.release
+
+            cmd = self.command(dci_path, release_config_path.as_posix())
 
             if run:
                 logger.info(f'Running FAI: {" ".join(cmd)}')
