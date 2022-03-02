@@ -1,6 +1,3 @@
-PACKAGES install-norec BOOKWORM SID
+PACKAGES install-norec
 google-compute-engine-oslogin
 google-guest-agent
-
-PACKAGES install-norec BUSTER
-google-compute-engine

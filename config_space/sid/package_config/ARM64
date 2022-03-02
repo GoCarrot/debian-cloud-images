@@ -10,6 +10,3 @@ apparmor
 
 PACKAGES install-norec GRUB_EFI_ARM64
 grub-efi-arm64
-
-PACKAGES install-norec BUSTER
-haveged

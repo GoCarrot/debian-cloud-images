@@ -2,8 +2,3 @@ PACKAGES install-norec
 cloud-init
 resolvconf
 cloud-guest-utils
-
-PACKAGES install-norec BUSTER
-bridge-utils
-ifenslave
-vlan
