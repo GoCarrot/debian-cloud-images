@@ -1,0 +1,3 @@
+SUITE=buster
+SUITE_SECURITY="${SUITE}/updates"
+FAI_DEBOOTSTRAP="$SUITE $apt_cdn/debian/"

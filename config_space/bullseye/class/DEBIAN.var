@@ -1,0 +1,12 @@
+apt_cdn=http://deb.debian.org
+security_cdn=http://security.debian.org
+KEYMAP=utf-8
+CONSOLEFONT=
+# errors in tasks greater than this value will cause the installation to stop
+STOP_ON_ERROR=400
+TIMEZONE=UTC
+FAI_DISABLE_PACKAGE_NAME_CHECK=1
+FCOPY_NOBACKUP=1
+FAI_DEBOOTSTRAP_OPTS="--variant minbase"
+FAI_RAMDISKS=""
+CLASS_BUILD="DEBIAN_BUILD"

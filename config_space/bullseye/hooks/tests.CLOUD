@@ -1,0 +1,19 @@
+#!/bin/bash
+set -eux
+
+# Cleanup mounts before running tests
+umount -l $FAI_ROOT/dev
+umount -l $FAI_ROOT/proc
+umount -l $FAI_ROOT/run
+umount -l $FAI_ROOT/sys
+
+exec pytest-3 \
+  -c "${CLOUD_BUILD_SYSTEM_TESTS}/pytest.ini" \
+  -p debian_cloud_images.test.pytest.mount \
+  -vrxXs \
+  --color=yes \
+  --junit-xml "${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.build.junit.xml" \
+  --mount-build-info "${CLOUD_BUILD_INFO}" \
+  --mount-path "${FAI_ROOT}" \
+  --rootdir "$CLOUD_BUILD_SYSTEM_TESTS" \
+  "${CLOUD_BUILD_SYSTEM_TESTS}/image"

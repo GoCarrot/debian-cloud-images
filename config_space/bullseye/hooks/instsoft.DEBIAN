@@ -1,0 +1,3 @@
+#!/bin/sh
+set -eu
+fcopy -SBM -v /etc/kernel-img.conf

@@ -1,0 +1,28 @@
+PACKAGES install-norec
+openssh-server
+cloud-initramfs-growroot
+sudo
+
+# needed for any useful login session
+libpam-systemd
+
+unattended-upgrades
+
+# We're going with chrony as our default ntp client in light of
+# https://lwn.net/Articles/735211/
+chrony
+
+# Packages from important
+apt-utils
+ifupdown
+init
+iptables
+iputils-ping
+isc-dhcp-client
+less
+logrotate
+nano
+netbase
+rsyslog
+vim-tiny
+whiptail
