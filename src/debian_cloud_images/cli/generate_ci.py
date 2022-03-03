@@ -1,6 +1,7 @@
 import json
 import logging
 import sys
+import typing
 
 from .base import BaseCommand
 
@@ -12,6 +13,22 @@ class GenerateCiCommand(BaseCommand):
     argparser_name = 'generate-generate'
     argparser_help = 'generate CI config'
     argparser_usage = '%(prog)s'
+
+    @classmethod
+    def _argparse_register(cls, parser):
+        super()._argparse_register(parser)
+
+        parser.add_argument(
+            'output',
+            metavar='OUTPUT',
+            nargs='?',
+            help='Where to write file to (default: stdout)',
+        )
+
+    def __init__(self, *, output: str, **kw):
+        super().__init__(**kw)
+
+        self.output = output
 
     def __call__(self) -> None:
         out = {}
@@ -57,8 +74,16 @@ class GenerateCiCommand(BaseCommand):
                     'dependencies': builds,
                 }
 
-        print('# Generated with "python3 -m debian_cloud_images.cli.generate_ci"', file=sys.stdout)
-        json.dump(out, sys.stdout, indent=2)
+        if self.output:
+            with open(self.output, 'w') as f:
+                self.dump(f, out)
+        else:
+            self.dump(sys.stdout, out)
+
+    def dump(self, f: typing.TextIO, data: typing.Any) -> None:
+        print(f'# Generated with "python3 -m debian_cloud_images.cli.generate_ci {" ".join(sys.argv[1:])}"', file=f)
+        json.dump(data, f, indent=2)
+        print(file=f)
 
 
 if __name__ == '__main__':
