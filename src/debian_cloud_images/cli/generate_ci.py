@@ -30,6 +30,36 @@ class GenerateCiCommand(BaseCommand):
 
         self.output = output
 
+    def check_matches(self, matches, release_name, arch_name):
+        if not matches:
+            return True
+
+        for m in matches:
+            if not m.match_releases:
+                pass
+            elif release_name in m.match_releases:
+                pass
+            elif '*' in m.match_releases:
+                pass
+            else:
+                continue
+
+            if not m.match_arches:
+                pass
+            elif arch_name in m.match_arches:
+                pass
+            elif '*' in m.match_arches:
+                pass
+            else:
+                continue
+
+            if m.op == 'Enable':
+                return True
+            elif m.op == 'Disable':
+                return False
+
+        return False
+
     def __call__(self) -> None:
         out = {}
 
@@ -37,20 +67,9 @@ class GenerateCiCommand(BaseCommand):
             builds = []
 
             for release_name, release in self.config_image.releases.items():
-                # XXX: Better selection
-                if vendor_name == 'gce' and release_name == 'bullseye':
-                    continue
-
                 for arch_name, arch in self.config_image.archs.items():
-                    # XXX: Better arch selection
-                    if vendor_name in ('azure', 'ec2', 'gce'):
-                        if arch_name == 'amd64':
-                            pass
-                        elif arch_name == 'arm64':
-                            if vendor_name not in ('ec2', ):
-                                continue
-                        else:
-                            continue
+                    if not self.check_matches(vendor.matches, release.basename, arch_name):
+                        continue
 
                     name = ' '.join((vendor_name, release_name, arch_name, 'build'))
                     extends = '.' + ' '.join((vendor_name, 'build'))
