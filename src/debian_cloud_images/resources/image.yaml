@@ -1,3 +1,5 @@
+# After modifications, please call:
+# "python3 -m debian_cloud_images.cli.generate_ci .gitlab/ci/generated.yml"
 ---
 apiVersion: cloud.debian.org/v1alpha1
 kind: ImageConfig
