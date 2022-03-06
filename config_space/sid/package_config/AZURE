@@ -1,0 +1,5 @@
+PACKAGES install-norec
+cloud-init
+cloud-guest-utils
+hyperv-daemons
+waagent

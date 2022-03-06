@@ -7,14 +7,16 @@ import subprocess
 
 from typing import Dict, List
 
+from ..resources import path as resources_path
+
 
 dci_path = os.path.join(os.path.dirname(__file__), '../..')
-fai_config_path = os.path.join(os.path.dirname(__file__), 'fai_config')
 logger = logging.getLogger(__name__)
 
 
 class RunFAI:
     output_filename: pathlib.Path
+    release: str
     classes: List[str]
     size_gb: int
     env: Dict[str, str]
@@ -23,36 +25,41 @@ class RunFAI:
     def __init__(
             self, *,
             output_filename: pathlib.Path,
+            release: str,
             classes: List[str],
             size_gb: int,
             env: Dict[str, str],
             fai_filename: str='fai-diskimage',  # noqa:E252
     ):
         self.output_filename = output_filename
+        self.release = release
         self.classes = classes
         self.size_gb = size_gb
         self.env = env
         self.fai_filename = fai_filename
 
     def __call__(self, run: bool, *, popen=subprocess.Popen, dci_path=dci_path) -> None:
-        cmd = self.command(dci_path)
+        with resources_path('fai_config') as config_path:
+            release_config_path = config_path / self.release
 
-        if run:
-            logger.info(f'Running FAI: {" ".join(cmd)}')
+            cmd = self.command(dci_path, release_config_path.as_posix())
 
-            try:
-                process = popen(cmd)
-                retcode = process.wait()
-                if retcode:
-                    raise subprocess.CalledProcessError(retcode, cmd)
+            if run:
+                logger.info(f'Running FAI: {" ".join(cmd)}')
 
-            finally:
-                process.kill()
+                try:
+                    process = popen(cmd)
+                    retcode = process.wait()
+                    if retcode:
+                        raise subprocess.CalledProcessError(retcode, cmd)
 
-        else:
-            logger.info(f'Would run FAI: {" ".join(cmd)}')
+                finally:
+                    process.kill()
 
-    def command(self, dci_path: str) -> tuple:
+            else:
+                logger.info(f'Would run FAI: {" ".join(cmd)}')
+
+    def command(self, dci_path: str, config_path: str) -> tuple:
         return (
             'sudo',
             'env',
@@ -63,6 +70,6 @@ class RunFAI:
             '--hostname', 'debian',
             '--class', ','.join(self.classes),
             '--size', f'{self.size_gb}G',
-            '--cspace', fai_config_path,
+            '--cspace', config_path,
             self.output_filename.as_posix(),
         )

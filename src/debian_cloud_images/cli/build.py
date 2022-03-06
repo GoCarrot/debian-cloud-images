@@ -12,7 +12,7 @@ from .base import BaseCommand
 from ..build.fai import RunFAI
 from ..build.manifest import CreateManifest
 from ..build.tar import RunTar
-from ..data import data_path
+from ..resources import path as resources_path
 from ..utils import argparse_ext
 
 
@@ -241,7 +241,7 @@ class BuildCommand(BaseCommand):
         self.env['CLOUD_BUILD_INFO'] = json.dumps(self.c.info)
         self.env['CLOUD_BUILD_NAME'] = name
         self.env['CLOUD_BUILD_OUTPUT_DIR'] = output.resolve()
-        self.env['CLOUD_BUILD_DATA'] = data_path
+        self.env['CLOUD_BUILD_SYSTEM_TESTS'] = resources_path('system_tests').as_posix()
 
         output.mkdir(parents=True, exist_ok=True)
 
@@ -252,6 +252,7 @@ class BuildCommand(BaseCommand):
 
         self.fai = RunFAI(
             output_filename=image_raw,
+            release=self.c.release.basename,
             classes=self.c.classes,
             size_gb=self.c.vendor.size,
             env=self.env,

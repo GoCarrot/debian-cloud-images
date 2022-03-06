@@ -6,7 +6,7 @@ import yaml
 
 from ..api.cdo.image_config import v1alpha1_ImageConfigSchema
 from ..api.registry import registry as api_registry
-from ..data import data_path
+from ..resources import open_text as resources_open_text
 
 
 class ConfigImageLoader(dict):
@@ -18,7 +18,6 @@ class ConfigImageLoader(dict):
         for path in paths:
             for name in names:
                 yield pathlib.Path(path).expanduser() / 'debian-cloud-images' / name
-        yield pathlib.Path(data_path) / name
 
     def read(self, *filenames):
         for filename in filenames:
@@ -31,6 +30,9 @@ class ConfigImageLoader(dict):
                 with p.open() as f:
                     self.read_yaml(f)
                     return
+
+        with resources_open_text('image.yaml') as f:
+            self.read_yaml(f)
 
     def read_yaml(self, f, unknown=marshmallow.RAISE):
         config_raw = yaml.safe_load(f)

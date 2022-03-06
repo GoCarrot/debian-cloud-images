@@ -1,0 +1,4 @@
+deb {%apt_cdn%}/debian {%SUITE%} main
+deb {%security_cdn%}/debian-security {%SUITE_SECURITY%} main
+deb {%apt_cdn%}/debian {%SUITE%}-updates main
+deb {%apt_cdn%}/debian {%SUITE%}-backports main

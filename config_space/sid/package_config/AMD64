@@ -1,0 +1,12 @@
+# Install linux packages including it's own recommends
+
+PACKAGES install-norec LINUX_IMAGE_BASE
+linux-image-amd64
+apparmor
+
+PACKAGES install-norec LINUX_IMAGE_CLOUD
+linux-image-cloud-amd64
+apparmor
+
+PACKAGES install-norec GRUB_CLOUD_AMD64
+grub-cloud-amd64
