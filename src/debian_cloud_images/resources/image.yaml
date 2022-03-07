@@ -19,12 +19,6 @@ releases:
   baseid: '10'
   fai_classes: [BUSTER, EXTRAS]
   arch_supports_linux_image_cloud: [amd64]
-- name: buster+pu
-  basename: buster
-  id: '10'
-  baseid: '10'
-  fai_classes: [BUSTER, BUSTER_PU, EXTRAS]
-  arch_supports_linux_image_cloud: [amd64]
 - name: buster-backports
   basename: buster-backports
   id: 10-backports
