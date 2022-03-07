@@ -40,10 +40,26 @@
       "CLOUD_VENDOR": "azure"
     }
   },
+  "azure bookworm arm64 build": {
+    "extends": ".build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
   "azure bookworm-backports amd64 build": {
     "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm-backports arm64 build": {
+    "extends": ".build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm-backports",
       "CLOUD_VENDOR": "azure"
     }
@@ -56,6 +72,14 @@
       "CLOUD_VENDOR": "azure"
     }
   },
+  "azure sid arm64 build": {
+    "extends": ".build",
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
   "azure upload": {
     "extends": ".azure upload",
     "dependencies": [
@@ -64,8 +88,11 @@
       "azure bullseye amd64 build",
       "azure bullseye-backports amd64 build",
       "azure bookworm amd64 build",
+      "azure bookworm arm64 build",
       "azure bookworm-backports amd64 build",
-      "azure sid amd64 build"
+      "azure bookworm-backports arm64 build",
+      "azure sid amd64 build",
+      "azure sid arm64 build"
     ]
   },
   "ec2 buster amd64 build": {

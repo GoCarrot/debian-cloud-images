@@ -63,6 +63,10 @@ vendors:
   use_linux_image_cloud: true
   matches:
   - matchArches: [amd64]
+  - matchArches: [arm64]
+    matchReleases: [buster, buster-backports, bullseye, bullseye-backports]
+    op: Disable
+  - matchArches: [arm64]
 - name: ec2
   fai_classes: [EC2, IPV6_DHCP]
   size: 8
