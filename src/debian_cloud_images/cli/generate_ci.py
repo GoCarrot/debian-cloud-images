@@ -72,11 +72,10 @@ class GenerateCiCommand(BaseCommand):
                         continue
 
                     name = ' '.join((vendor_name, release_name, arch_name, 'build'))
-                    extends = '.' + ' '.join((vendor_name, 'build'))
 
                     builds.append(name)
                     out[name] = {
-                        'extends': extends,
+                        'extends': '.build',
                         'variables': {
                             'CLOUD_ARCH': arch_name,
                             'CLOUD_RELEASE': release_name,

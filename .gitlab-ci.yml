@@ -85,6 +85,13 @@ test pytest latest:
   script:
     - python3 ./setup.py pytest
 
+####
+# Builds for developer uploads pushes
+#
+# Builds are run if
+# - the manual jobs are started.
+####
+
 .build:
   stage: build
   image: debian:bullseye
@@ -123,63 +130,10 @@ test pytest latest:
       - '*.tar.xz'
     reports:
       junit: '*.build.junit.xml'
+  rules:
+  - if: '$CI_MERGE_REQUEST_ID == null'
+    when: manual
   allow_failure: true
-
-####
-# Builds for developer uploads pushes
-#
-# Builds are run if
-# - it is requested by setting $BUILD_AZURE, $BUILD_EC2, $BUILD_GCE, $BUILD_GENERIC or $BUILD_NOCLOUD or
-# - the manual jobs are started.
-####
-
-.azure build:
-  extends: .build
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_AZURE'
-    when: on_success
-  - if: '$CI_MERGE_REQUEST_ID == null'
-    when: manual
-
-.ec2 build:
-  extends: .build
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_EC2'
-    when: on_success
-  - if: '$CI_MERGE_REQUEST_ID == null'
-    when: manual
-
-.gce build:
-  extends: .build
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_GCE'
-    when: on_success
-  - if: '$CI_MERGE_REQUEST_ID == null'
-    when: manual
-
-.generic build:
-  extends: .build
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_GENERIC'
-    when: on_success
-  - if: '$CI_MERGE_REQUEST_ID == null'
-    when: manual
-
-.genericcloud build:
-  extends: .build
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_GENERIC'
-    when: on_success
-  - if: '$CI_MERGE_REQUEST_ID == null'
-    when: manual
-
-.nocloud build:
-  extends: .build
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $BUILD_NOCLOUD'
-    when: on_success
-  - if: '$CI_MERGE_REQUEST_ID == null'
-    when: manual
 
 ####
 # Provider uploads for developer pushs
@@ -199,8 +153,6 @@ test pytest latest:
     paths:
       - '*.upload-azure.json'
   rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1" && $BUILD_AZURE'
-    when: on_success
   - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1"'
     when: manual
   allow_failure: true
@@ -219,8 +171,6 @@ test pytest latest:
     paths:
       - '*.upload-ec2.json'
   rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1" && $BUILD_EC2'
-    when: on_success
   - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1"'
     when: manual
   allow_failure: true
@@ -239,8 +189,6 @@ test pytest latest:
     paths:
       - '*.upload-gce.json'
   rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1" && $BUILD_GCE'
-    when: on_success
   - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"'
     when: manual
   allow_failure: true
