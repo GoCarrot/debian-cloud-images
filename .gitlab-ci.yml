@@ -130,6 +130,7 @@ test pytest latest:
       - '*.tar.xz'
     reports:
       junit: '*.build.junit.xml'
+  needs: []
   rules:
   - if: '$CI_MERGE_REQUEST_ID == null'
     when: manual
