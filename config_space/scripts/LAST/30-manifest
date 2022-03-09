@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+# Modified by Teak.io on 2022-03-09
+
 import argparse
 import collections
 import json
@@ -57,13 +59,13 @@ if __name__ == '__main__':
     cloud_release = CloudRelease()
 
     with subprocess.Popen(
-        ('dpkg-query', '-W', '--admindir', os.path.join(args.root, 'var/lib/dpkg')),
+        ('dpkg-query', '-W', '-f', '${binary:Package}\\t${Version}\\t${source:Package}\\t${source:Version}\\n', '--admindir', os.path.join(args.root, 'var/lib/dpkg')),
         stdout=subprocess.PIPE,
     ) as f:
         packages = []
         for l in f.stdout:
-            package, version = l.decode().strip().split()
-            packages.append({'name': package, 'version': version})
+            package, version, source_package, source_version = l.decode().strip().split()
+            packages.append({'name': package, 'version': version, 'source_name': source_package, 'source_version': source_version})
 
     manifest = Build(packages=packages)
     with open('{}/{}.build-fai.json'.format(args.output_dir, args.name), 'w') as f:
