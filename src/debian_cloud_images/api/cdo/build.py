@@ -1,3 +1,5 @@
+# Modified by Teak.io on 2022-03-09
+
 from marshmallow import Schema, fields, pre_dump, post_load
 
 from ..meta import ObjectMeta, TypeMeta, v1_ObjectMetaSchema, v1_TypeMetaSchema
@@ -14,6 +16,8 @@ class Build:
 class v1alpha1_BuildDataPackageSchema(Schema):
     name = fields.Str(required=True)
     version = fields.Str(required=True)
+    source_name = fields.Str(required=True)
+    source_version = fields.Str(required=True)
 
 
 class v1alpha1_BuildDataSchema(Schema):
