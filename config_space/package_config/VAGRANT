@@ -1,7 +1,3 @@
-PACKAGES install-norec ARM64
-libxmlsec1=1.2.32-2
-libxmlsec1-openssl=1.2.32-2
-
 PACKAGES install-norec
 open-vm-tools/bullseye-backports
 fuse
