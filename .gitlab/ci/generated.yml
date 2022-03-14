@@ -1,23 +1,15 @@
-# Generated with "python3 -m debian_cloud_images.cli.generate_ci"
+# Generated with "python3 -m debian_cloud_images.cli.generate_ci .gitlab/ci/generated.yml"
 {
   "azure buster amd64 build": {
-    "extends": ".azure build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster",
       "CLOUD_VENDOR": "azure"
     }
   },
-  "azure buster+pu amd64 build": {
-    "extends": ".azure build",
-    "variables": {
-      "CLOUD_ARCH": "amd64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "azure"
-    }
-  },
   "azure buster-backports amd64 build": {
-    "extends": ".azure build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster-backports",
@@ -25,7 +17,7 @@
     }
   },
   "azure bullseye amd64 build": {
-    "extends": ".azure build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye",
@@ -33,7 +25,7 @@
     }
   },
   "azure bullseye-backports amd64 build": {
-    "extends": ".azure build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -41,7 +33,7 @@
     }
   },
   "azure bookworm amd64 build": {
-    "extends": ".azure build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm",
@@ -49,7 +41,7 @@
     }
   },
   "azure bookworm-backports amd64 build": {
-    "extends": ".azure build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -57,7 +49,7 @@
     }
   },
   "azure sid amd64 build": {
-    "extends": ".azure build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "sid",
@@ -68,7 +60,6 @@
     "extends": ".azure upload",
     "dependencies": [
       "azure buster amd64 build",
-      "azure buster+pu amd64 build",
       "azure buster-backports amd64 build",
       "azure bullseye amd64 build",
       "azure bullseye-backports amd64 build",
@@ -78,7 +69,7 @@
     ]
   },
   "ec2 buster amd64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster",
@@ -86,31 +77,15 @@
     }
   },
   "ec2 buster arm64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "buster",
       "CLOUD_VENDOR": "ec2"
     }
   },
-  "ec2 buster+pu amd64 build": {
-    "extends": ".ec2 build",
-    "variables": {
-      "CLOUD_ARCH": "amd64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "ec2"
-    }
-  },
-  "ec2 buster+pu arm64 build": {
-    "extends": ".ec2 build",
-    "variables": {
-      "CLOUD_ARCH": "arm64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "ec2"
-    }
-  },
   "ec2 buster-backports amd64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster-backports",
@@ -118,7 +93,7 @@
     }
   },
   "ec2 buster-backports arm64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "buster-backports",
@@ -126,7 +101,7 @@
     }
   },
   "ec2 bullseye amd64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye",
@@ -134,7 +109,7 @@
     }
   },
   "ec2 bullseye arm64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bullseye",
@@ -142,7 +117,7 @@
     }
   },
   "ec2 bullseye-backports amd64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -150,7 +125,7 @@
     }
   },
   "ec2 bullseye-backports arm64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -158,7 +133,7 @@
     }
   },
   "ec2 bookworm amd64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm",
@@ -166,7 +141,7 @@
     }
   },
   "ec2 bookworm arm64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm",
@@ -174,7 +149,7 @@
     }
   },
   "ec2 bookworm-backports amd64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -182,7 +157,7 @@
     }
   },
   "ec2 bookworm-backports arm64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -190,7 +165,7 @@
     }
   },
   "ec2 sid amd64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "sid",
@@ -198,7 +173,7 @@
     }
   },
   "ec2 sid arm64 build": {
-    "extends": ".ec2 build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "sid",
@@ -210,8 +185,6 @@
     "dependencies": [
       "ec2 buster amd64 build",
       "ec2 buster arm64 build",
-      "ec2 buster+pu amd64 build",
-      "ec2 buster+pu arm64 build",
       "ec2 buster-backports amd64 build",
       "ec2 buster-backports arm64 build",
       "ec2 bullseye amd64 build",
@@ -227,23 +200,15 @@
     ]
   },
   "gce buster amd64 build": {
-    "extends": ".gce build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster",
       "CLOUD_VENDOR": "gce"
     }
   },
-  "gce buster+pu amd64 build": {
-    "extends": ".gce build",
-    "variables": {
-      "CLOUD_ARCH": "amd64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "gce"
-    }
-  },
   "gce buster-backports amd64 build": {
-    "extends": ".gce build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster-backports",
@@ -251,7 +216,7 @@
     }
   },
   "gce bullseye-backports amd64 build": {
-    "extends": ".gce build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -259,7 +224,7 @@
     }
   },
   "gce bookworm amd64 build": {
-    "extends": ".gce build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm",
@@ -267,7 +232,7 @@
     }
   },
   "gce bookworm-backports amd64 build": {
-    "extends": ".gce build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -275,7 +240,7 @@
     }
   },
   "gce sid amd64 build": {
-    "extends": ".gce build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "sid",
@@ -286,7 +251,6 @@
     "extends": ".gce upload",
     "dependencies": [
       "gce buster amd64 build",
-      "gce buster+pu amd64 build",
       "gce buster-backports amd64 build",
       "gce bullseye-backports amd64 build",
       "gce bookworm amd64 build",
@@ -295,7 +259,7 @@
     ]
   },
   "generic buster amd64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster",
@@ -303,7 +267,7 @@
     }
   },
   "generic buster arm64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "buster",
@@ -311,39 +275,15 @@
     }
   },
   "generic buster ppc64el build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "buster",
       "CLOUD_VENDOR": "generic"
     }
   },
-  "generic buster+pu amd64 build": {
-    "extends": ".generic build",
-    "variables": {
-      "CLOUD_ARCH": "amd64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "generic"
-    }
-  },
-  "generic buster+pu arm64 build": {
-    "extends": ".generic build",
-    "variables": {
-      "CLOUD_ARCH": "arm64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "generic"
-    }
-  },
-  "generic buster+pu ppc64el build": {
-    "extends": ".generic build",
-    "variables": {
-      "CLOUD_ARCH": "ppc64el",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "generic"
-    }
-  },
   "generic buster-backports amd64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster-backports",
@@ -351,7 +291,7 @@
     }
   },
   "generic buster-backports arm64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "buster-backports",
@@ -359,7 +299,7 @@
     }
   },
   "generic buster-backports ppc64el build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "buster-backports",
@@ -367,7 +307,7 @@
     }
   },
   "generic bullseye amd64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye",
@@ -375,7 +315,7 @@
     }
   },
   "generic bullseye arm64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bullseye",
@@ -383,7 +323,7 @@
     }
   },
   "generic bullseye ppc64el build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bullseye",
@@ -391,7 +331,7 @@
     }
   },
   "generic bullseye-backports amd64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -399,7 +339,7 @@
     }
   },
   "generic bullseye-backports arm64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -407,7 +347,7 @@
     }
   },
   "generic bullseye-backports ppc64el build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -415,7 +355,7 @@
     }
   },
   "generic bookworm amd64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm",
@@ -423,7 +363,7 @@
     }
   },
   "generic bookworm arm64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm",
@@ -431,7 +371,7 @@
     }
   },
   "generic bookworm ppc64el build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm",
@@ -439,7 +379,7 @@
     }
   },
   "generic bookworm-backports amd64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -447,7 +387,7 @@
     }
   },
   "generic bookworm-backports arm64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -455,7 +395,7 @@
     }
   },
   "generic bookworm-backports ppc64el build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -463,7 +403,7 @@
     }
   },
   "generic sid amd64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "sid",
@@ -471,7 +411,7 @@
     }
   },
   "generic sid arm64 build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "sid",
@@ -479,7 +419,7 @@
     }
   },
   "generic sid ppc64el build": {
-    "extends": ".generic build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "sid",
@@ -487,7 +427,7 @@
     }
   },
   "genericcloud buster amd64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster",
@@ -495,7 +435,7 @@
     }
   },
   "genericcloud buster arm64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "buster",
@@ -503,39 +443,15 @@
     }
   },
   "genericcloud buster ppc64el build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "buster",
       "CLOUD_VENDOR": "genericcloud"
     }
   },
-  "genericcloud buster+pu amd64 build": {
-    "extends": ".genericcloud build",
-    "variables": {
-      "CLOUD_ARCH": "amd64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "genericcloud"
-    }
-  },
-  "genericcloud buster+pu arm64 build": {
-    "extends": ".genericcloud build",
-    "variables": {
-      "CLOUD_ARCH": "arm64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "genericcloud"
-    }
-  },
-  "genericcloud buster+pu ppc64el build": {
-    "extends": ".genericcloud build",
-    "variables": {
-      "CLOUD_ARCH": "ppc64el",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "genericcloud"
-    }
-  },
   "genericcloud buster-backports amd64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster-backports",
@@ -543,7 +459,7 @@
     }
   },
   "genericcloud buster-backports arm64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "buster-backports",
@@ -551,7 +467,7 @@
     }
   },
   "genericcloud buster-backports ppc64el build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "buster-backports",
@@ -559,7 +475,7 @@
     }
   },
   "genericcloud bullseye amd64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye",
@@ -567,7 +483,7 @@
     }
   },
   "genericcloud bullseye arm64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bullseye",
@@ -575,7 +491,7 @@
     }
   },
   "genericcloud bullseye ppc64el build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bullseye",
@@ -583,7 +499,7 @@
     }
   },
   "genericcloud bullseye-backports amd64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -591,7 +507,7 @@
     }
   },
   "genericcloud bullseye-backports arm64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -599,7 +515,7 @@
     }
   },
   "genericcloud bullseye-backports ppc64el build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -607,7 +523,7 @@
     }
   },
   "genericcloud bookworm amd64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm",
@@ -615,7 +531,7 @@
     }
   },
   "genericcloud bookworm arm64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm",
@@ -623,7 +539,7 @@
     }
   },
   "genericcloud bookworm ppc64el build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm",
@@ -631,7 +547,7 @@
     }
   },
   "genericcloud bookworm-backports amd64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -639,7 +555,7 @@
     }
   },
   "genericcloud bookworm-backports arm64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -647,7 +563,7 @@
     }
   },
   "genericcloud bookworm-backports ppc64el build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -655,7 +571,7 @@
     }
   },
   "genericcloud sid amd64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "sid",
@@ -663,7 +579,7 @@
     }
   },
   "genericcloud sid arm64 build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "sid",
@@ -671,7 +587,7 @@
     }
   },
   "genericcloud sid ppc64el build": {
-    "extends": ".genericcloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "sid",
@@ -679,7 +595,7 @@
     }
   },
   "nocloud buster amd64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster",
@@ -687,7 +603,7 @@
     }
   },
   "nocloud buster arm64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "buster",
@@ -695,39 +611,15 @@
     }
   },
   "nocloud buster ppc64el build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "buster",
       "CLOUD_VENDOR": "nocloud"
     }
   },
-  "nocloud buster+pu amd64 build": {
-    "extends": ".nocloud build",
-    "variables": {
-      "CLOUD_ARCH": "amd64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "nocloud"
-    }
-  },
-  "nocloud buster+pu arm64 build": {
-    "extends": ".nocloud build",
-    "variables": {
-      "CLOUD_ARCH": "arm64",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "nocloud"
-    }
-  },
-  "nocloud buster+pu ppc64el build": {
-    "extends": ".nocloud build",
-    "variables": {
-      "CLOUD_ARCH": "ppc64el",
-      "CLOUD_RELEASE": "buster+pu",
-      "CLOUD_VENDOR": "nocloud"
-    }
-  },
   "nocloud buster-backports amd64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "buster-backports",
@@ -735,7 +627,7 @@
     }
   },
   "nocloud buster-backports arm64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "buster-backports",
@@ -743,7 +635,7 @@
     }
   },
   "nocloud buster-backports ppc64el build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "buster-backports",
@@ -751,7 +643,7 @@
     }
   },
   "nocloud bullseye amd64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye",
@@ -759,7 +651,7 @@
     }
   },
   "nocloud bullseye arm64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bullseye",
@@ -767,7 +659,7 @@
     }
   },
   "nocloud bullseye ppc64el build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bullseye",
@@ -775,7 +667,7 @@
     }
   },
   "nocloud bullseye-backports amd64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -783,7 +675,7 @@
     }
   },
   "nocloud bullseye-backports arm64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -791,7 +683,7 @@
     }
   },
   "nocloud bullseye-backports ppc64el build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bullseye-backports",
@@ -799,7 +691,7 @@
     }
   },
   "nocloud bookworm amd64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm",
@@ -807,7 +699,7 @@
     }
   },
   "nocloud bookworm arm64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm",
@@ -815,7 +707,7 @@
     }
   },
   "nocloud bookworm ppc64el build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm",
@@ -823,7 +715,7 @@
     }
   },
   "nocloud bookworm-backports amd64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -831,7 +723,7 @@
     }
   },
   "nocloud bookworm-backports arm64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -839,7 +731,7 @@
     }
   },
   "nocloud bookworm-backports ppc64el build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm-backports",
@@ -847,7 +739,7 @@
     }
   },
   "nocloud sid amd64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "sid",
@@ -855,7 +747,7 @@
     }
   },
   "nocloud sid arm64 build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "sid",
@@ -863,7 +755,7 @@
     }
   },
   "nocloud sid ppc64el build": {
-    "extends": ".nocloud build",
+    "extends": ".build",
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "sid",

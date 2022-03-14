@@ -1,3 +1,5 @@
+# After modifications, please call:
+# "python3 -m debian_cloud_images.cli.generate_ci .gitlab/ci/generated.yml"
 ---
 apiVersion: cloud.debian.org/v1alpha1
 kind: ImageConfig
@@ -16,12 +18,6 @@ releases:
   id: '10'
   baseid: '10'
   fai_classes: [BUSTER, EXTRAS]
-  arch_supports_linux_image_cloud: [amd64]
-- name: buster+pu
-  basename: buster
-  id: '10'
-  baseid: '10'
-  fai_classes: [BUSTER, BUSTER_PU, EXTRAS]
   arch_supports_linux_image_cloud: [amd64]
 - name: buster-backports
   basename: buster-backports
@@ -65,14 +61,22 @@ vendors:
   fai_classes: [AZURE, IPV6_DHCP]
   size: 30
   use_linux_image_cloud: true
+  matches:
+  - matchArches: [amd64]
 - name: ec2
   fai_classes: [EC2, IPV6_DHCP]
   size: 8
   use_linux_image_cloud: true
+  matches:
+  - matchArches: [amd64, arm64]
 - name: gce
   fai_classes: [GCE]
   size: 10
   use_linux_image_cloud: true
+  matches:
+  - matchReleases: [bullseye]
+    op: Disable
+  - matchArches: [amd64]
 - name: generic
   fai_classes: [GENERIC]
   size: 2

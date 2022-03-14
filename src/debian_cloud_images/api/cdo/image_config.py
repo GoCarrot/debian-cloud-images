@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, pre_dump, post_load
+from marshmallow import Schema, fields, pre_dump, post_load, validate
 
 from ..meta import TypeMeta, v1_TypeMetaSchema
 from ..registry import registry as _registry
@@ -102,6 +102,30 @@ class v1alpha1_ImageConfigTypeSchema(Schema):
         return self.__model__(**data)
 
 
+class ImageConfigVendorMatch:
+    def __init__(
+        self,
+        op='Enable',
+        match_arches=None,
+        match_releases=None,
+    ):
+        self.op = op
+        self.match_arches = match_arches
+        self.match_releases = match_releases
+
+
+class v1alpha1_ImageConfigVendorMatchSchema(Schema):
+    __model__ = ImageConfigVendorMatch
+
+    op = fields.Str(alidate=validate.OneOf(('Enable', 'Disable')))
+    match_arches = fields.List(fields.Str(), data_key='matchArches')
+    match_releases = fields.List(fields.Str(), data_key='matchReleases')
+
+    @post_load
+    def load_obj(self, data, **kw):
+        return self.__model__(**data)
+
+
 class ImageConfigVendor:
     def __init__(
         self,
@@ -109,11 +133,13 @@ class ImageConfigVendor:
         fai_classes=None,
         size=None,
         use_linux_image_cloud=False,
+        matches=None,
     ):
         self.name = name
         self.fai_classes = fai_classes
         self.size = size
         self.use_linux_image_cloud = use_linux_image_cloud
+        self.matches = matches
 
 
 class v1alpha1_ImageConfigVendorSchema(Schema):
@@ -123,6 +149,7 @@ class v1alpha1_ImageConfigVendorSchema(Schema):
     fai_classes = fields.List(fields.Str())
     size = fields.Integer(required=True)
     use_linux_image_cloud = fields.Boolean()
+    matches = fields.Nested(v1alpha1_ImageConfigVendorMatchSchema, many=True)
 
     @post_load
     def load_obj(self, data, **kw):
