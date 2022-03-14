@@ -52,6 +52,15 @@ class Classes(collections.abc.MutableSet):
         logger.info('Removing class %s', v)
         self.__data.remove(v)
 
+    def update_combine(self, *others):
+        new = []
+        for other in others:
+            for o in other:
+                for i in self.__data:
+                    new.append('+'.join((i, o)))
+                new.append(o)
+        self.__data.extend(new)
+
 
 class Check:
     def __init__(self):
@@ -64,24 +73,24 @@ class Check:
     def set_type(self, _type):
         self.type = _type
         self.info['type'] = self.type.name
-        self.classes |= self.type.fai_classes
+        self.classes.update_combine(self.type.fai_classes)
 
     def set_release(self, release):
         self.release = release
         self.info['release'] = self.release.basename
         self.info['release_id'] = self.release.id
         self.info['release_baseid'] = self.release.baseid
-        self.classes |= self.release.fai_classes
+        self.classes.update_combine(self.release.fai_classes)
 
     def set_vendor(self, vendor):
         self.vendor = vendor
         self.env['CLOUD_RELEASE_ID'] = self.info['vendor'] = self.vendor.name
-        self.classes |= self.vendor.fai_classes
+        self.classes.update_combine(self.vendor.fai_classes)
 
     def set_arch(self, arch):
         self.arch = arch
         self.info['arch'] = arch.name
-        self.classes |= arch.fai_classes
+        self.classes.update_combine(arch.fai_classes)
 
     def set_version(self, version, version_date, build_id):
         self.build_id = self.info['build_id'] = build_id.id
