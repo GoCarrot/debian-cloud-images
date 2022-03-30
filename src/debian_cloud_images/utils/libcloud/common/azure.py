@@ -18,6 +18,9 @@ class AzureGenericOAuth2Connection(AzureResourceManagementConnection):
         self.tenant_id = tenant_id
         self.login_resource = login_resource
 
+        self.access_token = ''
+        self.expires_on = -1
+
     def get_token_from_credentials(self):
         if self.user_id and self.key:
             return super().get_token_from_credentials()
