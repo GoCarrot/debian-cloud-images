@@ -6,3 +6,4 @@ build-backend = "setuptools.build_meta"
 junit_family = "xunit2"
 minversion = "6.0"
 norecursedirs = ["system_tests"]
+testpaths = ["src", "tests"]
