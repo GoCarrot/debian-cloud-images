@@ -6,6 +6,9 @@ sudo
 # needed for any useful login session
 libpam-systemd
 
+libnss-resolve
+netplan.io
+
 unattended-upgrades
 
 # We're going with chrony as our default ntp client in light of
@@ -14,11 +17,9 @@ chrony
 
 # Packages from important
 apt-utils
-ifupdown
 init
 iptables
 iputils-ping
-isc-dhcp-client
 less
 logrotate
 nano

@@ -11,14 +11,6 @@ rm -f $target/etc/mailname \
       $target/var/log/dpkg.log \
       $target/var/log/install_packages.list
 
-# If $target/etc/resolv.conf is a link it is probably managed by some
-# management software (e.g. resolvconf, systemd-resolvd,
-# NetworkManager) and should stay in place.
-if [ ! -L $target/etc/resolv.conf ]
-then
-    rm -f $target/etc/resolv.conf
-fi
-
 rm -rf $target/var/cache/apt/*
 rm -rf $target/var/lib/apt/lists/*
 rm -rf $target/var/log/fai
