@@ -14,6 +14,13 @@ class v1alpha1_ToolConfigAzureCloudpartnerSchema(Schema):
     tenant = fields.UUID()
 
 
+class v1alpha1_ToolConfigAzureComputegallerySchema(Schema):
+    group = fields.Str()
+    name = fields.Str()
+    subscription = fields.UUID()
+    tenant = fields.UUID()
+
+
 class v1alpha1_ToolConfigAzureImageSchema(Schema):
     group = fields.Str()
     subscription = fields.UUID()
@@ -29,6 +36,7 @@ class v1alpha1_ToolConfigAzureStorageSchema(Schema):
 
 class v1alpha1_ToolConfigAzureSchema(Schema):
     auth = fields.Nested(v1alpha1_ToolConfigAzureAuthSchema)
+    computegallery = fields.Nested(v1alpha1_ToolConfigAzureComputegallerySchema)
     cloudpartner = fields.Nested(v1alpha1_ToolConfigAzureCloudpartnerSchema)
     image = fields.Nested(v1alpha1_ToolConfigAzureImageSchema)
     storage = fields.Nested(v1alpha1_ToolConfigAzureStorageSchema)
