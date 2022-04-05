@@ -1,3 +1,5 @@
+import argparse
+
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
 from debian_cloud_images.images.azure_computegallery.s2_version import ImagesAzureComputegalleryVersion
@@ -44,11 +46,18 @@ config options:
             required=True,
             type=AzureImageVersion.from_string,
         )
+        parser.add_argument(
+            '--wait',
+            default=True,
+            help='wait for long running operation',
+            action=argparse.BooleanOptionalAction,
+        )
 
     def __init__(
             self, *,
             computegallery_image: str,
             computegallery_version_override: AzureImageVersion,
+            wait: bool,
             **kw,
     ):
         super().__init__(**kw)
@@ -56,6 +65,7 @@ config options:
         self._computegallery_image = computegallery_image
         self._computegallery_version_override = computegallery_version_override
         self._storage_folder = computegallery_image
+        self._wait = wait
 
         self._client_id = str(self.config_get('azure.auth.client', default=None))
         self._client_secret = self.config_get('azure.auth.secret', default=None)
@@ -125,10 +135,12 @@ config options:
                     computegallery_conn,
                 )
 
-                print('Uploading image')
+                print(f'Uploading image version: {image_version}')
 
                 with image.open_image('vhd') as f:
                     image_blob.put(f)
+
+                print(f'Creating image version: {image_version}')
 
                 computegallery_version.create(location, {
                     'storageProfile': {
@@ -139,7 +151,7 @@ config options:
                             }
                         }
                     }
-                })
+                }, wait=self._wait)
 
                 metadata = image.build.metadata.copy()
                 metadata.labels[label_ucdo_type] = self.image_public_info.apply(image.build_info).public_type.name
@@ -154,6 +166,12 @@ config options:
                 image.write_manifests('upload-azure-computegallery', manifests, output=self.output)
 
                 print(f'Created image version successfully: {computegallery_version.path}')
+
+                # Blob is read in the background, so can't delete if we don't wait
+                if self._wait:
+                    image_blob.delete()
+                else:
+                    print('Not deleting blob')
 
             except BaseException:
                 image_blob.delete()

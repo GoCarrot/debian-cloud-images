@@ -6,7 +6,7 @@ import logging
 from libcloud.common.azure_arm import AzureResourceManagementConnection
 from libcloud.http import LibcloudConnection
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util.retry import Retry
 
 
 logger = logging.getLogger(__name__)
