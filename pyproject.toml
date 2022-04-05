@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+junit_family = "xunit2"
+minversion = "6.0"
+norecursedirs = []
+testpaths = ["tests"]
