@@ -82,9 +82,19 @@ test pytest latest:
   stage: source test
   image: python:slim
   before_script:
-    - pip install -e .
+  - pip install -e . pytest-cov
   script:
-    - python3 ./setup.py pytest
+  - >
+    pytest
+    -vrxXs
+    --color=yes
+    --cov=src --cov-report=term --cov-report=html:coverage
+    --junit-xml=junit.xml
+  artifacts:
+    paths:
+    - coverage/
+    reports:
+      junit: junit.xml
 
 ####
 # Builds for developer uploads pushes
