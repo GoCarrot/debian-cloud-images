@@ -55,20 +55,13 @@ test package:
   script:
     - >
       apt-get install --no-install-recommends -y
-      python3-pytest python3-pytest-cov
+      python3-pytest
     - >
       PYTHONPATH=src
       py.test-3
       -vrxXs
       --color=yes
-      --cov=src --cov-report=term --cov-report=html:coverage
-      --junit-xml=junit.xml
       tests
-  artifacts:
-    paths:
-      - coverage/
-    reports:
-      junit: junit.xml
 
 test pytest bullseye:
   extends: .test pytest
