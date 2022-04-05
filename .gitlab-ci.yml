@@ -29,28 +29,28 @@ test package:
     - DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -us -uc
     - lintian ../*.changes
 
-.test pytest:
+.test python:
   stage: source test
   script:
-    - >
-      apt-get install --no-install-recommends -y
-      python3-pytest
-    - >
-      PYTHONPATH=src
-      py.test-3
-      -vrxXs
-      --color=yes
-      tests
+  - >
+    apt-get install --no-install-recommends -y
+    python3-pytest
+  - >
+    PYTHONPATH=src
+    py.test-3
+    -vrxXs
+    --color=yes
+    tests
 
-test pytest bullseye:
-  extends: .test pytest
+test python bullseye:
+  extends: .test python
   image: debian:bullseye
 
-test pytest bookworm:
-  extends: .test pytest
+test python bookworm:
+  extends: .test python
   image: debian:bookworm
 
-test pytest latest:
+test python latest:
   stage: source test
   image: python:slim
   before_script:
