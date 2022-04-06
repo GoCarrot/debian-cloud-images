@@ -49,6 +49,12 @@ class ImagePublicInfo:
             " Return vendor name "
             return '{}-{}'.format(self.vendor_family, self.__info['version'])
 
+        def vendor_name_extra(self, extra: str, length: int = 63) -> str:
+            " Return vendor name "
+            version = self.__info['version']
+            family = self.vendor_family[:length - 2 - len(version) - len(extra)]
+            return f'{family}-{version}-{extra}'
+
         @property
         def vendor_name63(self):
             " Return vendor name limited to 63 characters "
