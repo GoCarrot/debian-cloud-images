@@ -1,7 +1,12 @@
+import base64
+import datetime
 import collections.abc
+import hashlib
+import hmac
 import http
 import logging
 import typing
+import urllib.parse
 
 from debian_cloud_images.utils.libcloud.storage.azure_arm import (
     AzureBlobsOAuth2StorageDriver,
@@ -35,6 +40,55 @@ class ImagesAzureStorageFolder:
     @property
     def name(self) -> str:
         return self.__name_folder
+
+    @property
+    def path(self) -> str:
+        return f'/{self.__name_folder}'
+
+    def query_sas(
+            self,
+            start: datetime.date,
+            expiry: datetime.date,
+            permission: str = 'r',
+    ) -> str:
+        query: dict[str, str] = {
+            'sp': permission,
+            'st': start.strftime('%Y-%m-%dT00:00:00Z'),
+            'se': expiry.strftime('%Y-%m-%dT00:00:00Z'),
+            'sv': '2020-12-06',
+            'sr': 'c',
+        }
+
+        # https://docs.microsoft.com/en-us/rest/api/storageservices/create-service-sas#version-2020-12-06-and-later
+        tosign = (
+            query['sp'],  # signedPermissions
+            query['st'],  # signedStart
+            query['se'],  # signedExpiry
+            f'/blob/{self.__name_storage}/{self.__name_folder}',  # canonicalizedResource
+            '',  # signedIdentifier
+            '',  # signedIP
+            '',  # signedProtocol
+            query['sv'],  # signedVersion
+            query['sr'],  # signedResource
+            '',  # signedSnapshotTime
+            '',  # signedEncryptionScope
+            '',  # rscc
+            '',  # rscd
+            '',  # rsce
+            '',  # rscl
+            '',  # rsct
+        )
+
+        storage_secret = self.__driver.get_storagekeys(
+            resource_group=self.__name_resource_group,
+            name=self.__name_storage,
+        )[0]
+
+        key = base64.b64decode(storage_secret)
+        signed_hmac_sha256 = hmac.HMAC(key, '\n'.join(tosign).encode('ascii'), hashlib.sha256)
+        query['sig'] = base64.b64encode(signed_hmac_sha256.digest()).decode('ascii')
+
+        return urllib.parse.urlencode(query)
 
     def create(self, exist_ok=True) -> None:
         r = self.__driver_storage.connection.request(
