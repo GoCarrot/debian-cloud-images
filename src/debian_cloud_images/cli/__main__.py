@@ -3,11 +3,8 @@ import argparse
 from .build import BuildCommand
 from .cleanup import CleanupCommand
 from .cleanup_ec2 import CleanupEc2Command
-from .cleanup_azure_cloudpartner import CleanupAzureCloudpartnerCommand
-from .release_azure_cloudpartner import ReleaseAzureCloudpartnerCommand
 from .upload import UploadCommand
 from .upload_azure import UploadAzureCommand
-from .upload_azure_cloudpartner import UploadAzureCloudpartnerCommand
 from .upload_azure_computegallery import UploadAzureComputegalleryCommand
 from .upload_ec2 import UploadEc2Command
 from .upload_gce import UploadGceCommand
@@ -28,11 +25,8 @@ def main():
     BuildCommand._argparse_init_sub(subparsers)
     CleanupCommand._argparse_init_sub(subparsers)
     CleanupEc2Command._argparse_init_sub(subparsers)
-    CleanupAzureCloudpartnerCommand._argparse_init_sub(subparsers)
-    ReleaseAzureCloudpartnerCommand._argparse_init_sub(subparsers)
     UploadCommand._argparse_init_sub(subparsers)
     UploadAzureCommand._argparse_init_sub(subparsers)
-    UploadAzureCloudpartnerCommand._argparse_init_sub(subparsers)
     UploadAzureComputegalleryCommand._argparse_init_sub(subparsers)
     UploadEc2Command._argparse_init_sub(subparsers)
     UploadGceCommand._argparse_init_sub(subparsers)
