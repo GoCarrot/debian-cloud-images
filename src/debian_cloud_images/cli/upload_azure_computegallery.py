@@ -43,7 +43,6 @@ config options:
             '--computegallery-version-override',
             help='use specified image version inside Azure Compute Gallery',
             metavar='VERSION',
-            required=True,
             type=AzureImageVersion.from_string,
         )
         parser.add_argument(
@@ -115,7 +114,12 @@ config options:
 
         for image in self.images.values():
             try:
-                image_version = self._computegallery_version_override
+                if self._computegallery_version_override is not None:
+                    image_version = self._computegallery_version_override
+                elif 'version_azure' in image.build_info:
+                    image_version = image.build_info['version_azure']
+                else:
+                    raise RuntimeError('No Azure version, use --computegallery-version-override')
 
                 image_blob_name = f'{image_version}.vhd'
                 image_blob = ImagesAzureStorageBlob(
