@@ -4,12 +4,27 @@ import json
 import logging
 
 from libcloud.common.azure_arm import AzureResourceManagementConnection
+from libcloud.http import LibcloudConnection
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 
 logger = logging.getLogger(__name__)
 
 
+class LibcloudRetryConnection(LibcloudConnection):
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
+
+        retry_strategy = Retry(
+            total=3,
+        )
+        self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
+
+
 class AzureGenericOAuth2Connection(AzureResourceManagementConnection):
+    conn_class = LibcloudRetryConnection
+
     def __init__(self, key=None, secret=None, secure=True, host=None, *,
                  client_id, client_secret, tenant_id, subscription_id, login_resource, **kw):
         super().__init__(key=client_id, secret=client_secret)
@@ -17,6 +32,9 @@ class AzureGenericOAuth2Connection(AzureResourceManagementConnection):
         self.subscription_id = subscription_id
         self.tenant_id = tenant_id
         self.login_resource = login_resource
+
+        self.access_token = ''
+        self.expires_on = -1
 
     def get_token_from_credentials(self):
         if self.user_id and self.key:
