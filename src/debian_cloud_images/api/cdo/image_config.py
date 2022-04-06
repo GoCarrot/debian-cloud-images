@@ -117,7 +117,7 @@ class ImageConfigVendorMatch:
 class v1alpha1_ImageConfigVendorMatchSchema(Schema):
     __model__ = ImageConfigVendorMatch
 
-    op = fields.Str(alidate=validate.OneOf(('Enable', 'Disable')))
+    op = fields.Str(validate=validate.OneOf(('Enable', 'Disable')))
     match_arches = fields.List(fields.Str(), data_key='matchArches')
     match_releases = fields.List(fields.Str(), data_key='matchReleases')
 
