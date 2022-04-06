@@ -1,0 +1,113 @@
+from debian_cloud_images.images.azure_partnerlegacy.s3_version import (
+    ImagesAzurePartnerlegacyVersion,
+)
+
+
+class TestImagesAzurePartnerlegacyVersion:
+    def test_create(self, azure_conn, requests_mock):
+        requests_mock.get(
+            'https://host/api/publishers/publisher/offers/offer?api-version=2017-10-31',
+            json={
+                'definition': {
+                    'plans': [
+                        {
+                            'planId': 'plan',
+                            'microsoft-azure-corevm.vmImagesPublicAzure': {
+                            },
+                            'diskGenerations': [
+                                {
+                                    'planId': 'plan-suffix',
+                                    'microsoft-azure-corevm.vmImagesPublicAzure': {
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            },
+        )
+
+        put = requests_mock.put(
+            'https://host/api/publishers/publisher/offers/offer?api-version=2017-10-31',
+        )
+
+        t = ImagesAzurePartnerlegacyVersion(
+            'publisher',
+            'offer',
+            'plan',
+            'version',
+            azure_conn,
+        )
+        assert t.create('d', 'm', 'l', 'u') == {
+            'description': 'd',
+            'label': 'l',
+            'mediaName': 'm',
+            'osVhdUrl': 'u',
+        }
+
+        assert put.last_request.json() == {
+            'definition': {
+                'plans': [
+                    {
+                        'planId': 'plan',
+                        'microsoft-azure-corevm.vmImagesPublicAzure': {
+                            'version': {
+                                'description': 'd',
+                                'label': 'l',
+                                'mediaName': 'm',
+                                'osVhdUrl': 'u'
+                            },
+                        },
+                        'diskGenerations': [
+                            {
+                                'planId': 'plan-suffix',
+                                'microsoft-azure-corevm.vmImagesPublicAzure': {
+                                    'version': {
+                                        'description': 'd',
+                                        'label': 'l-suffix',
+                                        'mediaName': 'm-suffix',
+                                        'osVhdUrl': 'u'
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        }
+
+    def test_get(self, azure_conn, requests_mock):
+        requests_mock.get(
+            'https://host/api/publishers/publisher/offers/offer?api-version=2017-10-31',
+            json={
+                'definition': {
+                    'plans': [
+                        {
+                            'planId': 'plan',
+                            'microsoft-azure-corevm.vmImagesPublicAzure': {
+                                'version': {
+                                    'description': 'd',
+                                    'label': 'l',
+                                    'mediaName': 'm',
+                                    'osVhdUrl': 'u',
+                                },
+                            },
+                        },
+                    ],
+                },
+            },
+        )
+
+        t = ImagesAzurePartnerlegacyVersion(
+            'publisher',
+            'offer',
+            'plan',
+            'version',
+            azure_conn,
+        )
+        assert t.get() == {
+            'description': 'd',
+            'label': 'l',
+            'mediaName': 'm',
+            'osVhdUrl': 'u',
+        }
