@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# Modified by Teak.io, Inc. on 2022-02-19
+# Modified by Teak.io, Inc. on 2022-02-19, 2022-04-16
 
 rm -f $target/etc/mailname \
       $target/etc/machine-id \
@@ -31,4 +31,5 @@ touch $target/var/lib/dpkg/available
 
 shred --remove $target/etc/ssh/ssh_host_*
 
+e4defrag -v $target
 fstrim $target
