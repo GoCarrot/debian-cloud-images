@@ -11,7 +11,11 @@ rm -f $target/etc/mailname \
       $target/var/log/apt/* \
       $target/var/log/bootstrap.log \
       $target/var/log/dpkg.log \
-      $target/var/log/install_packages.list
+      $target/var/log/install_packages.list \
+      $target/var/lib/cloud \
+      $target/var/lib/chrony
+
+find $target/var/log -type f -not -empty | tee /dev/stderr | xargs rm
 
 # If $target/etc/resolv.conf is a link it is probably managed by some
 # management software (e.g. resolvconf, systemd-resolvd,
@@ -31,5 +35,4 @@ touch $target/var/lib/dpkg/available
 
 shred --remove $target/etc/ssh/ssh_host_*
 
-e4defrag -v $target
 fstrim $target
