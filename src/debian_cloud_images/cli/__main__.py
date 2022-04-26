@@ -20,6 +20,7 @@ def main():
         prog='debian-cloud-images',
         formatter_class=argparse.RawTextHelpFormatter,
     )
+    parser.set_defaults(cls=None)
     subparsers = parser.add_subparsers(
         help='sub-command help',
     )
@@ -37,7 +38,11 @@ def main():
     PutSSMCommand._argparse_init_sub(subparsers)
 
     args = parser.parse_args()
-    args.cls(argparser=parser, **vars(args))()
+    if args.cls:
+        args.cls(argparser=parser, **vars(args))()
+    else:
+        parser.print_help()
+        parser.exit(2)
 
 
 if __name__ == '__main__':
