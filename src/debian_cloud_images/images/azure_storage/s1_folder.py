@@ -1,6 +1,7 @@
 import base64
 import datetime
 import collections.abc
+import email.utils
 import hashlib
 import hmac
 import http
@@ -104,6 +105,16 @@ class ImagesAzureStorageFolder:
             pass
         else:
             raise RuntimeError('Error creating container: {0.error} ({0.status})'.format(r))
+
+    def op_cleanup(self, remove: typing.Callable[[datetime.datetime], bool]) -> set[str]:
+        container = self.__driver_storage.get_container(self.name)
+        removed = set()
+        for obj in self.__driver_storage.iterate_container_objects(container):
+            last_modified = email.utils.parsedate_to_datetime(obj.extra['last_modified'])
+            if remove(last_modified):
+                self.__driver_storage.delete_object(obj)
+                removed.add(obj.name)
+        return removed
 
 
 class ImagesAzureStorageFolders(collections.abc.Mapping):

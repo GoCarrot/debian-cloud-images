@@ -2,6 +2,7 @@ import argparse
 
 from .build import BuildCommand
 from .cleanup import CleanupCommand
+from .cleanup_azure_partner import CleanupAzurePartnerlegacyCommand
 from .cleanup_ec2 import CleanupEc2Command
 from .control_azure_partner import ControlAzurePartnerlegacyCommand
 from .upload import UploadCommand
@@ -28,6 +29,7 @@ def main():
     BuildCommand._argparse_init_sub(subparsers)
     CleanupCommand._argparse_init_sub(subparsers)
     CleanupEc2Command._argparse_init_sub(subparsers)
+    CleanupAzurePartnerlegacyCommand._argparse_init_sub(subparsers)
     ControlAzurePartnerlegacyCommand._argparse_init_sub(subparsers)
     UploadCommand._argparse_init_sub(subparsers)
     UploadAzureCommand._argparse_init_sub(subparsers)

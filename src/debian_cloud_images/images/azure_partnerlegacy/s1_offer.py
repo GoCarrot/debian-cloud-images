@@ -49,3 +49,22 @@ class ImagesAzurePartnerlegacyOffer:
         path = f'{self.path}/publish'
         # E-mail address is actually ignored
         self.__request(path=path, method='POST', data={'metadata': {'notification-emails': 'jondoe@contoso.com'}})
+
+    def op_cleanup(self, remove: typing.Callable[[str], bool]) -> set[str]:
+        data = self.get()
+        removed: set[str] = set()
+        for plan in data['definition']['plans']:
+            removed |= self.__op_cleanup_versions(plan['microsoft-azure-corevm.vmImagesPublicAzure'], remove)
+            for generation in plan['diskGenerations']:
+                removed |= self.__op_cleanup_versions(generation['microsoft-azure-corevm.vmImagesPublicAzure'], remove)
+        if removed:
+            self.put(data)
+        return removed
+
+    def __op_cleanup_versions(self, versions, remove: typing.Callable[[str], bool]) -> set[str]:
+        removed: set[str] = set()
+        for k in list(versions.keys()):
+            if remove(k) is True:
+                del versions[k]
+                removed.add(k)
+        return removed
