@@ -49,27 +49,24 @@ class ImagesAzurePartnerlegacyVersion:
 
     def create(
             self,
-            description: str,
-            legacy_name: str,
-            legacy_label: str,
             url: str,
     ) -> typing.Any:
         response, data, plan = self.__get_plan()
+        plan_id = plan['planId']
         versions = plan['microsoft-azure-corevm.vmImagesPublicAzure']
         ret = versions[self.__name_version] = {
-            'description': description,
-            'label': legacy_label,
-            'mediaName': legacy_name,
+            'description': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
+            'label': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}',
+            'mediaName': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
             'osVhdUrl': url,
         }
         for generation in plan['diskGenerations']:
             versions = generation['microsoft-azure-corevm.vmImagesPublicAzure']
-            # Legacy images names needs to be unique
-            suffix = generation['planId'].rsplit('-', 1)[-1]
+            plan_id = generation['planId']
             versions[self.__name_version] = {
-                'description': description,
-                'label': f'{legacy_label}-{suffix}',
-                'mediaName': f'{legacy_name}-{suffix}',
+                'description': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
+                'label': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}',
+                'mediaName': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
                 'osVhdUrl': url,
             }
         self.__request(method='PUT', data=data)

@@ -154,9 +154,6 @@ config options:
             )
 
             partner_version.create(
-                description='Debian',
-                legacy_name=image_public_info.vendor_name58,
-                legacy_label=image_public_info.vendor_azure_family,
                 url=f'{image_blob.url}?{query_sas}',
             )
 

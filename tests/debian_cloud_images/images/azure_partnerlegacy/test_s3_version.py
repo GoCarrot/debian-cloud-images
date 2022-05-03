@@ -38,10 +38,10 @@ class TestImagesAzurePartnerlegacyVersion:
             'version',
             azure_conn,
         )
-        assert t.create('d', 'm', 'l', 'u') == {
-            'description': 'd',
-            'label': 'l',
-            'mediaName': 'm',
+        assert t.create('u') == {
+            'description': 'publisher_offer_plan_version',
+            'label': 'publisher_offer_plan',
+            'mediaName': 'publisher_offer_plan_version',
             'osVhdUrl': 'u',
         }
 
@@ -52,9 +52,9 @@ class TestImagesAzurePartnerlegacyVersion:
                         'planId': 'plan',
                         'microsoft-azure-corevm.vmImagesPublicAzure': {
                             'version': {
-                                'description': 'd',
-                                'label': 'l',
-                                'mediaName': 'm',
+                                'description': 'publisher_offer_plan_version',
+                                'label': 'publisher_offer_plan',
+                                'mediaName': 'publisher_offer_plan_version',
                                 'osVhdUrl': 'u'
                             },
                         },
@@ -63,9 +63,9 @@ class TestImagesAzurePartnerlegacyVersion:
                                 'planId': 'plan-suffix',
                                 'microsoft-azure-corevm.vmImagesPublicAzure': {
                                     'version': {
-                                        'description': 'd',
-                                        'label': 'l-suffix',
-                                        'mediaName': 'm-suffix',
+                                        'description': 'publisher_offer_plan-suffix_version',
+                                        'label': 'publisher_offer_plan-suffix',
+                                        'mediaName': 'publisher_offer_plan-suffix_version',
                                         'osVhdUrl': 'u'
                                     },
                                 },

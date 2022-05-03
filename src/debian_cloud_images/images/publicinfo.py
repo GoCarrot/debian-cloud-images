@@ -56,13 +56,6 @@ class ImagePublicInfo:
             return f'{family}-{version}-{extra}'
 
         @property
-        def vendor_name58(self):
-            " Return vendor name limited to 58 characters "
-            version = self.__info['version']
-            family = self.vendor_family[:58 - 1 - len(version)]
-            return f'{family}-{version}'
-
-        @property
         def vendor_name63(self):
             " Return vendor name limited to 63 characters "
             version = self.__info['version']
