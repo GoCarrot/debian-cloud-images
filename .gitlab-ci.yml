@@ -2,8 +2,6 @@
 stages:
   - source test
   - build
-  - vendor upload
-  - upload
 
 variables:
   CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
@@ -118,64 +116,6 @@ test python latest:
   needs: []
   rules:
   - if: '$CI_MERGE_REQUEST_ID == null'
-    when: manual
-  allow_failure: true
-
-####
-# Provider uploads for developer pushs
-####
-
-.azure upload:
-  stage: vendor upload
-  image: debian:bookworm
-  script:
-    - >
-      ./bin/debian-cloud-images upload-azure
-      --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
-      *.build.json
-  artifacts:
-    name: upload-azure
-    expire_in: 7 days
-    paths:
-      - '*.upload-azure.json'
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_AZURE_DEV_ENABLED == "1"'
-    when: manual
-  allow_failure: true
-
-.ec2 upload:
-  stage: vendor upload
-  image: debian:bookworm
-  script:
-    - >
-      ./bin/debian-cloud-images upload-ec2
-      --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
-      *.build.json
-  artifacts:
-    name: upload-ec2
-    expire_in: 7 days
-    paths:
-      - '*.upload-ec2.json'
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_EC2_DEV_ENABLED == "1"'
-    when: manual
-  allow_failure: true
-
-.gce upload:
-  stage: vendor upload
-  image: debian:bookworm
-  script:
-    - >
-      ./bin/debian-cloud-images upload-gce
-      --config-file "${CLOUD_UPLOAD_DEV_CONFIG}"
-      *.build.json
-  artifacts:
-    name: upload-gce
-    expire_in: 7 days
-    paths:
-      - '*.upload-gce.json'
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null && $CLOUD_UPLOAD_GCE_DEV_ENABLED == "1"'
     when: manual
   allow_failure: true
 

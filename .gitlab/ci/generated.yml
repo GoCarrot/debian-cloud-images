@@ -80,21 +80,6 @@
       "CLOUD_VENDOR": "azure"
     }
   },
-  "azure upload": {
-    "extends": ".azure upload",
-    "dependencies": [
-      "azure buster amd64 build",
-      "azure buster-backports amd64 build",
-      "azure bullseye amd64 build",
-      "azure bullseye-backports amd64 build",
-      "azure bookworm amd64 build",
-      "azure bookworm arm64 build",
-      "azure bookworm-backports amd64 build",
-      "azure bookworm-backports arm64 build",
-      "azure sid amd64 build",
-      "azure sid arm64 build"
-    ]
-  },
   "ec2 buster amd64 build": {
     "extends": ".build",
     "variables": {
@@ -207,25 +192,6 @@
       "CLOUD_VENDOR": "ec2"
     }
   },
-  "ec2 upload": {
-    "extends": ".ec2 upload",
-    "dependencies": [
-      "ec2 buster amd64 build",
-      "ec2 buster arm64 build",
-      "ec2 buster-backports amd64 build",
-      "ec2 buster-backports arm64 build",
-      "ec2 bullseye amd64 build",
-      "ec2 bullseye arm64 build",
-      "ec2 bullseye-backports amd64 build",
-      "ec2 bullseye-backports arm64 build",
-      "ec2 bookworm amd64 build",
-      "ec2 bookworm arm64 build",
-      "ec2 bookworm-backports amd64 build",
-      "ec2 bookworm-backports arm64 build",
-      "ec2 sid amd64 build",
-      "ec2 sid arm64 build"
-    ]
-  },
   "gce buster amd64 build": {
     "extends": ".build",
     "variables": {
@@ -273,17 +239,6 @@
       "CLOUD_RELEASE": "sid",
       "CLOUD_VENDOR": "gce"
     }
-  },
-  "gce upload": {
-    "extends": ".gce upload",
-    "dependencies": [
-      "gce buster amd64 build",
-      "gce buster-backports amd64 build",
-      "gce bullseye-backports amd64 build",
-      "gce bookworm amd64 build",
-      "gce bookworm-backports amd64 build",
-      "gce sid amd64 build"
-    ]
   },
   "generic buster amd64 build": {
     "extends": ".build",

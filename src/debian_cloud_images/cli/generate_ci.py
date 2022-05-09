@@ -64,8 +64,6 @@ class GenerateCiCommand(BaseCommand):
         out = {}
 
         for vendor_name, vendor in self.config_image.vendors.items():
-            builds = []
-
             for release_name, release in self.config_image.releases.items():
                 for arch_name, arch in self.config_image.archs.items():
                     if not self.check_matches(vendor.matches, release.basename, arch_name):
@@ -73,7 +71,6 @@ class GenerateCiCommand(BaseCommand):
 
                     name = ' '.join((vendor_name, release_name, arch_name, 'build'))
 
-                    builds.append(name)
                     out[name] = {
                         'extends': '.build',
                         'variables': {
@@ -82,15 +79,6 @@ class GenerateCiCommand(BaseCommand):
                             'CLOUD_VENDOR': vendor_name,
                         }
                     }
-
-            # XXX: Better selection
-            if vendor_name in ('azure', 'ec2', 'gce'):
-                name = ' '.join((vendor_name, 'upload'))
-                extends = '.' + name
-                out[name] = {
-                    'extends': extends,
-                    'dependencies': builds,
-                }
 
         if self.output:
             with open(self.output, 'w') as f:
