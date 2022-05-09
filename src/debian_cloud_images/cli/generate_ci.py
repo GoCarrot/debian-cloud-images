@@ -46,11 +46,22 @@ class GenerateCiCommand(BaseCommand):
 
         self.output = output
 
-    def check_matches(self, matches, release_name, arch_name):
+    def check_matches(self, matches, vendor_name, release_name, arch_name):
         if not matches:
             return True
 
+        enable = None
+
         for m in matches:
+            if not m.match_vendors:
+                pass
+            elif vendor_name in m.match_vendors:
+                pass
+            elif '*' in m.match_vendors:
+                pass
+            else:
+                continue
+
             if not m.match_releases:
                 pass
             elif release_name in m.match_releases:
@@ -70,11 +81,13 @@ class GenerateCiCommand(BaseCommand):
                 continue
 
             if m.op == 'Enable':
-                return True
+                if enable is None:
+                    enable = True
             elif m.op == 'Disable':
-                return False
+                if enable is None:
+                    enable = False
 
-        return False
+        return enable
 
     def __call__(self) -> None:
         out = {}
@@ -82,7 +95,12 @@ class GenerateCiCommand(BaseCommand):
         for vendor_name, vendor in self.config_image.vendors.items():
             for release_name, release in self.config_image.releases.items():
                 for arch_name, arch in self.config_image.archs.items():
-                    if not self.check_matches(vendor.matches, release.basename, arch_name):
+                    enable = self.check_matches(vendor.matches, vendor_name, release.basename, arch_name)
+                    if not enable:
+                        continue
+
+                    enable = self.check_matches(self.public_type.matches, vendor_name, release.basename, arch_name)
+                    if not enable:
                         continue
 
                     name = ' '.join((vendor_name, release_name, arch_name, 'build'))

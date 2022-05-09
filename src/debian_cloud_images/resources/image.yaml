@@ -108,3 +108,22 @@ types:
 
 publicTypes:
 - name: dev
+- name: daily
+  matches:
+  - matchVendors: [azure]
+    matchReleases: [buster, buster-backports, bullseye, sid]
+    matchArches: [amd64]
+  - matchVendors: [ec2]
+    matchReleases: [buster, buster-backports, bullseye, sid]
+  - matchVendors: [gce]
+    matchReleases: [sid]
+  - matchVendors: [generic]
+    matchReleases: [buster, bullseye, sid]
+  - matchVendors: [genericcloud]
+    matchReleases: [buster, bullseye, sid]
+    matchArches: [amd64]
+  - matchVendors: [nocloud]
+    matchReleases: [buster, bullseye]
+    matchArches: [amd64]
+  - matchVendors: [nocloud]
+    matchReleases: [sid]
