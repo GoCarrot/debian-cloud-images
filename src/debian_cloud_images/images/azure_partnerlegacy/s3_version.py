@@ -50,8 +50,20 @@ class ImagesAzurePartnerlegacyVersion:
     def create(
             self,
             url: str,
-    ) -> typing.Any:
+    ) -> list[dict]:
         response, data, plan = self.__get_plan()
+        ret = []
+        ret.append(self.__create_version(url, plan))
+        for generation in plan['diskGenerations']:
+            ret.append(self.__create_version(url, generation))
+        self.__request(method='PUT', data=data)
+        return ret
+
+    def __create_version(
+            self,
+            url: str,
+            plan: typing.Any,
+    ) -> dict:
         plan_id = plan['planId']
         versions = plan['microsoft-azure-corevm.vmImagesPublicAzure']
         ret = versions[self.__name_version] = {
@@ -60,16 +72,6 @@ class ImagesAzurePartnerlegacyVersion:
             'mediaName': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
             'osVhdUrl': url,
         }
-        for generation in plan['diskGenerations']:
-            versions = generation['microsoft-azure-corevm.vmImagesPublicAzure']
-            plan_id = generation['planId']
-            versions[self.__name_version] = {
-                'description': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
-                'label': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}',
-                'mediaName': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
-                'osVhdUrl': url,
-            }
-        self.__request(method='PUT', data=data)
         return ret
 
     def get(self) -> typing.Any:

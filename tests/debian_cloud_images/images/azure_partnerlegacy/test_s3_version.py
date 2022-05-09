@@ -38,12 +38,20 @@ class TestImagesAzurePartnerlegacyVersion:
             'version',
             azure_conn,
         )
-        assert t.create('u') == {
-            'description': 'publisher_offer_plan_version',
-            'label': 'publisher_offer_plan',
-            'mediaName': 'publisher_offer_plan_version',
-            'osVhdUrl': 'u',
-        }
+        assert t.create('u') == [
+            {
+                'description': 'publisher_offer_plan_version',
+                'label': 'publisher_offer_plan',
+                'mediaName': 'publisher_offer_plan_version',
+                'osVhdUrl': 'u',
+            },
+            {
+                'description': 'publisher_offer_plan-suffix_version',
+                'label': 'publisher_offer_plan-suffix',
+                'mediaName': 'publisher_offer_plan-suffix_version',
+                'osVhdUrl': 'u',
+            },
+        ]
 
         assert put.last_request.json() == {
             'definition': {
