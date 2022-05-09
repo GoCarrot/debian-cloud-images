@@ -1,3 +1,5 @@
+from debian_cloud_images.api.cdo.image_config import ImageConfigArch
+
 from debian_cloud_images.images.azure_partnerlegacy.s3_version import (
     ImagesAzurePartnerlegacyVersion,
 )
@@ -12,13 +14,18 @@ class TestImagesAzurePartnerlegacyVersion:
                     'plans': [
                         {
                             'planId': 'plan',
-                            'microsoft-azure-corevm.vmImagesPublicAzure': {
-                            },
+                            'microsoft-azure-corevm.vmImagesArchitecture': 'Arch',
+                            'microsoft-azure-corevm.vmImagesPublicAzure': {},
                             'diskGenerations': [
                                 {
+                                    'planId': 'plan-other',
+                                    'microsoft-azure-corevm.vmImagesArchitecture': 'Other',
+                                    'microsoft-azure-corevm.vmImagesPublicAzure': {},
+                                },
+                                {
                                     'planId': 'plan-suffix',
-                                    'microsoft-azure-corevm.vmImagesPublicAzure': {
-                                    },
+                                    'microsoft-azure-corevm.vmImagesArchitecture': 'Arch',
+                                    'microsoft-azure-corevm.vmImagesPublicAzure': {},
                                 },
                             ],
                         },
@@ -38,7 +45,7 @@ class TestImagesAzurePartnerlegacyVersion:
             'version',
             azure_conn,
         )
-        assert t.create('u') == [
+        assert t.create('u', ImageConfigArch(name='arch', azure_name='Arch')) == [
             {
                 'description': 'publisher_offer_plan_version',
                 'label': 'publisher_offer_plan',
@@ -58,6 +65,7 @@ class TestImagesAzurePartnerlegacyVersion:
                 'plans': [
                     {
                         'planId': 'plan',
+                        "microsoft-azure-corevm.vmImagesArchitecture": "Arch",
                         'microsoft-azure-corevm.vmImagesPublicAzure': {
                             'version': {
                                 'description': 'publisher_offer_plan_version',
@@ -68,7 +76,13 @@ class TestImagesAzurePartnerlegacyVersion:
                         },
                         'diskGenerations': [
                             {
+                                'planId': 'plan-other',
+                                'microsoft-azure-corevm.vmImagesArchitecture': 'Other',
+                                'microsoft-azure-corevm.vmImagesPublicAzure': {},
+                            },
+                            {
                                 'planId': 'plan-suffix',
+                                'microsoft-azure-corevm.vmImagesArchitecture': 'Arch',
                                 'microsoft-azure-corevm.vmImagesPublicAzure': {
                                     'version': {
                                         'description': 'publisher_offer_plan-suffix_version',

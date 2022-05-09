@@ -111,7 +111,7 @@ config options:
         try:
             image_public_info = self.image_public_info.apply(self.image.build_info)
             # XXX
-            image_arch = self.image.build_info['arch']
+            image_arch = self.config_image.archs[self.image.build_info['arch']]
 
             if self._partner_version_override is not None:
                 image_version = self._partner_version_override
@@ -122,7 +122,7 @@ config options:
 
             image_ref = f'{self._partner_publisher}:{self._partner_offer}:{self._partner_plan}:{image_version}'
 
-            image_blob_name = f'{self._partner_plan}:{image_arch}:{image_version}.vhd'
+            image_blob_name = f'{self._partner_plan}:{image_arch.name}:{image_version}.vhd'
             image_blob = ImagesAzureStorageBlob(
                 self._storage_group,
                 self._storage_name,
@@ -155,6 +155,7 @@ config options:
 
             partner_version.create(
                 url=f'{image_blob.url}?{query_sas}',
+                image_arch=image_arch,
             )
 
             metadata = self.image.build.metadata.copy()

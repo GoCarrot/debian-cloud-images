@@ -1,6 +1,7 @@
 import logging
 import typing
 
+from debian_cloud_images.api.cdo.image_config import ImageConfigArch
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 
 
@@ -50,21 +51,26 @@ class ImagesAzurePartnerlegacyVersion:
     def create(
             self,
             url: str,
+            image_arch: ImageConfigArch,
     ) -> list[dict]:
         response, data, plan = self.__get_plan()
         ret = []
-        ret.append(self.__create_version(url, plan))
+        ret.append(self.__create_version(url, image_arch, plan))
         for generation in plan['diskGenerations']:
-            ret.append(self.__create_version(url, generation))
+            ret.append(self.__create_version(url, image_arch, generation))
         self.__request(method='PUT', data=data)
-        return ret
+        return [i for i in ret if i]
 
     def __create_version(
             self,
             url: str,
+            image_arch: ImageConfigArch,
             plan: typing.Any,
-    ) -> dict:
+    ) -> typing.Optional[dict]:
         plan_id = plan['planId']
+        arch = plan['microsoft-azure-corevm.vmImagesArchitecture']
+        if image_arch.azure_name != arch:
+            return None
         versions = plan['microsoft-azure-corevm.vmImagesPublicAzure']
         ret = versions[self.__name_version] = {
             'description': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
