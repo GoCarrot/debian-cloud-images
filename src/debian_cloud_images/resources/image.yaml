@@ -105,3 +105,6 @@ types:
   output_name: 'debian-{release}-{vendor}-{arch}-{build_type}-{version}'
   output_version: '{date}-{version}'
   output_version_azure: '0.{date!s}.{version!s}'
+
+publicTypes:
+- name: dev

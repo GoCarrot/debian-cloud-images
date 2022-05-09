@@ -1,4 +1,4 @@
-# Generated with "python3 -m debian_cloud_images.cli.generate_ci .gitlab/ci/generated.yml"
+# Generated with "python3 -m debian_cloud_images.cli.generate_ci --public-type dev .gitlab/ci/generated.yml"
 {
   "azure buster amd64 build": {
     "extends": ".build",

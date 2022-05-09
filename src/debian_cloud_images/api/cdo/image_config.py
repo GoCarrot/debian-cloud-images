@@ -8,14 +8,43 @@ class ImageConfig:
     def __init__(
         self,
         archs=None,
+        public_types=None,
         releases=None,
         types=None,
         vendors=None,
     ):
         self.archs = archs
+        self.public_types = public_types
         self.releases = releases
         self.types = types
         self.vendors = vendors
+
+
+class ImageConfigMatch:
+    def __init__(
+        self,
+        op='Enable',
+        match_arches=None,
+        match_releases=None,
+        match_vendors=None,
+    ):
+        self.op = op
+        self.match_arches = match_arches
+        self.match_releases = match_releases
+        self.match_vendors = match_vendors
+
+
+class v1alpha1_ImageConfigMatchSchema(Schema):
+    __model__ = ImageConfigMatch
+
+    op = fields.Str(validate=validate.OneOf(('Enable', 'EnableUpload', 'Disable', 'DisableUpload')))
+    match_arches = fields.List(fields.Str(), data_key='matchArches')
+    match_releases = fields.List(fields.Str(), data_key='matchReleases')
+    match_vendors = fields.List(fields.Str(), data_key='matchVendors')
+
+    @post_load
+    def load_obj(self, data, **kw):
+        return self.__model__(**data)
 
 
 class ImageConfigArch:
@@ -105,24 +134,21 @@ class v1alpha1_ImageConfigTypeSchema(Schema):
         return self.__model__(**data)
 
 
-class ImageConfigVendorMatch:
+class ImageConfigPublicType:
     def __init__(
         self,
-        op='Enable',
-        match_arches=None,
-        match_releases=None,
+        name=None,
+        matches=None,
     ):
-        self.op = op
-        self.match_arches = match_arches
-        self.match_releases = match_releases
+        self.name = name
+        self.matches = matches
 
 
-class v1alpha1_ImageConfigVendorMatchSchema(Schema):
-    __model__ = ImageConfigVendorMatch
+class v1alpha1_ImageConfigPublicTypeSchema(Schema):
+    __model__ = ImageConfigPublicType
 
-    op = fields.Str(validate=validate.OneOf(('Enable', 'Disable')))
-    match_arches = fields.List(fields.Str(), data_key='matchArches')
-    match_releases = fields.List(fields.Str(), data_key='matchReleases')
+    name = fields.Str(required=True)
+    matches = fields.Nested(v1alpha1_ImageConfigMatchSchema, many=True)
 
     @post_load
     def load_obj(self, data, **kw):
@@ -152,7 +178,7 @@ class v1alpha1_ImageConfigVendorSchema(Schema):
     fai_classes = fields.List(fields.Str())
     size = fields.Integer(required=True)
     use_linux_image_cloud = fields.Boolean()
-    matches = fields.Nested(v1alpha1_ImageConfigVendorMatchSchema, many=True)
+    matches = fields.Nested(v1alpha1_ImageConfigMatchSchema, many=True)
 
     @post_load
     def load_obj(self, data, **kw):
@@ -165,6 +191,7 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
     __typemeta__ = TypeMeta('ImageConfig', 'cloud.debian.org/v1alpha1')
 
     _archs_list = fields.Nested(v1alpha1_ImageConfigArchSchema, data_key='archs', many=True)
+    _public_types_list = fields.Nested(v1alpha1_ImageConfigPublicTypeSchema, data_key='publicTypes', many=True)
     _releases_list = fields.Nested(v1alpha1_ImageConfigReleaseSchema, data_key='releases', many=True)
     _types_list = fields.Nested(v1alpha1_ImageConfigTypeSchema, data_key='types', many=True)
     _vendors_list = fields.Nested(v1alpha1_ImageConfigVendorSchema, data_key='vendors', many=True)
@@ -173,6 +200,7 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
     def dump_obj(self, obj, **kw):
         data = obj.__dict__.copy()
         data['_archs_list'] = data['archs'].values()
+        data['_public_types_list'] = data['public_types'].values()
         data['_releases_list'] = data['releases'].values()
         data['_types_list'] = data['types'].values()
         data['_vendors_list'] = data['vendors'].values()
@@ -183,6 +211,7 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
         data.pop('api_version', None)
         data.pop('kind', None)
         data['archs'] = {c.name: c for c in data.pop('_archs_list', [])}
+        data['public_types'] = {c.name: c for c in data.pop('_public_types_list', [])}
         data['releases'] = {c.name: c for c in data.pop('_releases_list', [])}
         data['types'] = {c.name: c for c in data.pop('_types_list', [])}
         data['vendors'] = {c.name: c for c in data.pop('_vendors_list', [])}
