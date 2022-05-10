@@ -22,9 +22,11 @@ class ImageConfigArch:
     def __init__(
         self,
         name=None,
+        azure_name=None,
         fai_classes=None,
     ):
         self.name = name
+        self.azure_name = azure_name
         self.fai_classes = fai_classes
 
 
@@ -32,6 +34,7 @@ class v1alpha1_ImageConfigArchSchema(Schema):
     __model__ = ImageConfigArch
 
     name = fields.Str(required=True)
+    azure_name = fields.Str(data_key='azureName')
     fai_classes = fields.List(fields.Str())
 
     @post_load
