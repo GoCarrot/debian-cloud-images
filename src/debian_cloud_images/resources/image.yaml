@@ -115,9 +115,14 @@ publicTypes:
     uploadGroup: '10'
     op: EnableUpload
   - matchVendors: [azure]
-    matchReleases: [bullseye]
+    matchReleases: [bullseye, bullseye-backports]
     matchArches: [amd64]
     uploadGroup: '11'
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [bookworm, bookworm-backports]
+    matchArches: [amd64]
+    uploadGroup: '12'
     op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [sid]
@@ -125,17 +130,5 @@ publicTypes:
     uploadGroup: sid
     op: EnableUpload
   - matchVendors: [ec2]
-    matchReleases: [buster, buster-backports, bullseye, sid]
     op: EnableUpload
-  - matchVendors: [gce]
-    matchReleases: [sid]
-  - matchVendors: [generic]
-    matchReleases: [buster, bullseye, sid]
-  - matchVendors: [genericcloud]
-    matchReleases: [buster, bullseye, sid]
-    matchArches: [amd64]
-  - matchVendors: [nocloud]
-    matchReleases: [buster, bullseye]
-    matchArches: [amd64]
-  - matchVendors: [nocloud]
-    matchReleases: [sid]
+  - matchVendors: [generic, genericcloud, nocloud]
