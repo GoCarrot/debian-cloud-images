@@ -27,11 +27,13 @@ class ImageConfigMatch:
         match_arches=None,
         match_releases=None,
         match_vendors=None,
+        upload_group=None,
     ):
         self.op = op
         self.match_arches = match_arches
         self.match_releases = match_releases
         self.match_vendors = match_vendors
+        self.upload_group = upload_group
 
 
 class v1alpha1_ImageConfigMatchSchema(Schema):
@@ -41,6 +43,7 @@ class v1alpha1_ImageConfigMatchSchema(Schema):
     match_arches = fields.List(fields.Str(), data_key='matchArches')
     match_releases = fields.List(fields.Str(), data_key='matchReleases')
     match_vendors = fields.List(fields.Str(), data_key='matchVendors')
+    upload_group = fields.Str(data_key='uploadGroup')
 
     @post_load
     def load_obj(self, data, **kw):

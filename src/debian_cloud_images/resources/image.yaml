@@ -111,10 +111,23 @@ publicTypes:
 - name: daily
   matches:
   - matchVendors: [azure]
-    matchReleases: [buster, buster-backports, bullseye, sid]
+    matchReleases: [buster, buster-backports]
     matchArches: [amd64]
+    uploadGroup: '10'
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [bullseye]
+    matchArches: [amd64]
+    uploadGroup: '11'
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [sid]
+    matchArches: [amd64]
+    uploadGroup: sid
+    op: EnableUpload
   - matchVendors: [ec2]
     matchReleases: [buster, buster-backports, bullseye, sid]
+    op: EnableUpload
   - matchVendors: [gce]
     matchReleases: [sid]
   - matchVendors: [generic]

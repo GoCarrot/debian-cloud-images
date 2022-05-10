@@ -119,5 +119,12 @@ test python latest:
     when: manual
   allow_failure: true
 
+.upload:
+  stage: build
+  script:
+  - 'false'
+  rules:
+  - when: never
+
 include:
   local: .gitlab/ci/generated.yml

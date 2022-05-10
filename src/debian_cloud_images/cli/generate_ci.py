@@ -48,9 +48,11 @@ class GenerateCiCommand(BaseCommand):
 
     def check_matches(self, matches, vendor_name, release_name, arch_name):
         if not matches:
-            return True
+            return True, False, None
 
         enable = None
+        enable_upload = None
+        upload_group = None
 
         for m in matches:
             if not m.match_vendors:
@@ -83,36 +85,86 @@ class GenerateCiCommand(BaseCommand):
             if m.op == 'Enable':
                 if enable is None:
                     enable = True
+            elif m.op == 'EnableUpload':
+                if enable is None:
+                    enable = True
+                if enable_upload is None:
+                    enable_upload = True
             elif m.op == 'Disable':
                 if enable is None:
                     enable = False
+            elif m.op == 'DisableUpload':
+                if enable is None:
+                    enable = False
+                if enable_upload is None:
+                    enable_upload = False
 
-        return enable
+            if upload_group is None:
+                upload_group = m.upload_group
+
+        return enable, enable_upload, upload_group
 
     def __call__(self) -> None:
         out = {}
+        needs_upload = []
 
         for vendor_name, vendor in self.config_image.vendors.items():
             for release_name, release in self.config_image.releases.items():
                 for arch_name, arch in self.config_image.archs.items():
-                    enable = self.check_matches(vendor.matches, vendor_name, release.basename, arch_name)
+                    enable, _, _ = self.check_matches(vendor.matches, vendor_name, release.basename, arch_name)
                     if not enable:
                         continue
 
-                    enable = self.check_matches(self.public_type.matches, vendor_name, release.basename, arch_name)
+                    enable, enable_upload, upload_group = self.check_matches(self.public_type.matches, vendor_name, release.basename, arch_name)
                     if not enable:
                         continue
 
-                    name = ' '.join((vendor_name, release_name, arch_name, 'build'))
-
-                    out[name] = {
-                        'extends': '.build',
-                        'variables': {
-                            'CLOUD_ARCH': arch_name,
-                            'CLOUD_RELEASE': release_name,
-                            'CLOUD_VENDOR': vendor_name,
-                        }
+                    variables = {
+                        'CLOUD_ARCH': arch_name,
+                        'CLOUD_RELEASE': release_name,
+                        'CLOUD_VENDOR': vendor_name,
                     }
+
+                    name_build = f'{vendor_name} {release_name} {arch_name} build'
+                    name_upload = f'{vendor_name} {release_name} {arch_name} upload'
+                    extends_upload = f'.{vendor_name} upload'
+                    extends_postupload = f'.{vendor_name} postupload'
+
+                    if upload_group:
+                        variables['CLOUD_UPLOAD_GROUP'] = upload_group
+                        name_upload_group = f'{vendor_name} group-{upload_group} upload'
+                        name_postupload = f'{vendor_name} group-{upload_group} postupload'
+                    else:
+                        name_upload_group = f'{vendor_name} upload'
+                        name_postupload = f'{vendor_name} postupload'
+
+                    needs_upload.append(name_build)
+                    out[name_build] = {
+                        'extends': '.build',
+                        'variables': variables,
+                    }
+
+                    if enable_upload:
+                        needs_upload.append(name_upload)
+                        job_upload = out[name_upload] = {
+                            'extends': extends_upload,
+                            'variables': variables,
+                            'needs': [name_build],
+                        }
+
+                        if upload_group:
+                            job_upload['resource_group'] = name_upload_group
+
+                        job_postupload: dict[str, typing.Any] = out.setdefault(name_postupload, {
+                            'extends': extends_postupload,
+                            'needs': [],
+                        })
+                        job_postupload['needs'].append(name_upload)
+
+        out['upload'] = {
+            'extends': '.upload',
+            'dependencies': needs_upload,
+        }
 
         if self.output:
             with open(self.output, 'w') as f:
