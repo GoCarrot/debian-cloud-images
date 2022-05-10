@@ -90,6 +90,11 @@ vendors:
   fai_classes: [GENERIC]
   size: 2
   use_linux_image_cloud: true
+  matches:
+  - matchReleases: [buster]
+    matchArches: [arm64]
+    op: Disable
+  - matchArches: [amd64, arm64]
 - name: nocloud
   fai_classes: [NOCLOUD]
   size: 2
