@@ -14,16 +14,19 @@ class TestImagesAzurePartnerlegacyVersion:
                     'plans': [
                         {
                             'planId': 'plan',
+                            'microsoft-azure-corevm.generation': 'X',
                             'microsoft-azure-corevm.vmImagesArchitecture': 'Arch',
                             'microsoft-azure-corevm.vmImagesPublicAzure': {},
                             'diskGenerations': [
                                 {
                                     'planId': 'plan-other',
+                                    'microsoft-azure-corevm.generation': 'Y',
                                     'microsoft-azure-corevm.vmImagesArchitecture': 'Other',
                                     'microsoft-azure-corevm.vmImagesPublicAzure': {},
                                 },
                                 {
                                     'planId': 'plan-suffix',
+                                    'microsoft-azure-corevm.generation': 'Z',
                                     'microsoft-azure-corevm.vmImagesArchitecture': 'Arch',
                                     'microsoft-azure-corevm.vmImagesPublicAzure': {},
                                 },
@@ -49,10 +52,12 @@ class TestImagesAzurePartnerlegacyVersion:
             {
                 'ref': 'publisher:offer:plan:version',
                 'family_ref': 'publisher:offer:plan:latest',
+                'arch': 'ArchvX',
             },
             {
                 'ref': 'publisher:offer:plan-suffix:version',
                 'family_ref': 'publisher:offer:plan-suffix:latest',
+                'arch': 'ArchvZ',
             },
         ]
 
@@ -61,7 +66,8 @@ class TestImagesAzurePartnerlegacyVersion:
                 'plans': [
                     {
                         'planId': 'plan',
-                        "microsoft-azure-corevm.vmImagesArchitecture": "Arch",
+                        'microsoft-azure-corevm.generation': 'X',
+                        'microsoft-azure-corevm.vmImagesArchitecture': 'Arch',
                         'microsoft-azure-corevm.vmImagesPublicAzure': {
                             'version': {
                                 'description': 'publisher_offer_plan_version',
@@ -73,11 +79,13 @@ class TestImagesAzurePartnerlegacyVersion:
                         'diskGenerations': [
                             {
                                 'planId': 'plan-other',
+                                'microsoft-azure-corevm.generation': 'Y',
                                 'microsoft-azure-corevm.vmImagesArchitecture': 'Other',
                                 'microsoft-azure-corevm.vmImagesPublicAzure': {},
                             },
                             {
                                 'planId': 'plan-suffix',
+                                'microsoft-azure-corevm.generation': 'Z',
                                 'microsoft-azure-corevm.vmImagesArchitecture': 'Arch',
                                 'microsoft-azure-corevm.vmImagesPublicAzure': {
                                     'version': {

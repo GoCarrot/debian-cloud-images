@@ -83,4 +83,5 @@ class ImagesAzurePartnerlegacyVersion:
         return {
             'ref': f'{self.__name_publisher}:{self.__name_offer}:{plan_id}:{self.__name_version}',
             'family_ref': f'{self.__name_publisher}:{self.__name_offer}:{plan_id}:latest',
+            'arch': f'{arch}v{plan["microsoft-azure-corevm.generation"]}',
         }
