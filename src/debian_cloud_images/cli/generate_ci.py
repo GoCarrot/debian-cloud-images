@@ -124,6 +124,7 @@ class GenerateCiCommand(BaseCommand):
                         'CLOUD_RELEASE': release_name,
                         'CLOUD_VENDOR': vendor_name,
                     }
+                    variables_postupload = {}
 
                     name_build = f'{vendor_name} {release_name} {arch_name} build'
                     name_upload = f'{vendor_name} {release_name} {arch_name} upload'
@@ -132,6 +133,7 @@ class GenerateCiCommand(BaseCommand):
 
                     if upload_group:
                         variables['CLOUD_UPLOAD_GROUP'] = upload_group
+                        variables_postupload['CLOUD_UPLOAD_GROUP'] = upload_group
                         name_upload_group = f'{vendor_name} group-{upload_group} upload'
                         name_postupload = f'{vendor_name} group-{upload_group} postupload'
                     else:
@@ -157,6 +159,7 @@ class GenerateCiCommand(BaseCommand):
 
                         job_postupload: dict[str, typing.Any] = out.setdefault(name_postupload, {
                             'extends': extends_postupload,
+                            'variables': variables_postupload,
                             'needs': [],
                         })
                         job_postupload['needs'].append(name_upload)
