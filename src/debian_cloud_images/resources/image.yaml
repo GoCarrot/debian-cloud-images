@@ -45,12 +45,6 @@ releases:
   baseid: '12'
   fai_classes: [BOOKWORM, EXTRAS]
   arch_supports_linux_image_cloud: [amd64, arm64]
-- name: bookworm-backports
-  basename: bookworm-backports
-  id: 12-backports
-  baseid: '12'
-  fai_classes: [BOOKWORM, BACKPORTS_LINUX, EXTRAS]
-  arch_supports_linux_image_cloud: [amd64, arm64]
 - name: sid
   basename: sid
   id: sid
@@ -90,6 +84,11 @@ vendors:
   fai_classes: [GENERIC]
   size: 2
   use_linux_image_cloud: true
+  matches:
+  - matchReleases: [buster]
+    matchArches: [arm64]
+    op: Disable
+  - matchArches: [amd64, arm64]
 - name: nocloud
   fai_classes: [NOCLOUD]
   size: 2
@@ -105,3 +104,31 @@ types:
   output_name: 'debian-{release}-{vendor}-{arch}-{build_type}-{version}'
   output_version: '{date}-{version}'
   output_version_azure: '0.{date!s}.{version!s}'
+
+publicTypes:
+- name: dev
+- name: daily
+  matches:
+  - matchVendors: [azure]
+    matchReleases: [buster, buster-backports]
+    matchArches: [amd64]
+    uploadGroup: '10'
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [bullseye, bullseye-backports]
+    matchArches: [amd64]
+    uploadGroup: '11'
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [bookworm, bookworm-backports]
+    matchArches: [amd64]
+    uploadGroup: '12'
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [sid]
+    matchArches: [amd64, arm64]
+    uploadGroup: sid
+    op: EnableUpload
+  - matchVendors: [ec2]
+    op: EnableUpload
+  - matchVendors: [generic, genericcloud, nocloud]
