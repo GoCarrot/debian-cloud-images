@@ -1,7 +1,7 @@
 import datetime
 
 from debian_cloud_images.api.cdo.upload import Upload
-from debian_cloud_images.api.wellknown import label_ucdo_type
+from debian_cloud_images.api.wellknown import label_ucdo_type, label_aucdo_arch
 from debian_cloud_images.images.azure_partnerlegacy.s3_version import ImagesAzurePartnerlegacyVersion
 from debian_cloud_images.images.azure_storage.s1_folder import ImagesAzureStorageFolder
 from debian_cloud_images.images.azure_storage.s2_blob import ImagesAzureStorageBlob
@@ -124,7 +124,7 @@ config options:
             else:
                 raise RuntimeError('No Azure version, use --partner-version-override')
 
-            image_ref = f'{self._partner_publisher}:{self._partner_offer}:{image_plan}:{image_version}'
+            image_ref = f'{self._partner_publisher}/{self._partner_offer}/{image_plan}/{image_version}'
 
             image_blob_name = f'{image_plan}:{image_arch.name}:{image_version}.vhd'
             image_blob = ImagesAzureStorageBlob(
@@ -157,24 +157,29 @@ config options:
                 permission='rl',
             )
 
-            partner_version.create(
+            versions = partner_version.create(
                 url=f'{image_blob.url}?{query_sas}',
                 image_arch=image_arch,
             )
 
-            metadata = self.image.build.metadata.copy()
-            metadata.labels[label_ucdo_type] = image_public_info.public_type.name
+            manifests = []
 
-            manifests = [Upload(
-                metadata=metadata,
-                provider='management.azure.com',
-                ref=image_ref,
-                family_ref=f'{self._partner_publisher}:{self._partner_offer}:{image_plan}:latest'
-            )]
+            for i in versions:
+                metadata = self.image.build.metadata.copy()
+                metadata.labels[label_ucdo_type] = image_public_info.public_type.name
+                metadata.labels[label_aucdo_arch] = i['arch']
+
+                manifests.append(Upload(
+                    metadata=metadata,
+                    provider='management.azure.com',
+                    ref=i['ref'],
+                    family_ref=i['family_ref'],
+                ))
 
             self.image.write_manifests('upload-azure-partner', manifests, output=self.output)
 
-            print(f'Created image version successfully: {image_ref}')
+            for i in versions:
+                print(f'Created image version successfully: {i["ref"]}')
 
         except BaseException:
             raise

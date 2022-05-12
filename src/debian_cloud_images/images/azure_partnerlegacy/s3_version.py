@@ -54,12 +54,14 @@ class ImagesAzurePartnerlegacyVersion:
             image_arch: ImageConfigArch,
     ) -> list[dict]:
         response, data, plan = self.__get_plan()
-        ret = []
-        ret.append(self.__create_version(url, image_arch, plan))
+        versions = [self.__create_version(url, image_arch, plan)]
         for generation in plan['diskGenerations']:
-            ret.append(self.__create_version(url, image_arch, generation))
+            versions.append(self.__create_version(url, image_arch, generation))
         self.__request(method='PUT', data=data)
-        return [i for i in ret if i]
+        ret = [i for i in versions if i]
+        if not ret:
+            raise ValueError('No valid generation found for image')
+        return ret
 
     def __create_version(
             self,
@@ -72,15 +74,14 @@ class ImagesAzurePartnerlegacyVersion:
         if image_arch.azure_name != arch:
             return None
         versions = plan['microsoft-azure-corevm.vmImagesPublicAzure']
-        ret = versions[self.__name_version] = {
+        versions[self.__name_version] = {
             'description': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
             'label': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}',
             'mediaName': f'{self.__name_publisher}_{self.__name_offer}_{plan_id}_{self.__name_version}',
             'osVhdUrl': url,
         }
-        return ret
-
-    def get(self) -> typing.Any:
-        response, data, plan = self.__get_plan()
-        versions = plan['microsoft-azure-corevm.vmImagesPublicAzure']
-        return versions[self.__name_version]
+        return {
+            'ref': f'{self.__name_publisher}:{self.__name_offer}:{plan_id}:{self.__name_version}',
+            'family_ref': f'{self.__name_publisher}:{self.__name_offer}:{plan_id}:latest',
+            'arch': f'{arch}v{plan["microsoft-azure-corevm.generation"]}',
+        }
