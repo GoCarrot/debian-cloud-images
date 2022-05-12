@@ -38,10 +38,9 @@ config options:
             required=True,
         )
         parser.add_argument(
-            '--partner-plan',
+            '--partner-plan-override',
             help='use specified plan inside Azure Partner interface',
             metavar='PLAN',
-            required=True,
         )
         parser.add_argument(
             '--partner-version-override',
@@ -53,14 +52,14 @@ config options:
     def __init__(
             self, *,
             partner_offer: str,
-            partner_plan: str,
+            partner_plan_override: str,
             partner_version_override: AzureImageVersion,
             **kw,
     ):
         super().__init__(**kw)
 
         self._partner_offer = partner_offer
-        self._partner_plan = partner_plan
+        self._partner_plan_override = partner_plan_override
         self._partner_version_override = partner_version_override
         self._storage_folder = partner_offer
 
@@ -113,6 +112,11 @@ config options:
             # XXX
             image_arch = self.config_image.archs[self.image.build_info['arch']]
 
+            if self._partner_plan_override is not None:
+                image_plan = self._partner_version_override
+            else:
+                image_plan = self.image.build_info['release_id']
+
             if self._partner_version_override is not None:
                 image_version = self._partner_version_override
             elif 'version_azure' in self.image.build_info:
@@ -120,9 +124,9 @@ config options:
             else:
                 raise RuntimeError('No Azure version, use --partner-version-override')
 
-            image_ref = f'{self._partner_publisher}:{self._partner_offer}:{self._partner_plan}:{image_version}'
+            image_ref = f'{self._partner_publisher}:{self._partner_offer}:{image_plan}:{image_version}'
 
-            image_blob_name = f'{self._partner_plan}:{image_arch.name}:{image_version}.vhd'
+            image_blob_name = f'{image_plan}:{image_arch.name}:{image_version}.vhd'
             image_blob = ImagesAzureStorageBlob(
                 self._storage_group,
                 self._storage_name,
@@ -135,17 +139,17 @@ config options:
             partner_version = ImagesAzurePartnerlegacyVersion(
                 self._partner_publisher,
                 self._partner_offer,
-                self._partner_plan,
+                image_plan,
                 str(image_version),
                 partner_conn,
             )
 
-            print(f'Uploading image version: {image_version}')
+            print(f'Uploading image version: {image_ref}')
 
             with self.image.open_image('vhd') as f:
                 image_blob.put(f)
 
-            print(f'Creating image version: {image_version}')
+            print(f'Creating image version: {image_ref}')
 
             query_sas = image_folder.query_sas(
                 start=datetime.date.today() - datetime.timedelta(days=7),
