@@ -126,7 +126,7 @@ publicTypes:
     op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [sid]
-    matchArches: [amd64]
+    matchArches: [amd64, arm64]
     uploadGroup: sid
     op: EnableUpload
   - matchVendors: [ec2]
