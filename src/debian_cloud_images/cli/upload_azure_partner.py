@@ -78,7 +78,7 @@ config options:
             raise RuntimeError('Can only handle one image at a time')
         self.image = list(self.images.values())[0]
 
-    def __call__(self):
+    def __call__(self) -> None:
         partner_conn = AzureGenericOAuth2Connection(
             client_id=self._client_id,
             client_secret=self._client_secret,
@@ -113,7 +113,7 @@ config options:
             image_arch = self.config_image.archs[self.image.build_info['arch']]
 
             if self._partner_plan_override is not None:
-                image_plan = self._partner_version_override
+                image_plan = self._partner_plan_override
             else:
                 image_plan = self.image.build_info['release_id']
 
@@ -169,7 +169,7 @@ config options:
                 metadata=metadata,
                 provider='management.azure.com',
                 ref=image_ref,
-                family_ref=f'{self._partner_publisher}:{self._partner_offer}:{self._partner_plan}:latest'
+                family_ref=f'{self._partner_publisher}:{self._partner_offer}:{image_plan}:latest'
             )]
 
             self.image.write_manifests('upload-azure-partner', manifests, output=self.output)
