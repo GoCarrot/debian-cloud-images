@@ -79,8 +79,3 @@ class ImagesAzurePartnerlegacyVersion:
             'osVhdUrl': url,
         }
         return ret
-
-    def get(self) -> typing.Any:
-        response, data, plan = self.__get_plan()
-        versions = plan['microsoft-azure-corevm.vmImagesPublicAzure']
-        return versions[self.__name_version]
