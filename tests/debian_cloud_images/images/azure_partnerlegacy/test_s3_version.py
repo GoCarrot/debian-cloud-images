@@ -47,16 +47,12 @@ class TestImagesAzurePartnerlegacyVersion:
         )
         assert t.create('u', ImageConfigArch(name='arch', azure_name='Arch')) == [
             {
-                'description': 'publisher_offer_plan_version',
-                'label': 'publisher_offer_plan',
-                'mediaName': 'publisher_offer_plan_version',
-                'osVhdUrl': 'u',
+                'ref': 'publisher:offer:plan:version',
+                'family_ref': 'publisher:offer:plan:latest',
             },
             {
-                'description': 'publisher_offer_plan-suffix_version',
-                'label': 'publisher_offer_plan-suffix',
-                'mediaName': 'publisher_offer_plan-suffix_version',
-                'osVhdUrl': 'u',
+                'ref': 'publisher:offer:plan-suffix:version',
+                'family_ref': 'publisher:offer:plan-suffix:latest',
             },
         ]
 
