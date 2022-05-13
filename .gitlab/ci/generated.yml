@@ -64,6 +64,105 @@
       "CLOUD_VENDOR": "azure"
     }
   },
+  "bookworm upload": {
+    "extends": ".upload",
+    "needs": [
+      "azure bookworm amd64 build",
+      "azure bookworm arm64 build",
+      "ec2 bookworm amd64 build",
+      "ec2 bookworm arm64 build",
+      "gce bookworm amd64 build",
+      "generic bookworm amd64 build",
+      "generic bookworm arm64 build",
+      "generic bookworm ppc64el build",
+      "genericcloud bookworm amd64 build",
+      "genericcloud bookworm arm64 build",
+      "nocloud bookworm amd64 build",
+      "nocloud bookworm arm64 build",
+      "nocloud bookworm ppc64el build"
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bookworm"
+    }
+  },
+  "bullseye upload": {
+    "extends": ".upload",
+    "needs": [
+      "azure bullseye amd64 build",
+      "ec2 bullseye amd64 build",
+      "ec2 bullseye arm64 build",
+      "generic bullseye amd64 build",
+      "generic bullseye arm64 build",
+      "generic bullseye ppc64el build",
+      "genericcloud bullseye amd64 build",
+      "genericcloud bullseye arm64 build",
+      "nocloud bullseye amd64 build",
+      "nocloud bullseye arm64 build",
+      "nocloud bullseye ppc64el build"
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bullseye"
+    }
+  },
+  "bullseye-backports upload": {
+    "extends": ".upload",
+    "needs": [
+      "azure bullseye-backports amd64 build",
+      "ec2 bullseye-backports amd64 build",
+      "ec2 bullseye-backports arm64 build",
+      "gce bullseye-backports amd64 build",
+      "generic bullseye-backports amd64 build",
+      "generic bullseye-backports arm64 build",
+      "generic bullseye-backports ppc64el build",
+      "genericcloud bullseye-backports amd64 build",
+      "genericcloud bullseye-backports arm64 build",
+      "nocloud bullseye-backports amd64 build",
+      "nocloud bullseye-backports arm64 build",
+      "nocloud bullseye-backports ppc64el build"
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bullseye-backports"
+    }
+  },
+  "buster upload": {
+    "extends": ".upload",
+    "needs": [
+      "azure buster amd64 build",
+      "ec2 buster amd64 build",
+      "ec2 buster arm64 build",
+      "gce buster amd64 build",
+      "generic buster amd64 build",
+      "generic buster arm64 build",
+      "generic buster ppc64el build",
+      "genericcloud buster amd64 build",
+      "nocloud buster amd64 build",
+      "nocloud buster arm64 build",
+      "nocloud buster ppc64el build"
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "buster"
+    }
+  },
+  "buster-backports upload": {
+    "extends": ".upload",
+    "needs": [
+      "azure buster-backports amd64 build",
+      "ec2 buster-backports amd64 build",
+      "ec2 buster-backports arm64 build",
+      "gce buster-backports amd64 build",
+      "generic buster-backports amd64 build",
+      "generic buster-backports arm64 build",
+      "generic buster-backports ppc64el build",
+      "genericcloud buster-backports amd64 build",
+      "genericcloud buster-backports arm64 build",
+      "nocloud buster-backports amd64 build",
+      "nocloud buster-backports arm64 build",
+      "nocloud buster-backports ppc64el build"
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "buster-backports"
+    }
+  },
   "ec2 bookworm amd64 build": {
     "extends": ".build",
     "variables": {
@@ -576,81 +675,25 @@
       "CLOUD_VENDOR": "nocloud"
     }
   },
-  "upload": {
-    "dependencies": [
-      "azure bookworm amd64 build",
-      "azure bookworm arm64 build",
-      "azure bullseye amd64 build",
-      "azure bullseye-backports amd64 build",
-      "azure buster amd64 build",
-      "azure buster-backports amd64 build",
+  "sid upload": {
+    "extends": ".upload",
+    "needs": [
       "azure sid amd64 build",
       "azure sid arm64 build",
-      "ec2 bookworm amd64 build",
-      "ec2 bookworm arm64 build",
-      "ec2 bullseye amd64 build",
-      "ec2 bullseye arm64 build",
-      "ec2 bullseye-backports amd64 build",
-      "ec2 bullseye-backports arm64 build",
-      "ec2 buster amd64 build",
-      "ec2 buster arm64 build",
-      "ec2 buster-backports amd64 build",
-      "ec2 buster-backports arm64 build",
       "ec2 sid amd64 build",
       "ec2 sid arm64 build",
-      "gce bookworm amd64 build",
-      "gce bullseye-backports amd64 build",
-      "gce buster amd64 build",
-      "gce buster-backports amd64 build",
       "gce sid amd64 build",
-      "generic bookworm amd64 build",
-      "generic bookworm arm64 build",
-      "generic bookworm ppc64el build",
-      "generic bullseye amd64 build",
-      "generic bullseye arm64 build",
-      "generic bullseye ppc64el build",
-      "generic bullseye-backports amd64 build",
-      "generic bullseye-backports arm64 build",
-      "generic bullseye-backports ppc64el build",
-      "generic buster amd64 build",
-      "generic buster arm64 build",
-      "generic buster ppc64el build",
-      "generic buster-backports amd64 build",
-      "generic buster-backports arm64 build",
-      "generic buster-backports ppc64el build",
       "generic sid amd64 build",
       "generic sid arm64 build",
       "generic sid ppc64el build",
-      "genericcloud bookworm amd64 build",
-      "genericcloud bookworm arm64 build",
-      "genericcloud bullseye amd64 build",
-      "genericcloud bullseye arm64 build",
-      "genericcloud bullseye-backports amd64 build",
-      "genericcloud bullseye-backports arm64 build",
-      "genericcloud buster amd64 build",
-      "genericcloud buster-backports amd64 build",
-      "genericcloud buster-backports arm64 build",
       "genericcloud sid amd64 build",
       "genericcloud sid arm64 build",
-      "nocloud bookworm amd64 build",
-      "nocloud bookworm arm64 build",
-      "nocloud bookworm ppc64el build",
-      "nocloud bullseye amd64 build",
-      "nocloud bullseye arm64 build",
-      "nocloud bullseye ppc64el build",
-      "nocloud bullseye-backports amd64 build",
-      "nocloud bullseye-backports arm64 build",
-      "nocloud bullseye-backports ppc64el build",
-      "nocloud buster amd64 build",
-      "nocloud buster arm64 build",
-      "nocloud buster ppc64el build",
-      "nocloud buster-backports amd64 build",
-      "nocloud buster-backports arm64 build",
-      "nocloud buster-backports ppc64el build",
       "nocloud sid amd64 build",
       "nocloud sid arm64 build",
       "nocloud sid ppc64el build"
     ],
-    "extends": ".upload"
+    "variables": {
+      "CLOUD_RELEASE": "sid"
+    }
   }
 }
