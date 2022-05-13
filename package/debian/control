@@ -1,0 +1,24 @@
+Source: debian-cloud-images
+Section: web
+Priority: optional
+Maintainer: Debian Cloud Team <team+cloud@tracker.debian.org>
+Uploaders:
+ Thomas Goirand <zigo@debian.org>,
+ Noah Meyerhans <noahm@debian.org>,
+ Bastian Blank <waldi@debian.org>,
+Build-Depends:
+ debhelper-compat (= 12),
+Standards-Version: 4.2.1
+Rules-Requires-Root: no
+Vcs-Browser: https://salsa.debian.org/cloud-team/debian-cloud-images/tree/master/package
+Vcs-Git: https://salsa.debian.org/cloud-team/debian-cloud-images.git [package]
+Homepage: https://salsa.debian.org/cloud-team/debian-cloud-images
+
+Package: debian-cloud-images-packages
+Architecture: amd64 arm64 ppc64el
+Depends:
+ ${debian-cloud-images-packages:Depends},
+ ${misc:Depends},
+Description: List of packages the Debian cloud images needs
+ This empty package contains dependencies on all packages the cloud images
+ need.  It helps the release team to make sure those packages are available.
