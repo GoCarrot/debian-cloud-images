@@ -1,6 +1,7 @@
 debian-cloud-images (0.0.5) UNRELEASED; urgency=medium
 
   * Only build dependency package.
+  * Include more package dependencies.
 
  -- Bastian Blank <waldi@debian.org>  Fri, 13 May 2022 21:01:19 +0200
 
