@@ -19,13 +19,14 @@ before_script:
 test package:
   stage: source test
   image: debian:bookworm
+  before_script:
+  - apt-get update
+  - apt-get build-dep -y ./package
+  - apt-get install --no-install-recommends -y lintian
   script:
-    - apt-get build-dep -y ./
-    - >
-      apt-get install --no-install-recommends -y
-      lintian
-    - DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -us -uc
-    - lintian ../*.changes
+  - cd package
+  - dpkg-buildpackage -us -uc
+  - lintian ../*.changes
 
 .test python:
   stage: source test

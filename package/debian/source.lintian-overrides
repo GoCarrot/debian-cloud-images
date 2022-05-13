@@ -1,0 +1,2 @@
+# Better then rewriting debian/control
+debian-cloud-images source: source-contains-debian-substvars debian/source.substvars

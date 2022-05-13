@@ -20,11 +20,9 @@ class_arch = {
     'PPC64EL': 'ppc64el',
 }
 
-arch = sys.argv[0]
-
 packages = set()
 
-for i in pathlib.Path('config_space/package_config').glob('*'):
+for i in pathlib.Path('../config_space/sid/package_config').glob('*'):
     if '.' in i.name or i.name in class_exclude:
         continue
 
@@ -57,4 +55,4 @@ for i in pathlib.Path('config_space/package_config').glob('*'):
                     else:
                         packages.add(package)
 
-print(', '.join(sorted(packages)))
+print('debian-cloud-images-packages:Depends=' + ', '.join(sorted(packages)))
