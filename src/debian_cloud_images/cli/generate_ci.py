@@ -16,6 +16,14 @@ class GenerateCiCommand(BaseCommand):
     argparser_usage = '%(prog)s'
     argparser_argument_public_type = None
 
+    class JSONSortedEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, (frozenset, set)):
+                # GitLab only allows 50 entries in 'needs' by default
+                assert len(obj) < 50
+                return sorted(obj)
+            return super().default(self, obj)
+
     @classmethod
     def _argparse_register(cls, parser) -> None:
         super()._argparse_register(parser)
@@ -106,7 +114,6 @@ class GenerateCiCommand(BaseCommand):
 
     def __call__(self) -> None:
         out = {}
-        needs_upload = []
 
         for vendor_name, vendor in self.config_image.vendors.items():
             for release_name, release in self.config_image.releases.items():
@@ -124,10 +131,14 @@ class GenerateCiCommand(BaseCommand):
                         'CLOUD_RELEASE': release_name,
                         'CLOUD_VENDOR': vendor_name,
                     }
+                    variables_upload_all = {
+                        'CLOUD_RELEASE': release_name,
+                    }
                     variables_postupload = {}
 
                     name_build = f'{vendor_name} {release_name} {arch_name} build'
                     name_upload = f'{vendor_name} {release_name} {arch_name} upload'
+                    name_upload_all = f'{release_name} upload'
                     extends_upload = f'.{vendor_name} upload'
                     extends_postupload = f'.{vendor_name} postupload'
 
@@ -140,14 +151,20 @@ class GenerateCiCommand(BaseCommand):
                         name_upload_group = f'{vendor_name} upload'
                         name_postupload = f'{vendor_name} postupload'
 
-                    needs_upload.append(name_build)
                     out[name_build] = {
                         'extends': '.build',
                         'variables': variables,
                     }
 
+                    job_upload_all: dict[str, typing.Any] = out.setdefault(name_upload_all, {
+                        'extends': '.upload',
+                        'variables': variables_upload_all,
+                        'needs': set(),
+                    })
+                    job_upload_all['needs'].add(name_build)
+
                     if enable_upload:
-                        needs_upload.append(name_upload)
+                        job_upload_all['needs'].add(name_upload)
                         job_upload = out[name_upload] = {
                             'extends': extends_upload,
                             'variables': variables,
@@ -160,14 +177,9 @@ class GenerateCiCommand(BaseCommand):
                         job_postupload: dict[str, typing.Any] = out.setdefault(name_postupload, {
                             'extends': extends_postupload,
                             'variables': variables_postupload,
-                            'needs': [],
+                            'needs': set(),
                         })
-                        job_postupload['needs'].append(name_upload)
-
-        out['upload'] = {
-            'extends': '.upload',
-            'dependencies': needs_upload,
-        }
+                        job_postupload['needs'].add(name_upload)
 
         if self.output:
             with open(self.output, 'w') as f:
@@ -177,7 +189,7 @@ class GenerateCiCommand(BaseCommand):
 
     def dump(self, f: typing.TextIO, data: typing.Any) -> None:
         print(f'# Generated with "python3 -m debian_cloud_images.cli.generate_ci {" ".join(sys.argv[1:])}"', file=f)
-        json.dump(data, f, indent=2)
+        json.dump(data, f, indent=2, sort_keys=True, cls=self.JSONSortedEncoder)
         print(file=f)
 
 
