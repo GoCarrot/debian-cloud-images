@@ -18,6 +18,8 @@ class LibcloudRetryConnection(LibcloudConnection):
 
         retry_strategy = Retry(
             total=3,
+            status_forcelist={500, 502, 504},
+            backoff_factor=1,
         )
         self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
 
