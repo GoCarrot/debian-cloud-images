@@ -3,6 +3,9 @@
 %:
 	dh $@
 
+update: debian/source.substvars
+	@true
+
 debian/source.substvars:
 	debian/bin/make-substvars > debian/source.substvars
 
