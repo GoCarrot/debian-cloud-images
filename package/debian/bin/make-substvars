@@ -51,6 +51,9 @@ for i in pathlib.Path('../config_space/sid/package_config').glob('*'):
                     # Ignore to be removed packages
                     if package.endswith('-'):
                         continue
+                    # https://piuparts.debian.org/sid/fail/debian-cloud-images-packages_0.0.5.log
+                    if package == 'init':
+                        continue
                     if arch:
                         packages.add(f'{package} [{arch}]')
                     else:
