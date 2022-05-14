@@ -1,3 +1,5 @@
+import typing
+
 from marshmallow import Schema, fields, pre_dump, post_load
 
 from ..meta import ObjectMeta, TypeMeta, v1_ObjectMetaSchema, v1_TypeMetaSchema
@@ -5,9 +7,18 @@ from ..registry import registry as _registry
 
 
 class Build:
-    def __init__(self, info=None, packages=None, metadata=None):
+    info: dict
+    packages: list
+    metadata: ObjectMeta
+
+    def __init__(
+            self,
+            info: typing.Optional[dict] = None,
+            packages: typing.Optional[list] = None,
+            metadata: typing.Optional[ObjectMeta] = None,
+    ):
         self.info = info or {}
-        self.packages = packages
+        self.packages = packages or []
         self.metadata = metadata or ObjectMeta()
 
 
@@ -30,9 +41,9 @@ class v1alpha1_BuildSchema(v1_TypeMetaSchema):
     data = fields.Nested(v1alpha1_BuildDataSchema)
 
     @pre_dump
-    def dump_items(self, data, **kw):
+    def dump_items(self, data: Build, **kw) -> dict[str, typing.Any]:
         return {'metadata': data.metadata, 'data': data}
 
     @post_load
-    def load_obj(self, data, **kw):
-        return self.__model__(metadata=data['metadata'], **data['data'])
+    def load_obj(self, data: dict[str, typing.Any], **kw) -> Build:
+        return Build(metadata=data['metadata'], **data['data'])

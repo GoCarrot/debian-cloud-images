@@ -1,3 +1,5 @@
+import typing
+
 from marshmallow import Schema, fields, pre_dump, post_load, validate
 
 from ..meta import TypeMeta, v1_TypeMetaSchema
@@ -37,8 +39,6 @@ class ImageConfigMatch:
 
 
 class v1alpha1_ImageConfigMatchSchema(Schema):
-    __model__ = ImageConfigMatch
-
     op = fields.Str(validate=validate.OneOf(('Enable', 'EnableUpload', 'Disable', 'DisableUpload')))
     match_arches = fields.List(fields.Str(), data_key='matchArches')
     match_releases = fields.List(fields.Str(), data_key='matchReleases')
@@ -46,8 +46,8 @@ class v1alpha1_ImageConfigMatchSchema(Schema):
     upload_group = fields.Str(data_key='uploadGroup')
 
     @post_load
-    def load_obj(self, data, **kw):
-        return self.__model__(**data)
+    def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigMatch:
+        return ImageConfigMatch(**data)
 
 
 class ImageConfigArch:
@@ -63,15 +63,13 @@ class ImageConfigArch:
 
 
 class v1alpha1_ImageConfigArchSchema(Schema):
-    __model__ = ImageConfigArch
-
     name = fields.Str(required=True)
     azure_name = fields.Str(data_key='azureName')
     fai_classes = fields.List(fields.Str())
 
     @post_load
-    def load_obj(self, data, **kw):
-        return self.__model__(**data)
+    def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigArch:
+        return ImageConfigArch(**data)
 
 
 class ImageConfigRelease:
@@ -93,8 +91,6 @@ class ImageConfigRelease:
 
 
 class v1alpha1_ImageConfigReleaseSchema(Schema):
-    __model__ = ImageConfigRelease
-
     name = fields.Str(required=True)
     basename = fields.Str(required=True)
     id = fields.Str(required=True)
@@ -103,8 +99,8 @@ class v1alpha1_ImageConfigReleaseSchema(Schema):
     arch_supports_linux_image_cloud = fields.List(fields.Str())
 
     @post_load
-    def load_obj(self, data, **kw):
-        return self.__model__(**data)
+    def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigRelease:
+        return ImageConfigRelease(**data)
 
 
 class ImageConfigType:
@@ -124,8 +120,6 @@ class ImageConfigType:
 
 
 class v1alpha1_ImageConfigTypeSchema(Schema):
-    __model__ = ImageConfigType
-
     name = fields.Str(required=True)
     fai_classes = fields.List(fields.Str())
     output_name = fields.Str(required=True)
@@ -133,8 +127,8 @@ class v1alpha1_ImageConfigTypeSchema(Schema):
     output_version_azure = fields.Str(required=True)
 
     @post_load
-    def load_obj(self, data, **kw):
-        return self.__model__(**data)
+    def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigType:
+        return ImageConfigType(**data)
 
 
 class ImageConfigPublicType:
@@ -148,14 +142,12 @@ class ImageConfigPublicType:
 
 
 class v1alpha1_ImageConfigPublicTypeSchema(Schema):
-    __model__ = ImageConfigPublicType
-
     name = fields.Str(required=True)
     matches = fields.Nested(v1alpha1_ImageConfigMatchSchema, many=True)
 
     @post_load
-    def load_obj(self, data, **kw):
-        return self.__model__(**data)
+    def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigPublicType:
+        return ImageConfigPublicType(**data)
 
 
 class ImageConfigVendor:
@@ -175,8 +167,6 @@ class ImageConfigVendor:
 
 
 class v1alpha1_ImageConfigVendorSchema(Schema):
-    __model__ = ImageConfigVendor
-
     name = fields.Str(required=True)
     fai_classes = fields.List(fields.Str())
     size = fields.Integer(required=True)
@@ -184,8 +174,8 @@ class v1alpha1_ImageConfigVendorSchema(Schema):
     matches = fields.Nested(v1alpha1_ImageConfigMatchSchema, many=True)
 
     @post_load
-    def load_obj(self, data, **kw):
-        return self.__model__(**data)
+    def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigVendor:
+        return ImageConfigVendor(**data)
 
 
 @_registry.register
@@ -200,7 +190,7 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
     _vendors_list = fields.Nested(v1alpha1_ImageConfigVendorSchema, data_key='vendors', many=True)
 
     @pre_dump
-    def dump_obj(self, obj, **kw):
+    def dump_obj(self, obj: dict[str, typing.Any], **kw) -> dict[str, typing.Any]:
         data = obj.__dict__.copy()
         data['_archs_list'] = data['archs'].values()
         data['_public_types_list'] = data['public_types'].values()
@@ -210,7 +200,7 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
         return data
 
     @post_load
-    def load_obj(self, data, **kw):
+    def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfig:
         data.pop('api_version', None)
         data.pop('kind', None)
         data['archs'] = {c.name: c for c in data.pop('_archs_list', [])}
@@ -218,4 +208,4 @@ class v1alpha1_ImageConfigSchema(v1_TypeMetaSchema):
         data['releases'] = {c.name: c for c in data.pop('_releases_list', [])}
         data['types'] = {c.name: c for c in data.pop('_types_list', [])}
         data['vendors'] = {c.name: c for c in data.pop('_vendors_list', [])}
-        return self.__model__(**data)
+        return ImageConfig(**data)
