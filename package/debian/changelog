@@ -1,9 +1,9 @@
-debian-cloud-images (0.0.6) UNRELEASED; urgency=medium
+debian-cloud-images (0.0.6) unstable; urgency=medium
 
   * Restrict vendor packages by architecture.
   * Workaround piuparts choking.
 
- -- Bastian Blank <waldi@debian.org>  Sat, 14 May 2022 12:41:41 +0200
+ -- Bastian Blank <waldi@debian.org>  Sat, 14 May 2022 12:42:45 +0200
 
 debian-cloud-images (0.0.5) unstable; urgency=medium
 
