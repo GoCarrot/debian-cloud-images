@@ -15,6 +15,9 @@ class_exclude = {
 class_arch = {
     'AMD64': 'amd64',
     'ARM64': 'arm64',
+    'AZURE': 'amd64 arm64',
+    'EC2': 'amd64 arm64',
+    'GCE': 'amd64 arm64',
     'PPC64EL': 'ppc64el',
 }
 
@@ -47,6 +50,9 @@ for i in pathlib.Path('../config_space/sid/package_config').glob('*'):
                 for package in line.split():
                     # Ignore to be removed packages
                     if package.endswith('-'):
+                        continue
+                    # https://piuparts.debian.org/sid/fail/debian-cloud-images-packages_0.0.5.log
+                    if package == 'init':
                         continue
                     if arch:
                         packages.add(f'{package} [{arch}]')
