@@ -13,8 +13,8 @@ TypeMeta = namedtuple('TypeMeta', ['kind', 'api_version'])
 
 
 class v1_TypeMetaSchema(SchemaNonempty):
-    __model__: typing.Type = TypeMeta
-    __typemeta__: typing.Optional[TypeMeta] = None
+    __model__: typing.ClassVar[typing.Type] = TypeMeta
+    __typemeta__: typing.ClassVar[typing.Optional[TypeMeta]] = None
 
     api_version = fields.Str(data_key='apiVersion')
     kind = fields.Str()
