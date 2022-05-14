@@ -25,7 +25,7 @@ test package:
   - apt-get install --no-install-recommends -y lintian
   script:
   - cd package
-  - dpkg-buildpackage -us -uc
+  - for arch in amd64 arm64 ppc64el; do dpkg-buildpackage -us -uc -a$arch; done
   - lintian ../*.changes
 
 .test python:
