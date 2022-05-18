@@ -6,7 +6,7 @@ import pathlib
 
 from typing import Dict, Iterable
 
-from ..api.registry import registry as api_registry
+from ..api.cdo.build import v1alpha1_BuildSchema
 from ..api import wellknown
 
 
@@ -33,7 +33,7 @@ class CreateManifest:
             return
 
         with self.input_filename.open() as f:
-            manifest = api_registry.load(json.load(f))
+            manifest = v1alpha1_BuildSchema().load(json.load(f))
 
         manifest.info = self.info
 
@@ -49,4 +49,4 @@ class CreateManifest:
         manifest.metadata.annotations[wellknown.annotation_cdo_digest] = ','.join(digest)
 
         with self.output_filename.open('w') as f:
-            json.dump(api_registry.dump(manifest), f, indent=4, separators=(',', ': '), sort_keys=True)
+            json.dump(v1alpha1_BuildSchema().dump(manifest), f, indent=4, separators=(',', ': '), sort_keys=True)
