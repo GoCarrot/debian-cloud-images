@@ -1,4 +1,3 @@
-apt_preserve_sources_list: true
 manage_etc_hosts: true
 system_info:
   default_user:
