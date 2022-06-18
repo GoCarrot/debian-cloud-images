@@ -132,3 +132,20 @@ publicTypes:
   - matchVendors: [ec2]
     op: EnableUpload
   - matchVendors: [generic, genericcloud, nocloud]
+- name: release
+  matches:
+  - matchReleases: [bookworm, bookworm-backports, sid]
+    op: Disable
+  - matchVendors: [azure]
+    matchReleases: [buster, buster-backports]
+    matchArches: [amd64]
+    uploadGroup: debian-10
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [bullseye, bullseye-backports]
+    matchArches: [amd64]
+    uploadGroup: debian-11
+    op: EnableUpload
+  - matchVendors: [ec2]
+    op: EnableUpload
+  - matchVendors: [generic, genericcloud]

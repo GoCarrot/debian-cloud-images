@@ -10,19 +10,40 @@ from .base import BaseCommand
 logger = logging.getLogger()
 
 
+class SortedList:
+    def __init__(self, d=(), *, key):
+        self.__data = list(d)
+        self.__key = key
+
+    def __len__(self):
+        return len(self.__data)
+
+    def add(self, d):
+        if d not in self.__data:
+            self.__data.append(d)
+        return self.__data
+
+    def copy(self):
+        return self.__class__(self.__data, key=self.__key)
+
+    def sorted(self):
+        return sorted(self.__data, key=lambda s: s[self.__key])
+
+
+class JSONSortedEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, SortedList):
+            # GitLab only allows 50 entries in 'needs' by default
+            assert len(obj) < 50
+            return obj.sorted()
+        return super().default(self, obj)
+
+
 class GenerateCiCommand(BaseCommand):
     argparser_name = 'generate-generate'
     argparser_help = 'generate CI config'
     argparser_usage = '%(prog)s'
     argparser_argument_public_type = None
-
-    class JSONSortedEncoder(json.JSONEncoder):
-        def default(self, obj):
-            if isinstance(obj, (frozenset, set)):
-                # GitLab only allows 50 entries in 'needs' by default
-                assert len(obj) < 50
-                return sorted(obj)
-            return super().default(self, obj)
 
     @classmethod
     def _argparse_register(cls, parser) -> None:
@@ -113,7 +134,7 @@ class GenerateCiCommand(BaseCommand):
         return enable, enable_upload, upload_group
 
     def __call__(self) -> None:
-        out = {}
+        out: dict[str, typing.Any] = {}
 
         for vendor_name, vendor in self.config_image.vendors.items():
             for release_name, release in self.config_image.releases.items():
@@ -125,6 +146,12 @@ class GenerateCiCommand(BaseCommand):
                     enable, enable_upload, upload_group = self.check_matches(self.public_type.matches, vendor_name, release.basename, arch_name)
                     if not enable:
                         continue
+
+                    # XXX
+                    if self.public_type.name == 'release':
+                        enable_build = False
+                    else:
+                        enable_build = True
 
                     variables = {
                         'CLOUD_ARCH': arch_name,
@@ -141,6 +168,24 @@ class GenerateCiCommand(BaseCommand):
                     name_upload_all = f'{release_name} upload'
                     extends_upload = f'.{vendor_name} upload'
                     extends_postupload = f'.{vendor_name} postupload'
+                    needs_build = {
+                        'job': name_build,
+                        'optional': False,
+                    }
+                    needs_upload = {
+                        'job': name_upload,
+                        'optional': False,
+                    }
+                    needs_upload_optional = {
+                        'job': name_upload,
+                        'optional': True,
+                    }
+                    enable_variable = f'PIPELINE_RELEASE_{release_name.upper().replace("-", "_")}'
+                    rule = {'if': f'${enable_variable}'}
+
+                    # XXX
+                    if self.public_type.name != 'release':
+                        out.setdefault('variables', {})[enable_variable] = '1'
 
                     if upload_group:
                         variables['CLOUD_UPLOAD_GROUP'] = upload_group
@@ -151,35 +196,44 @@ class GenerateCiCommand(BaseCommand):
                         name_upload_group = f'{vendor_name} upload'
                         name_postupload = f'{vendor_name} postupload'
 
-                    out[name_build] = {
-                        'extends': '.build',
-                        'variables': variables,
-                    }
-
                     job_upload_all: dict[str, typing.Any] = out.setdefault(name_upload_all, {
                         'extends': '.upload',
                         'variables': variables_upload_all,
-                        'needs': set(),
+                        'needs': SortedList(key='job'),
+                        'rules': SortedList([], key='if'),
                     })
-                    job_upload_all['needs'].add(name_build)
+                    job_upload_all['rules'].add(rule)
+
+                    if enable_build:
+                        job_upload_all['needs'].add(needs_build)
+                        out[name_build] = {
+                            'extends': '.build',
+                            'variables': variables,
+                            'rules': SortedList([rule], key='if'),
+                        }
 
                     if enable_upload:
-                        job_upload_all['needs'].add(name_upload)
+                        job_upload_all['needs'].add(needs_upload)
                         job_upload = out[name_upload] = {
                             'extends': extends_upload,
                             'variables': variables,
-                            'needs': [name_build],
+                            'needs': SortedList(key='job'),
+                            'rules': SortedList([rule], key='if'),
                         }
 
+                        if enable_build:
+                            job_upload['needs'].add(needs_build)
                         if upload_group:
                             job_upload['resource_group'] = name_upload_group
 
                         job_postupload: dict[str, typing.Any] = out.setdefault(name_postupload, {
                             'extends': extends_postupload,
                             'variables': variables_postupload,
-                            'needs': set(),
+                            'needs': SortedList(key='job'),
+                            'rules': SortedList([], key='if'),
                         })
-                        job_postupload['needs'].add(name_upload)
+                        job_postupload['needs'].add(needs_upload_optional)
+                        job_postupload['rules'].add(rule)
 
         if self.output:
             with open(self.output, 'w') as f:
@@ -189,7 +243,7 @@ class GenerateCiCommand(BaseCommand):
 
     def dump(self, f: typing.TextIO, data: typing.Any) -> None:
         print(f'# Generated with "python3 -m debian_cloud_images.cli.generate_ci {" ".join(sys.argv[1:])}"', file=f)
-        json.dump(data, f, indent=2, sort_keys=True, cls=self.JSONSortedEncoder)
+        json.dump(data, f, indent=2, sort_keys=True, cls=JSONSortedEncoder)
         print(file=f)
 
 
