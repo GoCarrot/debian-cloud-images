@@ -27,7 +27,7 @@ class SortedList:
         return self.__class__(self.__data, key=self.__key)
 
     def sorted(self):
-        return sorted(self.__data, key=lambda s: s[self.__key])
+        return sorted(self.__data, key=lambda s: s.get(self.__key, '\uFFFF'))
 
 
 class JSONSortedEncoder(json.JSONEncoder):
@@ -147,12 +147,6 @@ class GenerateCiCommand(BaseCommand):
                     if not enable:
                         continue
 
-                    # XXX
-                    if self.public_type.name == 'release':
-                        enable_build = False
-                    else:
-                        enable_build = True
-
                     variables = {
                         'CLOUD_ARCH': arch_name,
                         'CLOUD_RELEASE': release_name,
@@ -181,31 +175,44 @@ class GenerateCiCommand(BaseCommand):
                         'optional': True,
                     }
                     enable_variable = f'PIPELINE_RELEASE_{release_name.upper().replace("-", "_")}'
-                    rule = {'if': f'${enable_variable}'}
 
                     # XXX
-                    if self.public_type.name != 'release':
+                    if self.public_type.name == 'release':
+                        enable_build = False
+                        enable_upload_all = True
+                        rule = {'if': f'${enable_variable}'}
+                    elif self.public_type.name == 'daily':
+                        enable_build = True
+                        enable_upload_all = True
+                        rule = {'if': f'${enable_variable}'}
                         out.setdefault('variables', {})[enable_variable] = '1'
-
-                    if upload_group:
-                        variables['CLOUD_UPLOAD_GROUP'] = upload_group
-                        variables_postupload['CLOUD_UPLOAD_GROUP'] = upload_group
-                        name_upload_group = f'{vendor_name} group-{upload_group} upload'
-                        name_postupload = f'{vendor_name} group-{upload_group} postupload'
                     else:
-                        name_upload_group = f'{vendor_name} upload'
-                        name_postupload = f'{vendor_name} postupload'
+                        enable_build = True
+                        enable_upload_all = False
+                        rule = {'when': 'manual'}
 
-                    job_upload_all: dict[str, typing.Any] = out.setdefault(name_upload_all, {
-                        'extends': '.upload',
-                        'variables': variables_upload_all,
-                        'needs': SortedList(key='job'),
-                        'rules': SortedList([], key='if'),
-                    })
-                    job_upload_all['rules'].add(rule)
+                    if enable_upload_all:
+                        if upload_group:
+                            variables['CLOUD_UPLOAD_GROUP'] = upload_group
+                            variables_postupload['CLOUD_UPLOAD_GROUP'] = upload_group
+                            name_upload_group = f'{vendor_name} group-{upload_group} upload'
+                            name_postupload = f'{vendor_name} group-{upload_group} postupload'
+                        else:
+                            name_upload_group = f'{vendor_name} upload'
+                            name_postupload = f'{vendor_name} postupload'
+
+                        job_upload_all: dict[str, typing.Any] = out.setdefault(name_upload_all, {
+                            'extends': '.upload',
+                            'variables': variables_upload_all,
+                            'needs': SortedList(key='job'),
+                            'rules': SortedList([], key='if'),
+                        })
+                        job_upload_all['rules'].add(rule)
 
                     if enable_build:
-                        job_upload_all['needs'].add(needs_build)
+                        if enable_upload_all:
+                            job_upload_all['needs'].add(needs_build)
+
                         out[name_build] = {
                             'extends': '.build',
                             'variables': variables,

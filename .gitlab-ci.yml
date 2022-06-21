@@ -7,6 +7,12 @@ variables:
   CLOUD_IMAGE_BUILD_ID: ${CI_PROJECT_NAMESPACE}-${CI_COMMIT_REF_SLUG}
   GIT_DEPTH: "1"
 
+workflow:
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    when: never
+  - when: always
+
 before_script:
   - apt-get update
   - apt-get install --no-install-recommends -y python3-libcloud python3-marshmallow python3-yaml qemu-utils
@@ -115,17 +121,7 @@ test python latest:
     reports:
       junit: '*.build.junit.xml'
   needs: []
-  rules:
-  - if: '$CI_MERGE_REQUEST_ID == null'
-    when: manual
   allow_failure: true
-
-.upload:
-  stage: build
-  script:
-  - 'false'
-  rules:
-  - when: never
 
 include:
   local: .gitlab/ci/generated.yml
