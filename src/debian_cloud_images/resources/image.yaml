@@ -60,7 +60,7 @@ vendors:
   matches:
   - matchArches: [amd64]
   - matchArches: [arm64]
-    matchReleases: [buster, buster-backports, bullseye, bullseye-backports]
+    matchReleases: [buster, buster-backports, bullseye]
     op: Disable
   - matchArches: [arm64]
 - name: ec2
@@ -111,22 +111,18 @@ publicTypes:
   matches:
   - matchVendors: [azure]
     matchReleases: [buster, buster-backports]
-    matchArches: [amd64]
     uploadGroup: debian-10-daily
     op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [bullseye, bullseye-backports]
-    matchArches: [amd64]
     uploadGroup: debian-11-daily
     op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [bookworm, bookworm-backports]
-    matchArches: [amd64]
     uploadGroup: debian-12-daily
     op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [sid]
-    matchArches: [amd64, arm64]
     uploadGroup: debian-sid-daily
     op: EnableUpload
   - matchVendors: [ec2]
@@ -138,12 +134,10 @@ publicTypes:
     op: Disable
   - matchVendors: [azure]
     matchReleases: [buster, buster-backports]
-    matchArches: [amd64]
     uploadGroup: debian-10
     op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [bullseye, bullseye-backports]
-    matchArches: [amd64]
     uploadGroup: debian-11
     op: EnableUpload
   - matchVendors: [ec2]

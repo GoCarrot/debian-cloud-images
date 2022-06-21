@@ -52,6 +52,19 @@
       "CLOUD_VENDOR": "azure"
     }
   },
+  "azure bullseye-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
   "azure buster amd64 build": {
     "extends": ".build",
     "rules": [
