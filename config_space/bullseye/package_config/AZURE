@@ -9,3 +9,7 @@ PACKAGES install-norec BUSTER
 python
 # Includes not backported service changes to start as early as possible
 hyperv-daemons/buster-backports
+
+PACKAGES install-norec BULLSEYE
+# Azure needs cloud-init >= 22.1
+cloud-init/bullseye-backports
