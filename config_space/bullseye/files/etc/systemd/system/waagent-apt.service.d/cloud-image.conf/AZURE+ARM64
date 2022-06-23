@@ -1,0 +1,3 @@
+# systemd in Bullseye can't detect Hyper-V on ARM64
+[Unit]
+ConditionVirtualization=
