@@ -134,11 +134,18 @@ publicTypes:
     op: Disable
   - matchVendors: [azure]
     matchReleases: [buster, buster-backports]
+    matchArches: [amd64]
     uploadGroup: debian-10
     op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [bullseye, bullseye-backports]
+    matchArches: [amd64]
     uploadGroup: debian-11
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [bullseye, bullseye-backports]
+    matchArches: [arm64]
+    uploadGroup: debian-11-arm64
     op: EnableUpload
   - matchVendors: [ec2]
     op: EnableUpload
