@@ -6,6 +6,7 @@ import json
 import subprocess
 import tempfile
 import typing
+import yaml
 
 from debian_cloud_images.images.azure_partnerlegacy.s1_offer import ImagesAzurePartnerlegacyOffer
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
@@ -100,11 +101,11 @@ config options:
         data = partner_offer.get()
 
         with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8') as f:
-            json.dump(data, f, sort_keys=True, indent=4)
+            yaml.safe_dump(data, f)
             f.flush()
             subprocess.check_call(['editor', f.name])
             f.seek(0)
-            data_changed = json.load(f)
+            data_changed = yaml.safe_load(f)
 
         diff = list(difflib.unified_diff(
             json.dumps(data, sort_keys=True, indent=4).split('\n'),
