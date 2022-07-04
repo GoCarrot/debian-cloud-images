@@ -2,12 +2,18 @@ import logging
 import time
 
 from libcloud.compute.types import VolumeSnapshotState
+import libcloud.common.exceptions
 
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
 from ..utils.libcloud.compute.ec2 import ExEC2NodeDriver
 from ..utils.libcloud.storage.s3 import S3BucketStorageDriver
+
+
+class EC2Exception(Exception):
+    def __init__(self, message):
+        self.message = message
 
 
 class ImageUploaderEc2:
@@ -135,12 +141,27 @@ class ImageUploaderEc2:
 
             logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
-            driver.ex_create_tags(ec2_image, self.generate_tags(image, public_info))
-            driver.ex_modify_image_attribute(
-                ec2_image,
-                self.generate_permissions('LaunchPermission'),
-            )
+            found = False
+            tries_remaining = 10
 
+            while not found and tries_remaining > 10:
+                tries_remaining -= 1
+                try:
+                    driver.ex_create_tags(ec2_image, self.generate_tags(image, public_info))
+                    driver.ex_modify_image_attribute(
+                        ec2_image,
+                        self.generate_permissions('LaunchPermission'),
+                    )
+                    found = True
+                except libcloud.common.exceptions.BaseHTTPError as e:
+                    if "InvalidAMIID.NotFound" in e.message:
+                        logging.info("Image %s not yet available in %s.",
+                                     ec2_image.id, driver.region_name)
+                        time.sleep(10)
+                    else:
+                        raise
+            if not found:
+                raise EC2Exception("AMI %s never became available in %s" % (ec2_image.image_id, driver.region))
             ec2_images[driver.region_name] = ec2_image
 
         return ec2_images
