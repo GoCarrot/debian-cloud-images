@@ -142,9 +142,9 @@ class ImageUploaderEc2:
             logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
             found = False
-            tries_remaining = 10
+            tries_remaining = 30
 
-            while not found and tries_remaining > 10:
+            while not found and tries_remaining > 0:
                 tries_remaining -= 1
                 try:
                     driver.ex_create_tags(ec2_image, self.generate_tags(image, public_info))
@@ -161,7 +161,7 @@ class ImageUploaderEc2:
                     else:
                         raise
             if not found:
-                raise EC2Exception("AMI %s never became available in %s" % (ec2_image.image_id, driver.region))
+                raise EC2Exception("AMI %s never became available in %s" % (ec2_image.id, driver.region))
             ec2_images[driver.region_name] = ec2_image
 
         return ec2_images
