@@ -2,13 +2,13 @@ import logging
 import time
 
 from libcloud.compute.types import VolumeSnapshotState
-import libcloud.common.exceptions
 
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
 from ..utils.libcloud.compute.ec2 import ExEC2NodeDriver
 from ..utils.libcloud.storage.s3 import S3BucketStorageDriver
+from ..utils.retry import with_retries
 
 
 class EC2Exception(Exception):
@@ -128,7 +128,7 @@ class ImageUploaderEc2:
             driver = snapshot.driver
             architecture = self.architecture_map[image.build_arch]
 
-            ec2_image = driver.ex_register_image(
+            ec2_image = with_retries(lambda: driver.ex_register_image(
                 name=public_info.vendor_name,
                 description=public_info.vendor_description,
                 architecture=architecture,
@@ -137,31 +137,17 @@ class ImageUploaderEc2:
                 virtualization_type='hvm',
                 ena_support=True,
                 sriov_net_support='simple',
-            )
+            ))
 
             logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
-            found = False
-            tries_remaining = 30
+            with_retries(lambda: driver.ex_create_tags(ec2_image, self.generate_tags(image, public_info)))
+            with_retries(lambda: driver.ex_modify_image_attribute(
+                ec2_image,
+                self.generate_permissions('LaunchPermission'),
+            ))
 
-            while not found and tries_remaining > 0:
-                tries_remaining -= 1
-                try:
-                    driver.ex_create_tags(ec2_image, self.generate_tags(image, public_info))
-                    driver.ex_modify_image_attribute(
-                        ec2_image,
-                        self.generate_permissions('LaunchPermission'),
-                    )
-                    found = True
-                except libcloud.common.exceptions.BaseHTTPError as e:
-                    if "InvalidAMIID.NotFound" in e.message:
-                        logging.info("Image %s not yet available in %s.",
-                                     ec2_image.id, driver.region_name)
-                        time.sleep(10)
-                    else:
-                        raise
-            if not found:
-                raise EC2Exception("AMI %s never became available in %s" % (ec2_image.id, driver.region))
+            logging.info('Finished setting tags and attributes on %s', ec2_image.id)
             ec2_images[driver.region_name] = ec2_image
 
         return ec2_images
@@ -177,18 +163,18 @@ class ImageUploaderEc2:
             if region == region_base:
                 snapshot = snapshot_base
             else:
-                snapshot = compute.ex_copy_snapshot(
+                snapshot = with_retries(lambda: compute.ex_copy_snapshot(
                     snapshot_base,
                     public_info.vendor_description,
-                )
+                ))
 
                 logging.info('Copy snapshot to %s/%s', region, snapshot.id)
 
-            compute.ex_create_tags(snapshot, self.generate_tags(image, public_info))
-            compute.ex_modify_snapshot_attribute(
+            with_retries(lambda: compute.ex_create_tags(snapshot, self.generate_tags(image, public_info)))
+            with_retries(lambda: compute.ex_modify_snapshot_attribute(
                 snapshot,
                 self.generate_permissions('CreateVolumePermission'),
-            )
+            ))
 
             snapshots_creating.append(snapshot)
 
@@ -221,7 +207,7 @@ class ImageUploaderEc2:
 
         logging.info('Import snapshot to region %s', region_name)
 
-        return self.compute[region_name].ex_import_snapshot(
+        return with_retries(lambda: self.compute[region_name].ex_import_snapshot(
             description=public_info.vendor_description,
             disk_container=[{
                 'Description': 'root',
@@ -231,7 +217,7 @@ class ImageUploaderEc2:
                     'S3Key': obj.name,
                 }
             }],
-        )
+        ))
 
     def delete_file(self, image, obj):
         """ Delete file from storage """
