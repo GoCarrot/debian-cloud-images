@@ -241,6 +241,8 @@ class GenerateCiCommand(BaseCommand):
                         })
                         job_postupload['needs'].add(needs_upload_optional)
                         job_postupload['rules'].add(rule)
+                        if enable_build:
+                            job_postupload['needs'].add(needs_build)
 
         if self.output:
             with open(self.output, 'w') as f:
