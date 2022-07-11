@@ -42,6 +42,19 @@ config options:
         subparsers = parser.add_subparsers(
             help='sub-command help',
         )
+        parser_cat = subparsers.add_parser(
+            name='cat',
+            help='retrieve Azure Partner offer',
+        )
+        parser_cat.set_defaults(impl=cls.cat)
+        parser_cat.add_argument(
+            'slot',
+            choices=['draft', 'preview', 'production'],
+            default='draft',
+            help='retrieve specified slot (draft (default), preview, production)',
+            metavar='SLOT',
+            nargs='?',
+        )
         parser_edit = subparsers.add_parser(
             name='edit',
             help='edit Azure Partner offer',
@@ -62,12 +75,14 @@ config options:
             self, *,
             impl: typing.Callable[[ControlAzurePartnerlegacyCommand, ImagesAzurePartnerlegacyOffer], None],
             partner_offer: str,
+            slot: str = None,
             **kw,
     ) -> None:
         super().__init__(**kw)
 
         self._impl = impl
         self._partner_offer = partner_offer
+        self._slot = slot
 
         self._client_id = str(self.config_get('azure.auth.client', default=None))
         self._client_secret = self.config_get('azure.auth.secret', default=None)
@@ -96,6 +111,12 @@ config options:
         )
 
         self._impl(self, partner_offer)
+
+    def cat(self, partner_offer: ImagesAzurePartnerlegacyOffer) -> None:
+        assert self._slot is not None
+        data = partner_offer.get(slot=self._slot)
+        with subprocess.Popen(['pager'], stdin=subprocess.PIPE) as p:
+            p.communicate(yaml.safe_dump(data).encode('utf-8'))
 
     def edit(self, partner_offer: ImagesAzurePartnerlegacyOffer) -> None:
         data = partner_offer.get()
