@@ -50,8 +50,7 @@ config options:
         parser_cat.add_argument(
             'slot',
             choices=['draft', 'preview', 'production'],
-            default='draft',
-            help='retrieve specified slot (draft (default), preview, production)',
+            help='retrieve specified slot (none (default), default, preview, production)',
             metavar='SLOT',
             nargs='?',
         )
@@ -113,7 +112,6 @@ config options:
         self._impl(self, partner_offer)
 
     def cat(self, partner_offer: ImagesAzurePartnerlegacyOffer) -> None:
-        assert self._slot is not None
         data = partner_offer.get(slot=self._slot)
         with subprocess.Popen(['pager'], stdin=subprocess.PIPE) as p:
             p.communicate(yaml.safe_dump(data).encode('utf-8'))

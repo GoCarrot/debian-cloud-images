@@ -32,8 +32,11 @@ class ImagesAzurePartnerlegacyOffer:
     def __request(self, path: str, method: str, data: typing.Any = None) -> typing.Any:
         return self.__conn.request(path, method=method, data=data, params={'api-version': self.api_version})
 
-    def get(self, slot: str = 'draft') -> typing.Any:
-        path = f'{self.path}/slot/{slot}'
+    def get(self, slot: str = None) -> typing.Any:
+        if slot:
+            path = f'{self.path}/slot/{slot}'
+        else:
+            path = self.path
         response = self.__request(path=path, method='GET')
         return response.parse_body()
 
