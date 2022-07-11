@@ -69,7 +69,7 @@ class TestImagesAzurePartnerlegacyOffer:
 
     def test_op_cleanup(self, azure_conn, requests_mock):
         requests_mock.get(
-            'https://host/api/publishers/publisher/offers/offer/slot/draft?api-version=2017-10-31',
+            'https://host/api/publishers/publisher/offers/offer?api-version=2017-10-31',
             json={
                 'definition': {
                     'plans': [
