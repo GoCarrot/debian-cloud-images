@@ -1,4 +1,3 @@
-import collections.abc
 import logging
 import time
 import typing
@@ -77,41 +76,3 @@ class ImagesAzureComputeimageImage:
                 raise RuntimeError('Image creation ended with unknown state: %s' % state)
 
         raise RuntimeError('Timeout while waiting for image creation to succeed')
-
-
-class ImagesAzureComputeimageImages(collections.abc.Mapping):
-    __items: typing.Mapping[str, ImagesAzureComputeimageImage]
-
-    __name_resource_group: str
-    __conn: AzureGenericOAuth2Connection
-
-    api_version: str = '2021-10-01'
-
-    def __init__(
-            self,
-            resource_group: str,
-            conn: AzureGenericOAuth2Connection,
-    ) -> None:
-        self.__name_resource_group = resource_group
-        self.__conn = conn
-        raise RuntimeError
-
-    def __getitem__(self, name: str) -> ImagesAzureComputeimageImage:
-        return self.__items[name]
-
-    def __iter__(self) -> typing.Iterator[str]:
-        return iter(self.__items)
-
-    def __len__(self) -> int:
-        return len(self.__items)
-
-    @property
-    def path(self) -> str:
-        return f'/subscriptions/{self.__conn.subscription_id}/resourceGroups/{self.__name_resource_group}/providers/Microsoft.Compute/images'
-
-    def api_get(self) -> typing.Iterator[typing.Any]:
-        response = self.__conn.request(self.path, method='GET', params={'api-version': self.api_version})
-        body = response.parse_body()
-        if 'nextLink' in body:
-            raise NotImplementedError
-        yield from body['value']
