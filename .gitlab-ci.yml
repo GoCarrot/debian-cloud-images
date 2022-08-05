@@ -59,7 +59,7 @@ test python latest:
   stage: source test
   image: python:slim
   before_script:
-  - pip install -e .[mypy,tests] pytest pytest-cov pytest-flake8 pytest-mypy
+  - pip install -e .[mypy,tests] "flake8<5" pytest pytest-cov pytest-flake8 pytest-mypy
   script:
   - >
     pytest
