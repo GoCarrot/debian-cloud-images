@@ -12,9 +12,11 @@ class TestVar:
             'faillog',
             'journal',  # systemd persistent journal
             'lastlog',
+            'private',
             'runit',
             'unattended-upgrades',
             'wtmp',
+            'README',
         ))
 
         assert len(c) == 0, '/var/log contains unexpected files: {}'.format(', '.join(c))
