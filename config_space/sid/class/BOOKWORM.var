@@ -1,3 +1,2 @@
 SUITE=bookworm
-SUITE_SECURITY="${SUITE}-security"
-FAI_DEBOOTSTRAP="$SUITE $apt_cdn/debian/"
+FAI_DEBOOTSTRAP="$SUITE https://deb.debian.org/debian/"

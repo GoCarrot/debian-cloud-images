@@ -1,3 +1,2 @@
 SUITE=sid
-FAI_DEBOOTSTRAP="$SUITE $apt_cdn/debian/"
-CLASS_BUILD="SID_BUILD"
+FAI_DEBOOTSTRAP="$SUITE https://deb.debian.org/debian/"
