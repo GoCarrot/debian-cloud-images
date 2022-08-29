@@ -21,9 +21,7 @@ init
 iptables
 iputils-ping
 less
-logrotate
 nano
 netbase
-rsyslog
 vim-tiny
 whiptail
