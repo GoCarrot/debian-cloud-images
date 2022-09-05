@@ -1,0 +1,9 @@
+apt:
+  generate_mirrorlists: true
+
+system_info:
+  package_mirrors:
+  - arches: [default]
+    failsafe:
+      primary: http://debian-archive.trafficmanager.net/debian
+      security: http://debian-archive.trafficmanager.net/debian-security
