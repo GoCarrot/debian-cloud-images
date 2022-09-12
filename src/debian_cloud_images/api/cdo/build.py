@@ -1,3 +1,4 @@
+import dataclasses
 import typing
 
 from marshmallow import Schema, fields, pre_dump, post_load
@@ -6,20 +7,11 @@ from ..meta import ObjectMeta, TypeMeta, v1_ObjectMetaSchema, v1_TypeMetaSchema
 from ..registry import registry as _registry
 
 
+@dataclasses.dataclass
 class Build:
-    info: dict
-    packages: list
-    metadata: ObjectMeta
-
-    def __init__(
-            self,
-            info: typing.Optional[dict] = None,
-            packages: typing.Optional[list] = None,
-            metadata: typing.Optional[ObjectMeta] = None,
-    ):
-        self.info = info or {}
-        self.packages = packages or []
-        self.metadata = metadata or ObjectMeta()
+    info: dict[str, str] = dataclasses.field(default_factory=dict)
+    packages: list[str] = dataclasses.field(default_factory=list)
+    metadata: ObjectMeta = dataclasses.field(default_factory=ObjectMeta)
 
 
 class v1alpha1_BuildDataPackageSchema(Schema):

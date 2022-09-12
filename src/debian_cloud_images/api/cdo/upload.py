@@ -1,3 +1,4 @@
+import dataclasses
 import typing
 
 from marshmallow import Schema, fields, pre_dump, post_load
@@ -6,23 +7,12 @@ from ..meta import ObjectMeta, TypeMeta, v1_ObjectMetaSchema, v1_TypeMetaSchema
 from ..registry import registry as _registry
 
 
+@dataclasses.dataclass
 class Upload:
     provider: str
     ref: str
-    family_ref: typing.Optional[str]
-    metadata: ObjectMeta
-
-    def __init__(
-            self,
-            provider: str,
-            ref: str,
-            family_ref: typing.Optional[str] = None,
-            metadata: typing.Optional[ObjectMeta] = None,
-    ) -> None:
-        self.provider = provider
-        self.ref = ref
-        self.family_ref = family_ref
-        self.metadata = metadata or ObjectMeta()
+    family_ref: typing.Optional[str] = dataclasses.field(default=None)
+    metadata: ObjectMeta = dataclasses.field(default_factory=ObjectMeta)
 
 
 class v1alpha1_UploadDataSchema(Schema):
