@@ -49,7 +49,7 @@ class ImageConfigArch:
 class v1alpha1_ImageConfigArchSchema(Schema):
     name = fields.Str(required=True)
     azure_name = fields.Str(data_key='azureName')
-    fai_classes = fields.List(fields.Str())
+    fai_classes = fields.List(fields.Str(), data_key='faiClasses')
 
     @post_load
     def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigArch:
@@ -71,8 +71,8 @@ class v1alpha1_ImageConfigReleaseSchema(Schema):
     basename = fields.Str(required=True)
     id = fields.Str(required=True)
     baseid = fields.Str(required=True)
-    fai_classes = fields.List(fields.Str())
-    arch_supports_linux_image_cloud = fields.List(fields.Str())
+    fai_classes = fields.List(fields.Str(), data_key='faiClasses')
+    arch_supports_linux_image_cloud = fields.List(fields.Str(), data_key='archSupportsLinuxImageCloud')
 
     @post_load
     def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigRelease:
@@ -90,10 +90,10 @@ class ImageConfigType:
 
 class v1alpha1_ImageConfigTypeSchema(Schema):
     name = fields.Str(required=True)
-    fai_classes = fields.List(fields.Str())
-    output_name = fields.Str(required=True)
-    output_version = fields.Str(required=True)
-    output_version_azure = fields.Str(required=True)
+    fai_classes = fields.List(fields.Str(), data_key='faiClasses')
+    output_name = fields.Str(required=True, data_key='outputName')
+    output_version = fields.Str(required=True, data_key='outputVersion')
+    output_version_azure = fields.Str(required=True, data_key='outputVersionAzure')
 
     @post_load
     def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigType:
@@ -126,9 +126,9 @@ class ImageConfigVendor:
 
 class v1alpha1_ImageConfigVendorSchema(Schema):
     name = fields.Str(required=True)
-    fai_classes = fields.List(fields.Str())
+    fai_classes = fields.List(fields.Str(), data_key='faiClasses')
     size = fields.Integer(required=True)
-    use_linux_image_cloud = fields.Boolean()
+    use_linux_image_cloud = fields.Boolean(data_key='useLinuxImageCloud')
     matches = fields.Nested(v1alpha1_ImageConfigMatchSchema, many=True)
 
     @post_load
