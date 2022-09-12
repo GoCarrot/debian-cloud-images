@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import dataclasses
 import typing
 
 from marshmallow import Schema, fields, pre_dump, post_load, validate
@@ -6,36 +9,22 @@ from ..meta import TypeMeta, v1_TypeMetaSchema
 from ..registry import registry as _registry
 
 
+@dataclasses.dataclass
 class ImageConfig:
-    def __init__(
-        self,
-        archs=None,
-        public_types=None,
-        releases=None,
-        types=None,
-        vendors=None,
-    ):
-        self.archs = archs
-        self.public_types = public_types
-        self.releases = releases
-        self.types = types
-        self.vendors = vendors
+    archs: list[ImageConfigArch]
+    public_types: list[ImageConfigPublicType]
+    releases: list[ImageConfigRelease]
+    types: list[ImageConfigType]
+    vendors: list[ImageConfigVendor]
 
 
+@dataclasses.dataclass
 class ImageConfigMatch:
-    def __init__(
-        self,
-        op='Enable',
-        match_arches=None,
-        match_releases=None,
-        match_vendors=None,
-        upload_group=None,
-    ):
-        self.op = op
-        self.match_arches = match_arches
-        self.match_releases = match_releases
-        self.match_vendors = match_vendors
-        self.upload_group = upload_group
+    op: str = dataclasses.field(default='Enable')
+    match_arches: list[str] = dataclasses.field(default_factory=list)
+    match_releases: list[str] = dataclasses.field(default_factory=list)
+    match_vendors: list[str] = dataclasses.field(default_factory=list)
+    upload_group: typing.Optional[str] = dataclasses.field(default=None)
 
 
 class v1alpha1_ImageConfigMatchSchema(Schema):
@@ -50,16 +39,11 @@ class v1alpha1_ImageConfigMatchSchema(Schema):
         return ImageConfigMatch(**data)
 
 
+@dataclasses.dataclass
 class ImageConfigArch:
-    def __init__(
-        self,
-        name=None,
-        azure_name=None,
-        fai_classes=None,
-    ):
-        self.name = name
-        self.azure_name = azure_name
-        self.fai_classes = fai_classes
+    name: str
+    azure_name: typing.Optional[str] = dataclasses.field(default=None)
+    fai_classes: list[str] = dataclasses.field(default_factory=list)
 
 
 class v1alpha1_ImageConfigArchSchema(Schema):
@@ -72,22 +56,14 @@ class v1alpha1_ImageConfigArchSchema(Schema):
         return ImageConfigArch(**data)
 
 
+@dataclasses.dataclass
 class ImageConfigRelease:
-    def __init__(
-        self,
-        name=None,
-        basename=None,
-        id=None,
-        baseid=None,
-        fai_classes=None,
-        arch_supports_linux_image_cloud=None,
-    ):
-        self.name = name
-        self.basename = basename
-        self.id = id
-        self.baseid = baseid
-        self.fai_classes = fai_classes
-        self.arch_supports_linux_image_cloud = arch_supports_linux_image_cloud
+    name: str
+    basename: str
+    id: str
+    baseid: str
+    fai_classes: list[str] = dataclasses.field(default_factory=list)
+    arch_supports_linux_image_cloud: bool = dataclasses.field(default=False)
 
 
 class v1alpha1_ImageConfigReleaseSchema(Schema):
@@ -103,20 +79,13 @@ class v1alpha1_ImageConfigReleaseSchema(Schema):
         return ImageConfigRelease(**data)
 
 
+@dataclasses.dataclass
 class ImageConfigType:
-    def __init__(
-        self,
-        name=None,
-        fai_classes=None,
-        output_name=None,
-        output_version=None,
-        output_version_azure=None,
-    ):
-        self.name = name
-        self.fai_classes = fai_classes
-        self.output_name = output_name
-        self.output_version = output_version
-        self.output_version_azure = output_version_azure
+    name: str
+    output_name: str
+    output_version: str
+    output_version_azure: str
+    fai_classes: list[str] = dataclasses.field(default_factory=list)
 
 
 class v1alpha1_ImageConfigTypeSchema(Schema):
@@ -131,14 +100,10 @@ class v1alpha1_ImageConfigTypeSchema(Schema):
         return ImageConfigType(**data)
 
 
+@dataclasses.dataclass
 class ImageConfigPublicType:
-    def __init__(
-        self,
-        name=None,
-        matches=None,
-    ):
-        self.name = name
-        self.matches = matches
+    name: str
+    matches: list[ImageConfigMatch] = dataclasses.field(default_factory=list)
 
 
 class v1alpha1_ImageConfigPublicTypeSchema(Schema):
@@ -150,20 +115,13 @@ class v1alpha1_ImageConfigPublicTypeSchema(Schema):
         return ImageConfigPublicType(**data)
 
 
+@dataclasses.dataclass
 class ImageConfigVendor:
-    def __init__(
-        self,
-        name=None,
-        fai_classes=None,
-        size=None,
-        use_linux_image_cloud=False,
-        matches=None,
-    ):
-        self.name = name
-        self.fai_classes = fai_classes
-        self.size = size
-        self.use_linux_image_cloud = use_linux_image_cloud
-        self.matches = matches
+    name: str
+    size: int
+    fai_classes: list[str] = dataclasses.field(default_factory=list)
+    use_linux_image_cloud: bool = dataclasses.field(default=False)
+    matches: list[ImageConfigMatch] = dataclasses.field(default_factory=list)
 
 
 class v1alpha1_ImageConfigVendorSchema(Schema):
