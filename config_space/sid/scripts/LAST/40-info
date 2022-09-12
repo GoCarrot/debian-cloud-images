@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxE
+set -euE
 shopt -s extglob nullglob
 
 exec > ${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.info
