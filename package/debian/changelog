@@ -1,3 +1,10 @@
+debian-cloud-images (0.0.7) UNRELEASED; urgency=medium
+
+  * Move source package lintian overrides to debian/source.
+  * Bump debhelper from old 12 to 13.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Tue, 13 Sep 2022 05:33:30 -0000
+
 debian-cloud-images (0.0.6) unstable; urgency=medium
 
   * Restrict vendor packages by architecture.

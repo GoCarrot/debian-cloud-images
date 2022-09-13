@@ -7,7 +7,7 @@ Uploaders:
  Noah Meyerhans <noahm@debian.org>,
  Bastian Blank <waldi@debian.org>,
 Build-Depends:
- debhelper-compat (= 12),
+ debhelper-compat (= 13),
 Standards-Version: 4.2.1
 Rules-Requires-Root: no
 Vcs-Browser: https://salsa.debian.org/cloud-team/debian-cloud-images/tree/master/package
