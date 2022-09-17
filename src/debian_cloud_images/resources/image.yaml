@@ -20,11 +20,15 @@ releases:
   id: '10'
   baseid: '10'
   faiClasses: [BUSTER, LINUX_VERSION_BUSTER, EXTRAS]
+  matches:
+  - matchArches: [amd64, arm64]
 - name: buster-backports
   basename: buster-backports
   id: 10-backports
   baseid: '10'
   faiClasses: [BUSTER, LINUX_VERSION_BUSTER_LTS, EXTRAS]
+  matches:
+  - matchArches: [amd64, arm64]
 - name: bullseye
   basename: bullseye
   id: '11'

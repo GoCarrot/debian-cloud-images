@@ -63,6 +63,7 @@ class ImageConfigRelease:
     id: str
     baseid: str
     fai_classes: list[str] = dataclasses.field(default_factory=list)
+    matches: list[ImageConfigMatch] = dataclasses.field(default_factory=list)
 
 
 class v1alpha1_ImageConfigReleaseSchema(Schema):
@@ -71,6 +72,7 @@ class v1alpha1_ImageConfigReleaseSchema(Schema):
     id = fields.Str(required=True)
     baseid = fields.Str(required=True)
     fai_classes = fields.List(fields.Str(), data_key='faiClasses')
+    matches = fields.Nested(v1alpha1_ImageConfigMatchSchema, many=True)
 
     @post_load
     def load_obj(self, data: dict[str, typing.Any], **kw) -> ImageConfigRelease:

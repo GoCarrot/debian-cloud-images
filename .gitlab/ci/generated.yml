@@ -481,19 +481,6 @@
       "CLOUD_VENDOR": "generic"
     }
   },
-  "generic buster ppc64el build": {
-    "extends": ".build",
-    "rules": [
-      {
-        "when": "manual"
-      }
-    ],
-    "variables": {
-      "CLOUD_ARCH": "ppc64el",
-      "CLOUD_RELEASE": "buster",
-      "CLOUD_VENDOR": "generic"
-    }
-  },
   "generic buster-backports amd64 build": {
     "extends": ".build",
     "rules": [
@@ -516,19 +503,6 @@
     ],
     "variables": {
       "CLOUD_ARCH": "arm64",
-      "CLOUD_RELEASE": "buster-backports",
-      "CLOUD_VENDOR": "generic"
-    }
-  },
-  "generic buster-backports ppc64el build": {
-    "extends": ".build",
-    "rules": [
-      {
-        "when": "manual"
-      }
-    ],
-    "variables": {
-      "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "buster-backports",
       "CLOUD_VENDOR": "generic"
     }
@@ -858,19 +832,6 @@
       "CLOUD_VENDOR": "nocloud"
     }
   },
-  "nocloud buster ppc64el build": {
-    "extends": ".build",
-    "rules": [
-      {
-        "when": "manual"
-      }
-    ],
-    "variables": {
-      "CLOUD_ARCH": "ppc64el",
-      "CLOUD_RELEASE": "buster",
-      "CLOUD_VENDOR": "nocloud"
-    }
-  },
   "nocloud buster-backports amd64 build": {
     "extends": ".build",
     "rules": [
@@ -893,19 +854,6 @@
     ],
     "variables": {
       "CLOUD_ARCH": "arm64",
-      "CLOUD_RELEASE": "buster-backports",
-      "CLOUD_VENDOR": "nocloud"
-    }
-  },
-  "nocloud buster-backports ppc64el build": {
-    "extends": ".build",
-    "rules": [
-      {
-        "when": "manual"
-      }
-    ],
-    "variables": {
-      "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "buster-backports",
       "CLOUD_VENDOR": "nocloud"
     }
