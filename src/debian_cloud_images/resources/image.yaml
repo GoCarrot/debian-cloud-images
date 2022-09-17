@@ -24,7 +24,7 @@ releases:
   basename: buster-backports
   id: 10-backports
   baseid: '10'
-  faiClasses: [BUSTER, LINUX_VERSION_BASE, EXTRAS]
+  faiClasses: [BUSTER, LINUX_VERSION_BUSTER_LTS, EXTRAS]
 - name: bullseye
   basename: bullseye
   id: '11'
