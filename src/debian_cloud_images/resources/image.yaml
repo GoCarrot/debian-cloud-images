@@ -20,43 +20,36 @@ releases:
   id: '10'
   baseid: '10'
   faiClasses: [BUSTER, LINUX_VERSION_BUSTER, EXTRAS]
-  archSupportsLinuxImageCloud: [amd64]
 - name: buster-backports
   basename: buster-backports
   id: 10-backports
   baseid: '10'
   faiClasses: [BUSTER, LINUX_VERSION_BASE, EXTRAS]
-  archSupportsLinuxImageCloud: [amd64, arm64]
 - name: bullseye
   basename: bullseye
   id: '11'
   baseid: '11'
   faiClasses: [BULLSEYE, LINUX_VERSION_BASE, EXTRAS]
-  archSupportsLinuxImageCloud: [amd64, arm64]
 - name: bullseye-backports
   basename: bullseye-backports
   id: 11-backports
   baseid: '11'
   faiClasses: [BULLSEYE, LINUX_VERSION_BACKPORTS, EXTRAS]
-  archSupportsLinuxImageCloud: [amd64, arm64]
 - name: bookworm
   basename: bookworm
   id: '12'
   baseid: '12'
   faiClasses: [BOOKWORM, LINUX_VERSION_BASE, EXTRAS]
-  archSupportsLinuxImageCloud: [amd64, arm64]
 - name: sid
   basename: sid
   id: sid
   baseid: sid
   faiClasses: [SID, LINUX_VERSION_BASE, EXTRAS]
-  archSupportsLinuxImageCloud: [amd64, arm64]
 
 vendors:
 - name: azure
   faiClasses: [AZURE, LINUX_VARIANT_CLOUD, IPV6_DHCP]
   size: 30
-  useLinuxImageCloud: true
   matches:
   - matchArches: [amd64]
   - matchArches: [arm64]
@@ -66,13 +59,11 @@ vendors:
 - name: ec2
   faiClasses: [EC2, LINUX_VARIANT_CLOUD, IPV6_DHCP]
   size: 8
-  useLinuxImageCloud: true
   matches:
   - matchArches: [amd64, arm64]
 - name: gce
   faiClasses: [GCE, LINUX_VARIANT_CLOUD]
   size: 10
-  useLinuxImageCloud: true
   matches:
   - matchReleases: [bullseye]
     op: Disable
@@ -83,7 +74,6 @@ vendors:
 - name: genericcloud
   faiClasses: [GENERIC, LINUX_VARIANT_CLOUD]
   size: 2
-  useLinuxImageCloud: true
   matches:
   - matchReleases: [buster]
     matchArches: [arm64]
