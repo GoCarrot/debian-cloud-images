@@ -37,7 +37,7 @@ releases:
   basename: bullseye-backports
   id: 11-backports
   baseid: '11'
-  faiClasses: [BULLSEYE, BACKPORTS_LINUX, EXTRAS]
+  faiClasses: [BULLSEYE, LINUX_VERSION_BACKPORTS, EXTRAS]
   archSupportsLinuxImageCloud: [amd64, arm64]
 - name: bookworm
   basename: bookworm
