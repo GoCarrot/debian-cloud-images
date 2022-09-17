@@ -19,19 +19,19 @@ releases:
   basename: buster
   id: '10'
   baseid: '10'
-  faiClasses: [BUSTER, EXTRAS]
+  faiClasses: [BUSTER, LINUX_VERSION_BUSTER, EXTRAS]
   archSupportsLinuxImageCloud: [amd64]
 - name: buster-backports
   basename: buster-backports
   id: 10-backports
   baseid: '10'
-  faiClasses: [BUSTER, BACKPORTS_LINUX, EXTRAS]
+  faiClasses: [BUSTER, LINUX_VERSION_BASE, EXTRAS]
   archSupportsLinuxImageCloud: [amd64, arm64]
 - name: bullseye
   basename: bullseye
   id: '11'
   baseid: '11'
-  faiClasses: [BULLSEYE, EXTRAS]
+  faiClasses: [BULLSEYE, LINUX_VERSION_BASE, EXTRAS]
   archSupportsLinuxImageCloud: [amd64, arm64]
 - name: bullseye-backports
   basename: bullseye-backports
@@ -43,18 +43,18 @@ releases:
   basename: bookworm
   id: '12'
   baseid: '12'
-  faiClasses: [BOOKWORM, EXTRAS]
+  faiClasses: [BOOKWORM, LINUX_VERSION_BASE, EXTRAS]
   archSupportsLinuxImageCloud: [amd64, arm64]
 - name: sid
   basename: sid
   id: sid
   baseid: sid
-  faiClasses: [SID, EXTRAS]
+  faiClasses: [SID, LINUX_VERSION_BASE, EXTRAS]
   archSupportsLinuxImageCloud: [amd64, arm64]
 
 vendors:
 - name: azure
-  faiClasses: [AZURE, IPV6_DHCP]
+  faiClasses: [AZURE, LINUX_VARIANT_CLOUD, IPV6_DHCP]
   size: 30
   useLinuxImageCloud: true
   matches:
@@ -64,13 +64,13 @@ vendors:
     op: Disable
   - matchArches: [arm64]
 - name: ec2
-  faiClasses: [EC2, IPV6_DHCP]
+  faiClasses: [EC2, LINUX_VARIANT_CLOUD, IPV6_DHCP]
   size: 8
   useLinuxImageCloud: true
   matches:
   - matchArches: [amd64, arm64]
 - name: gce
-  faiClasses: [GCE]
+  faiClasses: [GCE, LINUX_VARIANT_CLOUD]
   size: 10
   useLinuxImageCloud: true
   matches:
@@ -78,10 +78,10 @@ vendors:
     op: Disable
   - matchArches: [amd64]
 - name: generic
-  faiClasses: [GENERIC]
+  faiClasses: [GENERIC, LINUX_VARIANT_BASE]
   size: 2
 - name: genericcloud
-  faiClasses: [GENERIC]
+  faiClasses: [GENERIC, LINUX_VARIANT_CLOUD]
   size: 2
   useLinuxImageCloud: true
   matches:
@@ -90,7 +90,7 @@ vendors:
     op: Disable
   - matchArches: [amd64, arm64]
 - name: nocloud
-  faiClasses: [NOCLOUD]
+  faiClasses: [NOCLOUD, LINUX_VARIANT_BASE]
   size: 2
 
 types:
