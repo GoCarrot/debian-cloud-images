@@ -139,6 +139,10 @@ class GenerateCiCommand(BaseCommand):
         for vendor_name, vendor in self.config_image.vendors.items():
             for release_name, release in self.config_image.releases.items():
                 for arch_name, arch in self.config_image.archs.items():
+                    enable, _, _ = self.check_matches(release.matches, vendor_name, release.basename, arch_name)
+                    if not enable:
+                        continue
+
                     enable, _, _ = self.check_matches(vendor.matches, vendor_name, release.basename, arch_name)
                     if not enable:
                         continue
