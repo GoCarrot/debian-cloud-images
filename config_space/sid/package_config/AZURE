@@ -3,6 +3,3 @@ cloud-init
 cloud-guest-utils
 hyperv-daemons
 waagent
-
-# XXX: Broken right now, chrony conflicts with systemd-timesyncd, but FAI is unable to instruct apt to handle that
-#chrony
