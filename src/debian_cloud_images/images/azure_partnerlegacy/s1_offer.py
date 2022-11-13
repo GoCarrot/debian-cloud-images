@@ -3,6 +3,7 @@ import logging
 import typing
 
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
+from typing import Optional
 
 
 logger = logging.getLogger(__name__)
@@ -29,10 +30,10 @@ class ImagesAzurePartnerlegacyOffer:
     def path(self) -> str:
         return f'/api/publishers/{self.__name_publisher}/offers/{self.__name_offer}'
 
-    def __request(self, path: str, method: str, data: typing.Any = None) -> typing.Any:
+    def __request(self, path: str, method: str, data: Optional[typing.Any] = None) -> typing.Any:
         return self.__conn.request(path, method=method, data=data, params={'api-version': self.api_version})
 
-    def get(self, slot: str = None) -> typing.Any:
+    def get(self, slot: Optional[str] = None) -> typing.Any:
         if slot:
             path = f'{self.path}/slot/{slot}'
         else:

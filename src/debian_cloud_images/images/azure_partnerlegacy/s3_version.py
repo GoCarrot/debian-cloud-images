@@ -3,6 +3,7 @@ import typing
 
 from debian_cloud_images.api.cdo.image_config import ImageConfigArch
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
+from typing import Optional
 
 
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ class ImagesAzurePartnerlegacyVersion:
     def name(self) -> str:
         return self.__name_version
 
-    def __request(self, method: str, data: typing.Any = None) -> typing.Any:
+    def __request(self, method: str, data: Optional[typing.Any] = None) -> typing.Any:
         path = f'/api/publishers/{self.__name_publisher}/offers/{self.__name_offer}'
         return self.__conn.request(path, method=method, data=data, params={'api-version': self.api_version})
 

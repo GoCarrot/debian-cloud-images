@@ -59,11 +59,18 @@ config options:
         key = self.config_get('ec2.auth.key')
         secret = self.config_get('ec2.auth.secret')
         token = self.config_get('ec2.auth.token', default=None)
+        regions = self.config_get('ec2.image.regions', default=["all"])
 
-        self.drivers_compute = {
-            region.name: self.compute_cls(key=key, secret=secret, token=token, region=region.name)
-            for region in self.compute_cls(key=key, secret=secret, token=token, region='us-east-1').ex_list_regions()
-        }
+        if "all" in regions:
+            self.drivers_compute = {
+                region.name: self.compute_cls(key=key, secret=secret, token=token, region=region.name)
+                for region in self.compute_cls(key=key, secret=secret, token=token, region='us-east-1').ex_list_regions()
+            }
+        else:
+            self.drivers_compute = {
+                region: self.compute_cls(key=key, secret=secret, token=token, region=region)
+                for region in regions
+            }
 
     def __call__(self):
         if self.delete_date:

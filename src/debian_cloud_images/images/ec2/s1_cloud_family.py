@@ -53,6 +53,8 @@ class StepCloudFamilies(collections.abc.Mapping):
         for region, driver in sorted(self._info.drivers_compute.items()):
             logger.debug(f'Reading from region {region}')
 
+            ignored_snapshots = []
+
             for image in driver.list_images(ex_owner=self._info.account):
                 tags = image.extra['tags']
                 family = tags.get('ImageFamily', None)
@@ -61,12 +63,18 @@ class StepCloudFamilies(collections.abc.Mapping):
                     v = self.setdefault(family).versions.setdefault(ImageVersion.from_string(version))
                     v.images[region] = image
                 else:
-                    logger.warning(f'Found image {image.name} without proper tags in region {region}')
+                    logger.warning(f'Ignoring image {image.id} ({image.name}) without proper tags in region {region}')
+                    for bdm in image.extra['block_device_mapping']:
+                        snaptmp = bdm['ebs']['snapshot_id']
+                        ignored_snapshots.append(snaptmp)
 
             for snapshot in driver.list_snapshots(owner=self._info.account):
                 tags = snapshot.extra['tags']
                 family = tags.get('ImageFamily', None)
                 version = tags.get('ImageVersion', None)
+                if snapshot.id in ignored_snapshots:
+                    logger.warning(f'Snapshot {snapshot.id} is associated with ignored AMI')
+                    next
                 if family and version:
                     v = self.setdefault(family).versions.setdefault(ImageVersion.from_string(version))
                     v.snapshots[region] = snapshot

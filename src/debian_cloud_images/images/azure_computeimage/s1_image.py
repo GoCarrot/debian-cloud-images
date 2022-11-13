@@ -3,6 +3,7 @@ import time
 import typing
 
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class ImagesAzureComputeimageImage:
             name: str,
             conn: AzureGenericOAuth2Connection,
             *,
-            properties: typing.Any = None,
+            properties: Optional[typing.Any] = None,
     ) -> None:
         self.__name_resource_group = resource_group
         self.__name_image = name
@@ -34,7 +35,7 @@ class ImagesAzureComputeimageImage:
     def path(self) -> str:
         return f'/subscriptions/{self.__conn.subscription_id}/resourceGroups/{self.__name_resource_group}/providers/Microsoft.Compute/images/{self.__name_image}'
 
-    def __request(self, method: str, data: typing.Any = None) -> typing.Any:
+    def __request(self, method: str, data: Optional[typing.Any] = None) -> typing.Any:
         return self.__conn.request(self.path, method=method, data=data, params={'api-version': self.api_version})
 
     def create(
