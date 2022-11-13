@@ -74,7 +74,7 @@ class StepCloudFamilies(collections.abc.Mapping):
                 version = tags.get('ImageVersion', None)
                 if snapshot.id in ignored_snapshots:
                     logger.warning(f'Snapshot {snapshot.id} is associated with ignored AMI')
-                    next
+                    continue
                 if family and version:
                     v = self.setdefault(family).versions.setdefault(ImageVersion.from_string(version))
                     v.snapshots[region] = snapshot

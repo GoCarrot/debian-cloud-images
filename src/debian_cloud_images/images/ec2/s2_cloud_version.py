@@ -35,7 +35,7 @@ class StepCloudVersion:
                 logger.debug(f'Deleting image {image.name} from region {region}')
                 image.driver.delete_image(image)
             else:
-                logger.info(f'Would deleting image {image.name} from region {region}')
+                logger.info(f'Would delete image {image.name} from region {region}')
 
         for region, snapshot in sorted(self.snapshots.items()):
             image_name = snapshot.extra['tags']['AMI']
@@ -43,7 +43,7 @@ class StepCloudVersion:
                 logger.debug(f'Deleting snapshot {snapshot.id} for image {image_name} from region {region}')
                 snapshot.driver.destroy_volume_snapshot(snapshot)
             else:
-                logger.info(f'Would deleting snapshot {snapshot.id} for image {image_name} from region {region}')
+                logger.info(f'Would delete snapshot {snapshot.id} for image {image_name} from region {region}')
 
 
 class StepCloudVersions(collections.abc.Mapping):
