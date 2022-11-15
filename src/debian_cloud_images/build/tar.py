@@ -10,6 +10,9 @@ import subprocess
 logger = logging.getLogger(__name__)
 
 
+BUF_SIZE = 16 * 1024 * 1024
+
+
 class RunTar:
     input_filename: pathlib.Path
     output_filename: pathlib.Path
@@ -37,7 +40,7 @@ class RunTar:
                     process = popen(cmd, bufsize=0, stdout=subprocess.PIPE)
 
                     while True:
-                        o = process.stdout.read()
+                        o = process.stdout.read(BUF_SIZE)
                         if len(o) == 0:
                             break
                         output.write(o)
