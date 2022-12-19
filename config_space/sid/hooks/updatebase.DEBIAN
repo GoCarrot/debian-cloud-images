@@ -19,6 +19,17 @@ mount --make-private $FAI_ROOT/run
 mount -t sysfs fai-sysfs $FAI_ROOT/sys
 mount --make-private $FAI_ROOT/sys
 
+# When systemd-resolved is installed in the FAI root, it will overwrite
+# /etc/resolv.conf with a symlink to /run/systemd/resolve/stub-resolv.conf
+# regardless of whether the target exists or not.  If it doesn't, then we're
+# left with broken DNS inside the FAI root for the rest of the installation
+# process.  Avoid that condition by pre-populating stub-resolv.conf.  Note that
+# the file may already exist if the host is running systemd-resolved
+if [ ! -e "$FAI_ROOT/run/systemd/resolve/stub-resolv.conf" ]; then
+    mkdir -p "$FAI_ROOT/run/systemd/resolve"
+    cp -v /etc/resolv.conf "$FAI_ROOT/run/systemd/resolve/stub-resolv.conf"
+fi
+
 aptopt="-y -o Dpkg::Options::=--force-confnew"
 $ROOTCMD apt-get -y update
 $ROOTCMD apt-get $aptopt dist-upgrade < /dev/null
