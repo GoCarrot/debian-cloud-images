@@ -107,7 +107,7 @@ class Check:
         self.env['CLOUD_RELEASE_VERSION'] = self.info['version'] = self.version
         if self.vendor.name == 'azure':
             self.env['CLOUD_RELEASE_VERSION_AZURE'] = self.info['version_azure'] = self.version_azure
-        if self.vendor.name == 'generic':
+        if self.vendor.name in ('generic', 'nocloud'):
             self.env['MAXPACKAGES'] = 20
 
     def check(self):
