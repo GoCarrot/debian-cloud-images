@@ -5,5 +5,5 @@ system_info:
   package_mirrors:
   - arches: [default]
     failsafe:
-      primary: http://debian-archive.trafficmanager.net/debian
-      security: http://debian-archive.trafficmanager.net/debian-security
+      primary: http://azure.deb.debian.cloud/debian
+      security: http://azure.deb.debian.cloud/debian-security
