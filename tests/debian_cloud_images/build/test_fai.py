@@ -28,25 +28,24 @@ class TestRunFAI:
 
         run(True, popen=popen, dci_path='/nonexistent')
 
-        with resources_path('fai_config') as config_path:
-            release_config_path = config_path / 'release'
+        release_config_path = resources_path('fai_config') / 'release'
 
-            popen.assert_called_with(
-                (
-                    'sudo',
-                    'env',
-                    'PYTHONPATH=/nonexistent',
-                    'ENV1=env1',
-                    'ENV2=env2',
-                    tmp_path.as_posix(),
-                    '--verbose',
-                    '--hostname', 'debian',
-                    '--class', 'CLASS1,CLASS2',
-                    '--size', '23G',
-                    '--cspace', release_config_path.as_posix(),
-                    tmp_path.as_posix(),
-                ),
-            )
+        popen.assert_called_with(
+            (
+                'sudo',
+                'env',
+                'PYTHONPATH=/nonexistent',
+                'ENV1=env1',
+                'ENV2=env2',
+                tmp_path.as_posix(),
+                '--verbose',
+                '--hostname', 'debian',
+                '--class', 'CLASS1,CLASS2',
+                '--size', '23G',
+                '--cspace', release_config_path.as_posix(),
+                tmp_path.as_posix(),
+            ),
+        )
 
     def test___call___fail(self, tmp_path):
         env = {'ENV1': 'env1', 'ENV2': 'env2'}
