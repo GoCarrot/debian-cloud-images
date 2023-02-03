@@ -39,25 +39,24 @@ class RunFAI:
         self.fai_filename = fai_filename
 
     def __call__(self, run: bool, *, popen=subprocess.Popen, dci_path=dci_path) -> None:
-        with resources_path('fai_config') as config_path:
-            release_config_path = config_path / self.release
+        release_config_path = resources_path('fai_config') / self.release
 
-            cmd = self.command(dci_path, release_config_path.as_posix())
+        cmd = self.command(dci_path, release_config_path.as_posix())
 
-            if run:
-                logger.info(f'Running FAI: {" ".join(cmd)}')
+        if run:
+            logger.info(f'Running FAI: {" ".join(cmd)}')
 
-                try:
-                    process = popen(cmd)
-                    retcode = process.wait()
-                    if retcode:
-                        raise subprocess.CalledProcessError(retcode, cmd)
+            try:
+                process = popen(cmd)
+                retcode = process.wait()
+                if retcode:
+                    raise subprocess.CalledProcessError(retcode, cmd)
 
-                finally:
-                    process.kill()
+            finally:
+                process.kill()
 
-            else:
-                logger.info(f'Would run FAI: {" ".join(cmd)}')
+        else:
+            logger.info(f'Would run FAI: {" ".join(cmd)}')
 
     def command(self, dci_path: str, config_path: str) -> tuple:
         return (

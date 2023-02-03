@@ -1,20 +1,28 @@
 import importlib.machinery
-import importlib.resources
 import pathlib
-import platform
 import typing
 
 
+# XXX: mypy stub files lack get_resource_reader
+class SourceFileLoader(importlib.machinery.SourceFileLoader):
+    def get_resource_reader(self) -> typing.Any:
+        ...
+
+
 __spec__: importlib.machinery.ModuleSpec
+__loader = typing.cast(SourceFileLoader, __spec__.loader)
 
 
 def open_text(resource: str, encoding: str = 'utf-8', errors: str = 'strict') -> typing.TextIO:
-    return importlib.resources.open_text(__spec__.name, resource, encoding, errors)
+    return path(resource).open('r', encoding=encoding, errors=errors)
 
 
-def path(resource: str) -> typing.ContextManager[pathlib.Path]:
-    # XXX: Python < 3.10 fails if resource is not a real file or does not exist
-    if tuple(int(i) for i in platform.python_version_tuple()[:2]) < (3, 10):
-        loader = typing.cast(importlib.machinery.SourceFileLoader, __spec__.loader)
-        return pathlib.Path(typing.cast(str, loader.path)).parent / resource
-    return importlib.resources.path(__spec__.name, resource)
+def path(resource: str) -> pathlib.Path:
+    files = getattr(__loader.get_resource_reader(), 'files', None)
+
+    # Python < 3.10 does not have files()
+    if files is None:
+        def files():
+            return pathlib.Path(__loader.path).parent
+
+    return files() / resource
