@@ -7,6 +7,7 @@ touch $LOGDIR/skip.updatebase
 rm -rf $FAI_ROOT/run/*
 rm -rf $FAI_ROOT/proc/*
 rm -rf $FAI_ROOT/sys/*
+rm -rf $FAI_ROOT/var/cache/apt/*
 
 mount --bind /dev $FAI_ROOT/dev
 mount --make-private $FAI_ROOT/dev
@@ -18,6 +19,8 @@ mount -t tmpfs fai-run $FAI_ROOT/run
 mount --make-private $FAI_ROOT/run
 mount -t sysfs fai-sysfs $FAI_ROOT/sys
 mount --make-private $FAI_ROOT/sys
+mount -t tmpfs fai-var-cache-apt $FAI_ROOT/var/cache/apt
+mount --make-private $FAI_ROOT/var/cache/apt
 
 # When systemd-resolved is installed in the FAI root, it will overwrite
 # /etc/resolv.conf with a symlink to /run/systemd/resolve/stub-resolv.conf
