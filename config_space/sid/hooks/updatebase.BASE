@@ -4,6 +4,7 @@ shopt -s nullglob
 
 touch $LOGDIR/skip.updatebase
 
+rm -rf $FAI_ROOT/dev/*
 rm -rf $FAI_ROOT/run/*
 rm -rf $FAI_ROOT/proc/*
 rm -rf $FAI_ROOT/sys/*
