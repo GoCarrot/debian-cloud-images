@@ -181,7 +181,7 @@ class ImageUploaderEc2:
         snapshots_available = []
         while len(snapshots_creating):
             snapshot = snapshots_creating.pop(0)
-            snapshots_new = snapshot.driver.list_snapshots(snapshot)
+            snapshots_new = with_retries(lambda: snapshot.driver.list_snapshots(snapshot))
             if not snapshots_new:
                 snapshot_new = snapshot
             else:

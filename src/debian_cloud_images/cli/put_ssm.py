@@ -4,6 +4,7 @@ import pathlib
 from .base import BaseCommand
 from ..images import Images
 from ..utils.libcloud.other.aws_ssm import SSMConnection
+from ..utils.retry import with_retries
 
 
 class SSMVariableSetter:
@@ -69,7 +70,9 @@ class SSMVariableSetter:
                         if self.dry_run:
                             logging.info("Dry-run: set {}={}, overwrite={}".format(key, value, overwrite))
                         else:
-                            self.connection(region).set_variable(key, value, overwrite=overwrite)
+                            with_retries(lambda: self.connection(region).set_variable(key,
+                                                                                      value,
+                                                                                      overwrite=overwrite))
 
     def connection(self, region):
         if region not in self.__regional_connections:
