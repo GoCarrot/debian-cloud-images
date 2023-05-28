@@ -9,6 +9,9 @@ libpam-systemd
 libnss-resolve
 netplan.io
 
+# needed for systemd-networkd to set hostnames
+polkitd
+
 unattended-upgrades
 
 # Recommends of linux-image-*
