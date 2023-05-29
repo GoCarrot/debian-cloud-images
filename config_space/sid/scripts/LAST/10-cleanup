@@ -16,7 +16,6 @@ rm -rf $target/var/lib/apt/lists/*
 rm -rf $target/var/log/fai
 rm -f $target/var/lib/dpkg/available*
 
-touch $target/etc/hostname
 touch $target/etc/machine-id
 touch $target/var/lib/dpkg/available
 
