@@ -28,6 +28,8 @@ class TestEtc:
             'irc', 'gnats', 'nobody',
             # From package dbus
             'messagebus',
+            # From package polkit
+            'polkitd',
             # From package openssh-server
             'sshd',
             # From package tcpdump
