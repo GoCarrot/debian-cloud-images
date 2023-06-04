@@ -10,7 +10,6 @@ umount -l $FAI_ROOT/sys
 exec pytest-3 \
   -c "${CLOUD_BUILD_SYSTEM_TESTS}/pytest.ini" \
   -p debian_cloud_images.test.pytest.mount \
-  -vrxXs \
   --color=yes \
   --junit-xml "${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.build.junit.xml" \
   --mount-build-info "${CLOUD_BUILD_INFO}" \
