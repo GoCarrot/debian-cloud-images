@@ -1,6 +1,7 @@
 import pytest
 
 import collections
+import subprocess
 import typing
 
 
@@ -30,7 +31,32 @@ class Fixtures:
 _fixtures = Fixtures()
 
 
+PackageEntry = collections.namedtuple('PackageEntry', ['name', 'version', 'architecture', 'status_want', 'status_status'])
 PasswdEntry = collections.namedtuple('PasswdEntry', ['name', 'passwd', 'uid', 'gid', 'gecos', 'dir', 'shell'])
+
+
+@_fixtures.register
+def image_packages(metafunc):
+    path = metafunc.config.getoption('mount_path') / 'var/lib/dpkg'
+    proc = subprocess.run(
+        [
+            'dpkg-query',
+            '--show',
+            '--showformat=${binary:Package};${Version};${Architecture};${db:Status-Want};${db:Status-Status}\n',
+            f'--admindir={path}',
+        ],
+        check=True,
+        encoding='ascii',
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        timeout=10,
+    )
+
+    params = []
+    for line in proc.stdout.splitlines():
+        e = PackageEntry(*line.strip().split(';'))
+        params.append(pytest.param(e, id=e.name))
+    return params
 
 
 # Read infos from /etc/passwd as it apears in the image and create entries as
