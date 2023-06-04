@@ -53,3 +53,69 @@ class TestCommand:
             secret='access_secret_key',
             token='access_session_token',
         )
+
+    def test_create_image(self, monkeypatch):
+        from debian_cloud_images.cli import upload_ec2
+        from unittest.mock import MagicMock
+        pi = MagicMock()
+        image = MagicMock()
+        monkeypatch.setattr(image, 'build_arch', 'arm64')
+        snapshot = MagicMock()
+        monkeypatch.setattr(snapshot, 'id', "snap-012345689")
+        test_driver = MagicMock()
+        monkeypatch.setattr(snapshot, 'driver', test_driver)
+        monkeypatch.setattr(pi, 'vendor_name', "debian-tests")
+        monkeypatch.setattr(pi, 'vendor_description', "debian tests vendor description")
+        uploader = upload_ec2.ImageUploaderEc2(
+            output=None,
+            bucket=None,
+            key="dummy-key",
+            secret="dummy-secret",
+            token="dummy-token",
+            regions=["us-west-2"],
+            add_tags=None,
+            permission_public=True)
+
+        # This should get a gp2 volume
+        monkeypatch.setattr(image, 'build_release_id', '10')
+
+        uploader.create_image(image, pi, [snapshot])
+        test_driver.ex_register_image.assert_called_once_with(
+            name='debian-tests',
+            description="debian tests vendor description",
+            architecture='arm64',
+            block_device_mapping=[{'DeviceName': '/dev/xvda',
+                                   'Ebs': {'SnapshotId': "snap-012345689",
+                                           'VolumeType': 'gp2',
+                                           'DeleteOnTermination': 'true',
+                                           }}],
+            root_device_name='/dev/xvda',
+            virtualization_type='hvm',
+            ena_support=True,
+            sriov_net_support='simple')
+
+        test_driver.ex_create_tags.assert_called_once()
+        test_driver.ex_modify_image_attribute.assert_called_once()
+
+        # This should get a gp3 volume with additional performance settings
+        monkeypatch.setattr(image, 'build_release_id', '12')
+        test_driver.reset_mock()
+
+        uploader.create_image(image, pi, [snapshot])
+        test_driver.ex_register_image.assert_called_once_with(
+            name='debian-tests',
+            description="debian tests vendor description",
+            architecture='arm64',
+            block_device_mapping=[{'DeviceName': '/dev/xvda',
+                                   'Ebs': {'SnapshotId': "snap-012345689",
+                                           'VolumeType': 'gp3',
+                                           'DeleteOnTermination': 'true',
+                                           'Iops': 3000,
+                                           'Throughput': 125}}],
+            root_device_name='/dev/xvda',
+            virtualization_type='hvm',
+            ena_support=True,
+            sriov_net_support='simple')
+
+        test_driver.ex_create_tags.assert_called_once()
+        test_driver.ex_modify_image_attribute.assert_called_once()

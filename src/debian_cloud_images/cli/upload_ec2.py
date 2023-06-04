@@ -115,15 +115,28 @@ class ImageUploaderEc2:
 
         ec2_images = {}
 
+        volume_type = 'gp2'
+        volume_opts = {}
+
+        # Override for newer releases
+        if image.build_release_id not in ('11', '11-backports', '10', '10-backports'):
+            volume_type = 'gp3'
+            volume_opts = {
+                'Iops': 3000,
+                'Throughput': 125,
+            }
+
         for snapshot in snapshots:
             mapping = [{
                 'DeviceName': '/dev/xvda',
                 'Ebs': {
                     'SnapshotId': snapshot.id,
-                    'VolumeType': 'gp2',
+                    'VolumeType': volume_type,
                     'DeleteOnTermination': 'true',
                 },
             }]
+
+            mapping[0]['Ebs'] |= volume_opts
 
             driver = snapshot.driver
             architecture = self.architecture_map[image.build_arch]
