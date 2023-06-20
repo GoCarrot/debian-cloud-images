@@ -31,8 +31,24 @@ class Fixtures:
 _fixtures = Fixtures()
 
 
+GroupEntry = collections.namedtuple('GroupEntry', ['name', 'passwd', 'gid', 'members'])
 PackageEntry = collections.namedtuple('PackageEntry', ['name', 'version', 'architecture', 'status_want', 'status_status'])
 PasswdEntry = collections.namedtuple('PasswdEntry', ['name', 'passwd', 'uid', 'gid', 'gecos', 'dir', 'shell'])
+
+
+# Read infos from /etc/group as it apears in the image and create entries as
+# test parameters
+@_fixtures.register
+def image_group(metafunc):
+    path = metafunc.config.getoption('mount_path') / 'etc' / 'group'
+    if path.exists():
+        with path.open() as f:
+            params = []
+            for line in f.readlines():
+                e = GroupEntry(*line.strip().split(':'))
+                params.append(pytest.param(e, id=e.name))
+            return params
+    pytest.fail('Unable to read /etc/group inside image mount', pytrace=False)
 
 
 @_fixtures.register

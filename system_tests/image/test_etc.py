@@ -19,6 +19,40 @@ class TestEtc:
         p = image_path / 'etc' / 'resolv.conf'
         assert not p.exists() or p.is_symlink(), '/etc/resolv.conf does exist and is not a symlink'
 
+    def test_group_name(self, image_group):
+        name = image_group.name
+        if name in (
+            # From package base-passwd
+            'root', 'daemon', 'bin', 'sys', 'adm', 'tty', 'disk', 'lp', 'mail',
+            'news', 'uucp', 'man', 'proxy', 'kmem', 'dialout', 'fax', 'voice',
+            'cdrom', 'floppy', 'tape', 'sudo', 'audio', 'dip', 'www-data',
+            'backup', 'operator', 'list', 'irc', 'src', 'shadow', 'utmp',
+            'video', 'sasl', 'plugdev', 'staff', 'games', 'users', 'nogroup',
+            # From package dbus
+            'messagebus',
+            # From package polkit
+            'polkitd',
+            # From package tcpdump
+            'tcpdump',
+            # From package udev
+            'input', 'kvm', 'render', 'sgx',
+            # From package uuid-runtime
+            'uuidd',
+        ):
+            return
+        if name.startswith('_') or name.startswith('systemd-'):
+            return
+        pytest.fail('/etc/group includes group {} with not allowed name'.format(name), pytrace=False)
+
+    def test_group_gid(self, image_group):
+        name = image_group.name
+        gid = int(image_group.gid)
+        if gid >= 0 and gid < 1000:
+            return
+        if gid == 65534:
+            return
+        pytest.fail('/etc/group includes group {} with not allowed gid {}'.format(name, gid), pytrace=False)
+
     def test_passwd_name(self, image_passwd_entry):
         name = image_passwd_entry.name
         if name in (
