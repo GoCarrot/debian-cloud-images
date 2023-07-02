@@ -20,12 +20,13 @@ class Fixtures:
     def parametrize(self, name: str, metafunc: typing.Any) -> None:
         if func := self.__func.get(name):
             try:
-                metafunc.parametrize(name, func(metafunc))
+                metafunc.parametrize(name, [pytest.param(i[1], id=i[0]) for i in sorted(func(metafunc).items())])
             except BaseException as e:
                 metafunc.parametrize('raise_test', [e], indirect=True)
 
     def register(self, f: typing.Any) -> None:
-        self.__func[f.__name__] = f
+        self.__func[f.__name__ + '_entry'] = f
+        return pytest.fixture(f)
 
 
 _fixtures = Fixtures()
@@ -39,21 +40,36 @@ PasswdEntry = collections.namedtuple('PasswdEntry', ['name', 'passwd', 'uid', 'g
 # Read infos from /etc/group as it apears in the image and create entries as
 # test parameters
 @_fixtures.register
-def image_group(metafunc):
-    path = metafunc.config.getoption('mount_path') / 'etc' / 'group'
+def image_etc_group(request):
+    path = request.config.getoption('mount_path') / 'etc' / 'group'
     if path.exists():
         with path.open() as f:
-            params = []
+            ret = {}
             for line in f.readlines():
-                e = GroupEntry(*line.strip().split(':'))
-                params.append(pytest.param(e, id=e.name))
-            return params
+                entry = GroupEntry(*line.strip().split(':'))
+                ret[entry.name] = entry
+            return ret
     pytest.fail('Unable to read /etc/group inside image mount', pytrace=False)
 
 
+# Read infos from /etc/passwd as it apears in the image and create entries as
+# test parameters
 @_fixtures.register
-def image_packages(metafunc):
-    path = metafunc.config.getoption('mount_path') / 'var/lib/dpkg'
+def image_etc_passwd(request):
+    path = request.config.getoption('mount_path') / 'etc' / 'passwd'
+    if path.exists():
+        with path.open() as f:
+            ret = {}
+            for line in f.readlines():
+                entry = PasswdEntry(*line.strip().split(':'))
+                ret[entry.name] = entry
+            return ret
+    pytest.fail('Unable to read /etc/passwd inside image mount', pytrace=False)
+
+
+@_fixtures.register
+def image_packages(request):
+    path = request.config.getoption('mount_path') / 'var/lib/dpkg'
     proc = subprocess.run(
         [
             'dpkg-query',
@@ -68,26 +84,11 @@ def image_packages(metafunc):
         timeout=10,
     )
 
-    params = []
+    ret = {}
     for line in proc.stdout.splitlines():
-        e = PackageEntry(*line.strip().split(';'))
-        params.append(pytest.param(e, id=e.name))
-    return params
-
-
-# Read infos from /etc/passwd as it apears in the image and create entries as
-# test parameters
-@_fixtures.register
-def image_passwd_entry(metafunc):
-    path = metafunc.config.getoption('mount_path') / 'etc' / 'passwd'
-    if path.exists():
-        with path.open() as f:
-            params = []
-            for line in f.readlines():
-                e = PasswdEntry(*line.strip().split(':'))
-                params.append(pytest.param(e, id=e.name))
-            return params
-    pytest.fail('Unable to read /etc/passwd inside image mount', pytrace=False)
+        entry = PackageEntry(*line.strip().split(';'))
+        ret[entry.name] = entry
+    return ret
 
 
 def pytest_generate_tests(metafunc):
