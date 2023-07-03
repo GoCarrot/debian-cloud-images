@@ -32,7 +32,6 @@ class TestEtc:
         'plugdev',
         'sudo',
         'video',
-        pytest.param('netdev', marks=pytest.mark.xfail(reason='required by cloud-init')),
     ])
     def test_group_exist(self, image_etc_group, name):
         assert name in image_etc_group, f'/etc/group is missing group {name}'
