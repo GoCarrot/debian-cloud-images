@@ -44,6 +44,16 @@ releases:
   id: '12'
   baseid: '12'
   faiClasses: [BOOKWORM, LINUX_VERSION_BASE, EXTRAS]
+- name: bookworm-backports
+  basename: bookworm
+  id: 12-backports
+  baseid: '12'
+  faiClasses: [BOOKWORM, LINUX_VERSION_BACKPORTS, EXTRAS]
+- name: trixie
+  basename: trixie
+  id: '13'
+  baseid: '13'
+  faiClasses: [TRIXIE, LINUX_VERSION_BASE, EXTRAS]
 - name: sid
   basename: sid
   id: sid
@@ -115,6 +125,10 @@ publicTypes:
     uploadGroup: debian-12-daily
     op: EnableUpload
   - matchVendors: [azure]
+    matchReleases: [trixie, trixie-backports]
+    uploadGroup: debian-13-daily
+    op: EnableUpload
+  - matchVendors: [azure]
     matchReleases: [sid]
     uploadGroup: debian-sid-daily
     op: EnableUpload
@@ -124,6 +138,8 @@ publicTypes:
 - name: release
   matches:
   - matchReleases: [sid]
+    op: Disable
+  - matchReleases: [trixie]
     op: Disable
   - matchVendors: [azure]
     matchReleases: [buster, buster-backports]

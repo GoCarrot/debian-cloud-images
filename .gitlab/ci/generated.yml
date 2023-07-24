@@ -26,6 +26,32 @@
       "CLOUD_VENDOR": "azure"
     }
   },
+  "azure bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
   "azure bullseye amd64 build": {
     "extends": ".build",
     "rules": [
@@ -117,6 +143,32 @@
       "CLOUD_VENDOR": "azure"
     }
   },
+  "azure trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
   "ec2 bookworm amd64 build": {
     "extends": ".build",
     "rules": [
@@ -140,6 +192,32 @@
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
       "CLOUD_VENDOR": "ec2"
     }
   },
@@ -273,6 +351,32 @@
       "CLOUD_VENDOR": "ec2"
     }
   },
+  "ec2 trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
   "gce bookworm amd64 build": {
     "extends": ".build",
     "rules": [
@@ -283,6 +387,19 @@
     "variables": {
       "CLOUD_ARCH": "amd64",
       "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "gce"
+    }
+  },
+  "gce bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
       "CLOUD_VENDOR": "gce"
     }
   },
@@ -338,6 +455,19 @@
       "CLOUD_VENDOR": "gce"
     }
   },
+  "gce trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "gce"
+    }
+  },
   "generic bookworm amd64 build": {
     "extends": ".build",
     "rules": [
@@ -374,6 +504,45 @@
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm-backports",
       "CLOUD_VENDOR": "generic"
     }
   },
@@ -546,6 +715,45 @@
       "CLOUD_VENDOR": "generic"
     }
   },
+  "generic trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic trixie ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
   "genericcloud bookworm amd64 build": {
     "extends": ".build",
     "rules": [
@@ -569,6 +777,32 @@
     "variables": {
       "CLOUD_ARCH": "arm64",
       "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
       "CLOUD_VENDOR": "genericcloud"
     }
   },
@@ -689,6 +923,32 @@
       "CLOUD_VENDOR": "genericcloud"
     }
   },
+  "genericcloud trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
   "nocloud bookworm amd64 build": {
     "extends": ".build",
     "rules": [
@@ -725,6 +985,45 @@
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm-backports",
       "CLOUD_VENDOR": "nocloud"
     }
   },
@@ -894,6 +1193,45 @@
     "variables": {
       "CLOUD_ARCH": "ppc64el",
       "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud trixie ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "trixie",
       "CLOUD_VENDOR": "nocloud"
     }
   }
