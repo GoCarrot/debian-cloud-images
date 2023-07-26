@@ -1,3 +1,5 @@
-# systemd in Bullseye can't detect Hyper-V on ARM64
 [Unit]
+# Make sure cloud-init starts before
+After=cloud-final.service
+# systemd in Bullseye can't detect Hyper-V on ARM64
 ConditionVirtualization=
