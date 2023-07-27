@@ -45,7 +45,7 @@ releases:
   baseid: '12'
   faiClasses: [BOOKWORM, LINUX_VERSION_BASE, EXTRAS]
 - name: bookworm-backports
-  basename: bookworm
+  basename: bookworm-backports
   id: 12-backports
   baseid: '12'
   faiClasses: [BOOKWORM, LINUX_VERSION_BACKPORTS, EXTRAS]
