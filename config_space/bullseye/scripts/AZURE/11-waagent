@@ -1,4 +1,0 @@
-#!/bin/sh
-set -eu
-
-sed -i -e 's/^Extensions\.Enabled=.*$/Extensions.Enabled=n/' $target/etc/waagent.conf

@@ -1,3 +1,0 @@
-[Unit]
-# Make sure cloud-init starts before
-After=cloud-final.service
