@@ -25,6 +25,7 @@ class SSMVariableSetter:
         # Keep track of keys we've already set, per region
         regional_keys = {}
 
+        put_errors = 0
         for image in self.images.values():
             for upload in image.uploads:
 
@@ -70,9 +71,18 @@ class SSMVariableSetter:
                         if self.dry_run:
                             logging.info("Dry-run: set {}={}, overwrite={}".format(key, value, overwrite))
                         else:
-                            with_retries(lambda: self.connection(region).set_variable(key,
-                                                                                      value,
-                                                                                      overwrite=overwrite))
+                            try:
+                                with_retries(lambda: self.connection(region).set_variable(key,
+                                                                                          value,
+                                                                                          overwrite=overwrite),
+                                             max_tries=4)
+                            except Exception:
+                                logging.error("Unable to set {}={} in {}".format(
+                                    key, value, region))
+                                put_errors += 1
+        if put_errors > 0:
+            logging.error("Problems posting to SSM")
+            exit(1)
 
     def connection(self, region):
         if region not in self.__regional_connections:
