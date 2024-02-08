@@ -10,6 +10,7 @@ class_exclude = {
     'BUSTER', # Ignore buster-specific dependencies as we're not packaged for buster.
     'DEVEL',
     'GCE_SDK',
+    'TIME_SYSTEMD', # chrony and systemd-timesyncd conflict
 }
 
 class_arch = {

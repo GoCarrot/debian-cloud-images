@@ -1,3 +1,9 @@
+debian-cloud-images (0.0.8) UNRELEASED; urgency=medium
+
+  * Remove dependencies on conflicting packages.  (closes: #1062955)
+
+ -- Bastian Blank <waldi@debian.org>  Thu, 08 Feb 2024 07:58:16 +0100
+
 debian-cloud-images (0.0.7) unstable; urgency=medium
 
   [ Debian Janitor ]
