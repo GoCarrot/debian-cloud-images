@@ -42,6 +42,7 @@ test package:
   - cd package
   - for arch in amd64 arm64 ppc64el; do dpkg-buildpackage -us -uc -a$arch; done
   - lintian ../*.changes
+  - apt install -s ../*_$(dpkg --print-architecture).deb
 
 .test python:
   stage: source test
