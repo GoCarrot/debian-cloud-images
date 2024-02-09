@@ -9,7 +9,7 @@ from ..utils.retry import with_retries
 
 class SSMVariableSetter:
 
-    def __init__(self, access_key_id, secret_key, token, images, prefix, config_image, force_overwrite=False, dry_run=False):
+    def __init__(self, access_key_id, secret_key, token, images, prefix, config_image, force_overwrite=False, dry_run=False, only_regions=None):
         self.images = images
         self.access_key_id = access_key_id
         self.secret_key = secret_key
@@ -18,7 +18,11 @@ class SSMVariableSetter:
         self.config_image = config_image
         self.force_overwrite = force_overwrite
         self.dry_run = dry_run
+        self.only_regions = []
         self.__regional_connections = {}
+
+        if only_regions is not None:
+            self.only_regions = only_regions.split(',')
 
     def __call__(self):
 
@@ -43,6 +47,10 @@ class SSMVariableSetter:
                 region = upload.metadata.labels['aws.amazon.com/region']
                 release_arch = upload.metadata.labels['debian.org/arch']
                 release_name = upload.metadata.labels['debian.org/release']
+
+                if len(self.only_regions) > 0 and region not in self.only_regions:
+                    logging.info(f'Region {region} is not in only_regions, skipping')
+                    continue
 
                 if region not in regional_keys.keys():
                     regional_keys[region] = {}
@@ -130,7 +138,14 @@ config options:
             dest='force_overwrite',
         )
 
-    def __init__(self, manifests=[], prefix=None, regions=[], force_overwrite=False, dry_run=False, **kw):
+        parser.add_argument(
+            '--regions',
+            help='limit actions to only the given regions (comma separated)',
+            metavar='REGIONS',
+            dest='only_regions',
+        )
+
+    def __init__(self, manifests=[], prefix=None, regions=[], force_overwrite=False, dry_run=False, only_regions=None, **kw):
         super().__init__(**kw)
 
         self.ssm_prefix = self.config_get('ec2.ssm.prefix')
@@ -146,6 +161,7 @@ config options:
             config_image=self.config_image,
             force_overwrite=force_overwrite,
             dry_run=dry_run,
+            only_regions=only_regions,
         )
 
     def __call__(self):
