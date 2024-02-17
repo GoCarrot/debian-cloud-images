@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import pytest
 
 from debian_cloud_images.utils.azure.image_version import AzureImageVersion

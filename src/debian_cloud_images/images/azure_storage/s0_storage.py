@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import logging
 
 from debian_cloud_images.utils.libcloud.storage.azure_arm import (

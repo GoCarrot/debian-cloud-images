@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import datetime
 
 from debian_cloud_images.api.cdo.upload import Upload

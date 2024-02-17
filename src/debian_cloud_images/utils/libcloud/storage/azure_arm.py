@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from libcloud.common.base import BaseDriver
 from urllib.parse import urlparse
 

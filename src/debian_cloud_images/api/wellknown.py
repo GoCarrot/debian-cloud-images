@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 annotation_cdo_digest = "cloud.debian.org/digest"
 
 label_cdo_vendor = "cloud.debian.org/vendor"

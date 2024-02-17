@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from debian_cloud_images.images.azure_computegallery.s2_version import (
     ImagesAzureComputegalleryVersion,
     ImagesAzureComputegalleryVersions,
