@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
+import pathlib
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
@@ -10,13 +11,18 @@ from debian_cloud_images.images.azure_storage.s2_blob import ImagesAzureStorageB
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 from debian_cloud_images.utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
+from .base import cli
 from .upload_base import UploadBaseCommand
+from ..images.publicinfo import ImagePublicType
+from ..utils import argparse_ext
 
 
-class UploadAzureCommand(UploadBaseCommand):
-    argparser_name = 'upload-azure'
-    argparser_help = 'upload Debian images to Azure Compute'
-    argparser_epilog = '''
+@staticmethod
+@cli.register(
+    'upload-azure',
+    usage='%(prog)s [MANIFEST]...',
+    help='upload Debian images to Azure Compute',
+    epilog='''
 config options:
   azure.auth.client     application ID of service account, or empty for using az
   azure.auth.secret     secret of service account, or empty for using az
@@ -27,19 +33,42 @@ config options:
   azure.storage.subscription
   azure.storage.group
   azure.storage.name
-'''
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+''',
+    arguments=[
+        cli.prepare_argument(
+            'manifests',
+            help='read manifests',
+            metavar='MANIFEST',
+            nargs='*',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--output',
+            default='.',
+            help='write manifests to (default: .)',
+            metavar='DIR',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--variant',
+            action=argparse_ext.ActionEnum,
+            default='dev',
+            dest='public_type',
+            enum=ImagePublicType,
+        ),
+        cli.prepare_argument(
+            '--version-override',
+            dest='override_version',
+        ),
+        cli.prepare_argument(
             '--wait',
             default=True,
             help='wait for long running operation',
             action=argparse.BooleanOptionalAction,
-        )
-
+        ),
+    ],
+)
+class UploadAzureCommand(UploadBaseCommand):
     def __init__(
             self,
             *,
@@ -169,4 +198,4 @@ config options:
 
 
 if __name__ == '__main__':
-    UploadAzureCommand._main()
+    cli.main(UploadAzureCommand)

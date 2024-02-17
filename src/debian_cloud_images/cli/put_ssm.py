@@ -3,14 +3,13 @@
 import logging
 import pathlib
 
-from .base import BaseCommand
+from .base import cli, BaseCommand
 from ..images import Images
 from ..utils.libcloud.other.aws_ssm import SSMConnection
 from ..utils.retry import with_retries
 
 
 class SSMVariableSetter:
-
     def __init__(self, access_key_id, secret_key, token, images, prefix, config_image, force_overwrite=False, dry_run=False, only_regions=None):
         self.images = images
         self.access_key_id = access_key_id
@@ -106,47 +105,42 @@ class SSMVariableSetter:
         return self.__regional_connections[region]
 
 
-class PutSSMCommand(BaseCommand):
-    argparser_name = 'put-ssm'
-    argparser_help = 'set AWS SSM variable values'
-    argparser_epilog = '''
+@cli.register(
+    'put-ssm',
+    help='set AWS SSM variable values',
+    epilog='''
 config options:
   ec2.ssm.prefix     store AMI details relative to the given SSM path
-'''
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+''',
+    arguments=[
+        cli.prepare_argument(
             'manifests',
             help='read manifests',
             metavar='MANIFEST',
             nargs='*',
             type=pathlib.Path
-        )
-
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--dry-run',
             help="Dry run mode, don't actually do anything",
             action='store_true',
             dest='dry_run',
-        )
-
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--force-overwrite',
             help='forcibly overwrite any existing value',
             action='store_true',
             dest='force_overwrite',
-        )
-
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--regions',
             help='limit actions to only the given regions (comma separated)',
             metavar='REGIONS',
             dest='only_regions',
-        )
-
+        ),
+    ],
+)
+class PutSSMCommand(BaseCommand):
     def __init__(self, manifests=[], prefix=None, regions=[], force_overwrite=False, dry_run=False, only_regions=None, **kw):
         super().__init__(**kw)
 
@@ -171,4 +165,4 @@ config options:
 
 
 if __name__ == '__main__':
-    PutSSMCommand._main()
+    cli.main(PutSSMCommand)

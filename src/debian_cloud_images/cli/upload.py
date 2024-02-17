@@ -3,38 +3,65 @@
 import logging
 import pathlib
 
+from .base import cli
 from .upload_base import UploadBaseCommand
 from ..images.public import PublicImages
+from ..images.publicinfo import ImagePublicType
+from ..utils import argparse_ext
 
 
 logger = logging.getLogger(__name__)
 
 
-class UploadCommand(UploadBaseCommand):
-    argparser_name = 'upload'
-    argparser_help = 'upload Debian images to own storage'
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+@cli.register(
+    'upload',
+    usage='%(prog)s [MANIFEST]...',
+    help='upload Debian images to own storage',
+    arguments=[
+        cli.prepare_argument(
+            'manifests',
+            help='read manifests',
+            metavar='MANIFEST',
+            nargs='*',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--output',
+            default='.',
+            help='write manifests to (default: .)',
+            metavar='DIR',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--variant',
+            action=argparse_ext.ActionEnum,
+            default='dev',
+            dest='public_type',
+            enum=ImagePublicType,
+        ),
+        cli.prepare_argument(
+            '--version-override',
+            dest='override_version',
+        ),
+        cli.prepare_argument(
             '--provider',
             help='provider name',
             required=True,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--storage',
             help='base path for storage',
             metavar='PATH',
             required=True,
             type=pathlib.Path,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--no-op',
             action='store_true',
-        )
-
+        ),
+    ],
+)
+class UploadCommand(UploadBaseCommand):
     def __init__(
             self, *,
             no_op=True,
@@ -59,4 +86,4 @@ class UploadCommand(UploadBaseCommand):
 
 
 if __name__ == '__main__':
-    UploadCommand._main()
+    cli.main(UploadCommand)

@@ -9,15 +9,15 @@ from debian_cloud_images.utils.azure.image_version import AzureImageVersion
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 from debian_cloud_images.utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
-from .base import BaseCommand
+from .base import cli, BaseCommand
 
 logger = logging.getLogger(__name__)
 
 
-class CleanupAzurePartnerlegacyCommand(BaseCommand):
-    argparser_name = 'cleanup-azure-partner'
-    argparser_help = 'cleanup Azure Partner offers'
-    argparser_epilog = '''
+@cli.register(
+    'cleanup-azure-partner',
+    help='cleanup Azure Partner offers',
+    epilog='''
 config options:
   azure.auth.client     application ID of service account, or empty for using az
   azure.auth.secret     secret of service account, or empty for using az
@@ -27,37 +27,35 @@ config options:
   azure.storage.subscription
   azure.storage.group
   azure.storage.name
-'''
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+''',
+    arguments=[
+        cli.prepare_argument(
             '--partner-offer',
             help='use specified offer inside Azure Partner interface',
             metavar='OFFER',
             required=True,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--offer-delete-after',
             dest='delete_after_offer',
             help='delete images from offers after X days',
             metavar='DAYS',
             type=int,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--storage-delete-after',
             dest='delete_after_storage',
             help='delete images from storage after X days',
             metavar='DAYS',
             type=int,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--no-op',
             action='store_true',
-        )
-
+        ),
+    ],
+)
+class CleanupAzurePartnerlegacyCommand(BaseCommand):
     def __init__(
             self, *,
             no_op: bool,
@@ -162,4 +160,4 @@ config options:
 
 
 if __name__ == '__main__':
-    CleanupAzurePartnerlegacyCommand._main()
+    cli.main(CleanupAzurePartnerlegacyCommand)

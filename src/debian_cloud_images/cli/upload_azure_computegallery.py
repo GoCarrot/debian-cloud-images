@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
+import pathlib
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
@@ -11,13 +12,17 @@ from debian_cloud_images.utils.azure.image_version import AzureImageVersion
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 from debian_cloud_images.utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
+from .base import cli
 from .upload_base import UploadBaseCommand
+from ..images.publicinfo import ImagePublicType
+from ..utils import argparse_ext
 
 
-class UploadAzureComputegalleryCommand(UploadBaseCommand):
-    argparser_name = 'upload-azure-computegallery'
-    argparser_help = 'upload Debian images to Azure Compute Gallery'
-    argparser_epilog = '''
+@cli.register(
+    'upload-azure-computegallery',
+    usage='%(prog)s [MANIFEST]...',
+    help='upload Debian images to Azure Compute Gallery',
+    epilog='''
 config options:
   azure.auth.client     application ID of service account, or empty for using az
   azure.auth.secret     secret of service account, or empty for using az
@@ -29,31 +34,54 @@ config options:
   azure.storage.subscription
   azure.storage.group
   azure.storage.name
-'''
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+''',
+    arguments=[
+        cli.prepare_argument(
+            'manifests',
+            help='read manifests',
+            metavar='MANIFEST',
+            nargs='*',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--output',
+            default='.',
+            help='write manifests to (default: .)',
+            metavar='DIR',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--variant',
+            action=argparse_ext.ActionEnum,
+            default='dev',
+            dest='public_type',
+            enum=ImagePublicType,
+        ),
+        cli.prepare_argument(
+            '--version-override',
+            dest='override_version',
+        ),
+        cli.prepare_argument(
             '--computegallery-image',
             help='use specified image inside Azure Compute Gallery',
             metavar='IMAGE',
             required=True,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--computegallery-version-override',
             help='use specified image version inside Azure Compute Gallery',
             metavar='VERSION',
             type=AzureImageVersion.from_string,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--wait',
             default=True,
             help='wait for long running operation',
             action=argparse.BooleanOptionalAction,
-        )
-
+        ),
+    ],
+)
+class UploadAzureComputegalleryCommand(UploadBaseCommand):
     def __init__(
             self, *,
             computegallery_image: str,
@@ -185,4 +213,4 @@ config options:
 
 
 if __name__ == '__main__':
-    UploadAzureComputegalleryCommand._main()
+    cli.main(UploadAzureComputegalleryCommand)
