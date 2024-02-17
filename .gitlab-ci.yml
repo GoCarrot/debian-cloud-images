@@ -15,11 +15,16 @@ workflow:
 
 before_script:
   - apt-get update
-  - apt-get install --no-install-recommends -y python3-libcloud python3-marshmallow python3-yaml qemu-utils
+  - apt-get install --no-install-recommends -y crun python3-libcloud python3-marshmallow python3-yaml qemu-utils
   - |
     if [ "$CI_DISPOSABLE_ENVIRONMENT" ]; then
       # Workaround unsupported SEEK_HOLE in overlayfs (Docker default)
       mount -t tmpfs none /tmp
+    fi
+  - |
+    # Neither buster nor bullseye are usr-merged, nor have a suitable crun
+    if [ "$CI_JOB_IMAGE" = "debian:buster" ] || [ "$CI_JOB_IMAGE" = "debian:bullseye" ]; then
+      rm /usr/bin/crun
     fi
 
 test flake8:
