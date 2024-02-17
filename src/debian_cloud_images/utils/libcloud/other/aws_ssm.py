@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import logging
 
 from libcloud.common.aws import SignedAWSConnection, AWSDriver

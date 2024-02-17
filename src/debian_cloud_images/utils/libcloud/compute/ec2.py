@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from libcloud.compute.types import Provider
 from libcloud.compute.drivers.ec2 import BaseEC2NodeDriver, EC2Connection, NAMESPACE, VolumeSnapshot
 from libcloud.utils.xml import findtext, fixxpath

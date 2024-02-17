@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from debian_cloud_images.api.cdo.image_config import ImageConfigArch
 
 from debian_cloud_images.images.azure_partnerlegacy.s3_version import (
