@@ -3,20 +3,11 @@
 import io
 import json
 import os
-import pathlib
-import pkg_resources
 import pytest
 import shutil
 import tarfile
 
 from debian_cloud_images.images import Images, Image
-
-
-if pkg_resources.parse_version(pytest.__version__) < pkg_resources.parse_version('3.9'):
-    # XXX: New in 3.9
-    @pytest.fixture
-    def tmp_path(tmpdir):
-        return pathlib.Path(tmpdir.dirname)
 
 
 check_no_qemu_img = shutil.which('qemu-img') is None
