@@ -1,14 +1,15 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import importlib.resources
 import marshmallow
 import os
 import pathlib
 import sys
 import yaml
 
+from .. import resources
 from ..api.cdo.image_config import v1alpha1_ImageConfigSchema
 from ..api.registry import registry as api_registry
-from ..resources import open_text as resources_open_text
 
 
 class ConfigImageLoader(dict):
@@ -33,7 +34,7 @@ class ConfigImageLoader(dict):
                     self.read_yaml(f)
                     return
 
-        with resources_open_text('image.yaml') as f:
+        with (importlib.resources.files(resources) / 'image.yaml').open() as f:
             self.read_yaml(f)
 
     def read_yaml(self, f, unknown=marshmallow.RAISE):
