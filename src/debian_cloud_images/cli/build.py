@@ -2,6 +2,7 @@
 
 import argparse
 import collections.abc
+import importlib.resources
 import json
 import logging
 import pathlib
@@ -11,10 +12,10 @@ from datetime import datetime
 
 from .base import BaseCommand
 
+from .. import resources
 from ..build.fai import RunFAI
 from ..build.manifest import CreateManifest
 from ..build.tar import RunTar
-from ..resources import path as resources_path
 from ..utils import argparse_ext
 
 
@@ -245,37 +246,38 @@ class BuildCommand(BaseCommand):
             build_id=self.c.build_id,
         )
 
-        self.env = self.c.env
-        self.env['CLOUD_BUILD_INFO'] = json.dumps(self.c.info)
-        self.env['CLOUD_BUILD_NAME'] = name
-        self.env['CLOUD_BUILD_OUTPUT_DIR'] = output.resolve()
-        self.env['CLOUD_BUILD_SYSTEM_TESTS'] = resources_path('system_tests').as_posix()
+        with importlib.resources.as_file(importlib.resources.files(resources) / 'system_tests') as p_system_tests:
+            self.env = self.c.env
+            self.env['CLOUD_BUILD_INFO'] = json.dumps(self.c.info)
+            self.env['CLOUD_BUILD_NAME'] = name
+            self.env['CLOUD_BUILD_OUTPUT_DIR'] = output.resolve()
+            self.env['CLOUD_BUILD_SYSTEM_TESTS'] = p_system_tests.as_posix()
 
-        output.mkdir(parents=True, exist_ok=True)
+            output.mkdir(parents=True, exist_ok=True)
 
-        image_raw = output / '{}.raw'.format(name)
-        image_tar = output / '{}.tar'.format(name)
-        manifest_fai = output / '{}.build-fai.json'.format(name)
-        manifest_final = output / '{}.build.json'.format(name)
+            image_raw = output / '{}.raw'.format(name)
+            image_tar = output / '{}.tar'.format(name)
+            manifest_fai = output / '{}.build-fai.json'.format(name)
+            manifest_final = output / '{}.build.json'.format(name)
 
-        self.fai = RunFAI(
-            output_filename=image_raw,
-            release=self.c.release.basename,
-            classes=self.c.classes,
-            size_gb=self.c.vendor.size,
-            env=self.env,
-        )
+            self.fai = RunFAI(
+                output_filename=image_raw,
+                release=self.c.release.basename,
+                classes=self.c.classes,
+                size_gb=self.c.vendor.size,
+                env=self.env,
+            )
 
-        self.tar = RunTar(
-            input_filename=image_raw,
-            output_filename=image_tar,
-        )
+            self.tar = RunTar(
+                input_filename=image_raw,
+                output_filename=image_tar,
+            )
 
-        self.manifest = CreateManifest(
-            input_filename=manifest_fai,
-            output_filename=manifest_final,
-            info=self.c.info,
-        )
+            self.manifest = CreateManifest(
+                input_filename=manifest_fai,
+                output_filename=manifest_final,
+                info=self.c.info,
+            )
 
     def __call__(self):
         self.fai(not self.noop)

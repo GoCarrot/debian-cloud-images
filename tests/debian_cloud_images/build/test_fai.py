@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import importlib.resources
 import pytest
 import subprocess
 
@@ -8,7 +9,7 @@ from unittest.mock import Mock
 from debian_cloud_images.build.fai import (
     RunFAI,
 )
-from debian_cloud_images.resources import path as resources_path
+from debian_cloud_images import resources
 
 
 class TestRunFAI:
@@ -26,26 +27,25 @@ class TestRunFAI:
         popen_proc.wait = Mock(return_value=0)
         popen = Mock(return_value=popen_proc)
 
-        run(True, popen=popen, dci_path='/nonexistent')
+        with importlib.resources.as_file(importlib.resources.files(resources) / 'fai_config' / 'release') as release_config_path:
+            run(True, popen=popen, dci_path='/nonexistent')
 
-        release_config_path = resources_path('fai_config') / 'release'
-
-        popen.assert_called_with(
-            (
-                'sudo',
-                'env',
-                'PYTHONPATH=/nonexistent',
-                'ENV1=env1',
-                'ENV2=env2',
-                tmp_path.as_posix(),
-                '--verbose',
-                '--hostname', 'debian',
-                '--class', 'CLASS1,CLASS2',
-                '--size', '23G',
-                '--cspace', release_config_path.as_posix(),
-                tmp_path.as_posix(),
-            ),
-        )
+            popen.assert_called_with(
+                (
+                    'sudo',
+                    'env',
+                    'PYTHONPATH=/nonexistent',
+                    'ENV1=env1',
+                    'ENV2=env2',
+                    tmp_path.as_posix(),
+                    '--verbose',
+                    '--hostname', 'debian',
+                    '--class', 'CLASS1,CLASS2',
+                    '--size', '23G',
+                    '--cspace', release_config_path.as_posix(),
+                    tmp_path.as_posix(),
+                ),
+            )
 
     def test___call___fail(self, tmp_path):
         env = {'ENV1': 'env1', 'ENV2': 'env2'}

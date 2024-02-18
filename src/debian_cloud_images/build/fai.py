@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import importlib.resources
 import logging
 import pathlib
 import os.path
@@ -7,7 +8,7 @@ import subprocess
 
 from typing import Dict, List
 
-from ..resources import path as resources_path
+from .. import resources
 
 
 dci_path = os.path.join(os.path.dirname(__file__), '../..')
@@ -39,24 +40,23 @@ class RunFAI:
         self.fai_filename = fai_filename
 
     def __call__(self, run: bool, *, popen=subprocess.Popen, dci_path=dci_path) -> None:
-        release_config_path = resources_path('fai_config') / self.release
+        with importlib.resources.as_file(importlib.resources.files(resources) / 'fai_config' / self.release) as release_config_path:
+            cmd = self.command(dci_path, release_config_path.as_posix())
 
-        cmd = self.command(dci_path, release_config_path.as_posix())
+            if run:
+                logger.info(f'Running FAI: {" ".join(cmd)}')
 
-        if run:
-            logger.info(f'Running FAI: {" ".join(cmd)}')
+                try:
+                    process = popen(cmd)
+                    retcode = process.wait()
+                    if retcode:
+                        raise subprocess.CalledProcessError(retcode, cmd)
 
-            try:
-                process = popen(cmd)
-                retcode = process.wait()
-                if retcode:
-                    raise subprocess.CalledProcessError(retcode, cmd)
+                finally:
+                    process.kill()
 
-            finally:
-                process.kill()
-
-        else:
-            logger.info(f'Would run FAI: {" ".join(cmd)}')
+            else:
+                logger.info(f'Would run FAI: {" ".join(cmd)}')
 
     def command(self, dci_path: str, config_path: str) -> tuple:
         return (
