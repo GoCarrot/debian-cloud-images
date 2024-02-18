@@ -65,6 +65,10 @@ test python bookworm:
   extends: .test python
   image: debian:bookworm
 
+test python trixie:
+  extends: .test python
+  image: debian:trixie
+
 test python latest:
   stage: source test
   image: python:slim
