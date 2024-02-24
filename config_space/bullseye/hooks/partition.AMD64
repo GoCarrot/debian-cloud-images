@@ -23,9 +23,9 @@ unit: sectors
 # BIOS boot
 p14 : start=2048, size=6144, type="BIOS boot"
 # EFI system
-p15 : start=8192, size=253952, type="EFI System"
+p15 : start=8192, size=253952, type="EFI System", uuid=${PARTUUID_ESP}
 # Linux
-p1 : start=262144, type="Linux root (x86-64)"
+p1 : start=262144, type="Linux root (x86-64)", uuid=${PARTUUID_ROOT}
 EOF
 
 partprobe "$device"
@@ -37,11 +37,8 @@ tune2fs -c 0 -i 0 "$device_root"
 wait_for_device "$device_efi"
 mkfs.vfat "$device_efi"
 
-uuid_root=$(blkid -s UUID -o value "$device_root")
-uuid_efi=$(blkid -s UUID -o value "$device_efi")
-
 cat > "$LOGDIR/fstab" <<EOF
 # /etc/fstab: static file system information
-UUID=${uuid_root} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
-UUID=${uuid_efi} /boot/efi vfat defaults 0 0
+PARTUUID=${PARTUUID_ROOT} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
+PARTUUID=${PARTUUID_ESP} /boot/efi vfat defaults 0 0
 EOF
