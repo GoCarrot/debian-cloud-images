@@ -1,2 +1,1 @@
 SUITE=bookworm
-FAI_DEBOOTSTRAP="$SUITE https://deb.debian.org/debian/"
