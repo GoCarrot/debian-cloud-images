@@ -20,9 +20,9 @@ label: gpt
 unit: sectors
 
 # PReP boot
-p15 : start=2048, size=6144, type=9E1A2D38-C612-4316-AA26-8B49521E5A8B
+p15 : start=2048, size=6144, type="PowerPC PReP boot"
 # Linux
-p1 : start=8192, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4
+p1 : start=8192, type="Linux root (PPC64LE)"
 EOF
 
 partprobe "$device"
