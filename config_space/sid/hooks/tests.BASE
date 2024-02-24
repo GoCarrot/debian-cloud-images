@@ -1,13 +1,6 @@
 #!/bin/bash
 set -eu
 
-# Cleanup mounts before running tests
-umount -l $FAI_ROOT/dev
-umount -l $FAI_ROOT/proc
-umount -l $FAI_ROOT/run
-umount -l $FAI_ROOT/sys
-umount -l $FAI_ROOT/var/cache/apt
-
 exec pytest-3 \
   -c "${CLOUD_BUILD_SYSTEM_TESTS}/pytest.ini" \
   -p debian_cloud_images.test.pytest.mount \
