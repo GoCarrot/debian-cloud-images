@@ -1,32 +1,44 @@
-#! /bin/bash
+#!/bin/bash
+set -euE
 
-rm -f $target/etc/mailname \
-      $target/etc/machine-id \
-      $target/etc/apt/sources.list.d/localdebs.list \
-      $target/usr/bin/qemu-*-static \
-      $target/var/lib/dbus/machine-id \
-      $target/var/log/alternatives.log \
-      $target/var/log/apt/* \
-      $target/var/log/bootstrap.log \
-      $target/var/log/dpkg.log \
-      $target/var/log/install_packages.list
+cleanup_mounts=(
+  dev
+  proc
+  run
+  sys
+  var/cache/apt
+)
 
-# If $target/etc/resolv.conf is a link it is probably managed by some
-# management software (e.g. resolvconf, systemd-resolvd,
-# NetworkManager) and should stay in place.
-if [ ! -L $target/etc/resolv.conf ]
-then
-    rm -f $target/etc/resolv.conf
-fi
+cleanup_files=(
+  etc/apt/sources.list.d/localdebs.list
+  etc/mailname
+  etc/ssh/ssh_host_*
+  var/lib/apt/lists/*
+  var/lib/dbus/machine-id
+  var/log/alternatives.log
+  var/log/apt
+  var/log/bootstrap.log
+  var/log/dpkg.log
+  var/log/fai
+  var/log/install_packages.list
+)
 
-rm -rf $target/var/cache/apt/*
-rm -rf $target/var/lib/apt/lists/*
-rm -rf $target/var/log/fai
-rm -f $target/var/lib/dpkg/available*
+empty_files=(
+  etc/machine-id
+  var/lib/dpkg/available
+)
 
-touch $target/etc/machine-id
-touch $target/var/lib/dpkg/available
+for i in "${cleanup_mounts[@]}"; do
+  umount -l "$FAI_ROOT"/$i || :
+  find "$FAI_ROOT"/$i -mindepth 1 -depth -delete
+done
 
-shred --remove $target/etc/ssh/ssh_host_*
+for i in "${cleanup_files[@]}"; do
+  find "$FAI_ROOT"/$i -depth -delete || :
+done
 
-fstrim $target
+for i in "${empty_files[@]}"; do
+  > "$FAI_ROOT"/$i
+done
+
+fstrim "$FAI_ROOT"
