@@ -10,5 +10,5 @@ linux-image-5.10-amd64
 PACKAGES install-norec LINUX_VERSION_BUSTER_LTS+LINUX_VARIANT_CLOUD
 linux-image-5.10-cloud-amd64
 
-PACKAGES install-norec GRUB_CLOUD_AMD64
+PACKAGES install-norec
 grub-cloud-amd64

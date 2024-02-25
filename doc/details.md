@@ -11,20 +11,20 @@ It's also possible to call fai-diskimage(8) directly.
 
 Example 1 nocloud:
 
-    # fai-diskimage --hostname debian --class DEBIAN,CLOUD,BUSTER,BACKPORTS,NOCLOUD,AMD64,GRUB_CLOUD_AMD64,LINUX_IMAGE_BASE,LAST --size 2G --cspace ... debian-buster-nocloud.raw
+    # fai-diskimage --hostname debian --class DEBIAN,CLOUD,BUSTER,BACKPORTS,NOCLOUD,AMD64,LINUX_IMAGE_BASE,LAST --size 2G --cspace ... debian-buster-nocloud.raw
 
 Example 2 genericcloud (OpenStack):
 
-    # fai-diskimage --hostname debian --class DEBIAN,CLOUD,BUSTER,BACKPORTS,GENERIC,AMD64,GRUB_CLOUD_AMD64,LINUX_IMAGE_CLOUD,LAST --size 2G --cspace ... debian-buster-genericcloud.raw
+    # fai-diskimage --hostname debian --class DEBIAN,CLOUD,BUSTER,BACKPORTS,GENERIC,AMD64,LINUX_IMAGE_CLOUD,LAST --size 2G --cspace ... debian-buster-genericcloud.raw
 
 
 Example 3 Azure:
 
-    # fai-diskimage --hostname debian --class DEBIAN,CLOUD,BUSTER,BACKPORTS,AZURE,IPV6_DHCP,AMD64,GRUB_CLOUD_AMD64,LINUX_IMAGE_CLOUD,LAST --size 30G --cspace ... debian-buster-azure.raw
+    # fai-diskimage --hostname debian --class DEBIAN,CLOUD,BUSTER,BACKPORTS,AZURE,IPV6_DHCP,AMD64,LINUX_IMAGE_CLOUD,LAST --size 30G --cspace ... debian-buster-azure.raw
 
 Example 4 EC2:
 
-    # fai-diskimage --hostname debian --class DEBIAN,CLOUD,SID,EC2,IPV6_DHCP,AMD64,GRUB_CLOUD_AMD64,LINUX_IMAGE_BASE,LAST --size 8G --cspace ... debian-sid-ec2.raw
+    # fai-diskimage --hostname debian --class DEBIAN,CLOUD,SID,EC2,IPV6_DHCP,AMD64,LINUX_IMAGE_BASE,LAST --size 8G --cspace ... debian-sid-ec2.raw
 
 
 In these examples we replaced the directory to the config space with ...
@@ -56,9 +56,6 @@ These are classes containing architecture specific configs:
 * AMD64
 * ARM64
 * PPC64EL
-* GRUB_CLOUD_AMD64
-* GRUB_EFI_ARM64
-* GRUB_IEEE1275 (Open Firmware on PowerPC)
 
 
 Release specific classes:
