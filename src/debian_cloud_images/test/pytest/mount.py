@@ -29,3 +29,17 @@ def image_build_info(request):
 @pytest.fixture(scope="session")
 def image_path(request):
     return request.config.getoption('mount_path')
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        'markers', 'build_arch(name): mark test to run only on named architecture'
+    )
+
+
+def pytest_runtest_setup(item):
+    build_info = json.loads(item.config.getoption('mount_build_info'))
+
+    if i := [mark.args[0] for mark in item.iter_markers(name='build_arch')]:
+        if build_info['arch'] not in i:
+            pytest.skip(f'tests required arch in {i!r}')
