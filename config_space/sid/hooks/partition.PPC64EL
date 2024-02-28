@@ -22,7 +22,7 @@ unit: sectors
 # PReP boot
 p15 : start=2048, size=6144, type="PowerPC PReP boot"
 # Linux
-p1 : start=8192, type="Linux root (PPC64LE)"
+p1 : start=8192, type="Linux root (PPC64LE)", uuid=${PARTUUID_ROOT}
 EOF
 
 partprobe "$device"
@@ -31,9 +31,7 @@ wait_for_device "$device_root"
 mkfs.ext4 "$device_root"
 tune2fs -c 0 -i 0 "$device_root"
 
-uuid_root=$(blkid -s UUID -o value "$device_root")
-
 cat > "$LOGDIR/fstab" <<EOF
 # /etc/fstab: static file system information
-UUID=${uuid_root} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
+PARTUUID=${PARTUUID_ROOT} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
 EOF
