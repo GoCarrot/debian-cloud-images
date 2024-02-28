@@ -4,5 +4,5 @@ linux-image-arm64
 PACKAGES install-norec LINUX_VERSION_BASE+LINUX_VARIANT_CLOUD LINUX_VERSION_BACKPORTS+LINUX_VARIANT_CLOUD
 linux-image-cloud-arm64
 
-PACKAGES install-norec GRUB_EFI_ARM64
+PACKAGES install-norec
 grub-efi-arm64

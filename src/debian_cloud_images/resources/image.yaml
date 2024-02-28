@@ -7,12 +7,12 @@ kind: ImageConfig
 archs:
 - name: amd64
   azureName: X64
-  faiClasses: [AMD64, GRUB_CLOUD_AMD64]
+  faiClasses: [AMD64]
 - name: arm64
   azureName: Arm64
-  faiClasses: [ARM64, GRUB_EFI_ARM64]
+  faiClasses: [ARM64]
 - name: ppc64el
-  faiClasses: [PPC64EL, GRUB_IEEE1275]
+  faiClasses: [PPC64EL]
 
 releases:
 - name: buster

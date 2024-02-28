@@ -10,7 +10,7 @@ linux-image-5.10-arm64
 PACKAGES install-norec LINUX_VERSION_BUSTER_LTS+LINUX_VARIANT_CLOUD
 linux-image-5.10-cloud-arm64
 
-PACKAGES install-norec GRUB_EFI_ARM64
+PACKAGES install-norec
 grub-efi-arm64
 
 PACKAGES install-norec BUSTER
