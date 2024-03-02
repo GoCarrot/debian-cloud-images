@@ -31,7 +31,7 @@ EOF
 partprobe "$device"
 
 wait_for_device "$device_root"
-mkfs.ext4 "$device_root"
+mkfs.ext4 -U "$FSUUID_ROOT" "$device_root"
 tune2fs -c 0 -i 0 "$device_root"
 
 wait_for_device "$device_efi"
