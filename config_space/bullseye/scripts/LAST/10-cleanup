@@ -1,19 +1,19 @@
 #!/bin/bash
 set -euE
 
-cleanup_mounts=(
+cleanup_dirs=(
   dev
   proc
   run
   sys
   var/cache/apt
+  var/lib/apt/lists
 )
 
 cleanup_files=(
   etc/apt/sources.list.d/localdebs.list
   etc/mailname
   etc/ssh/ssh_host_*
-  var/lib/apt/lists/*
   var/lib/dbus/machine-id
   var/log/alternatives.log
   var/log/apt
@@ -28,7 +28,7 @@ empty_files=(
   var/lib/dpkg/available
 )
 
-for i in "${cleanup_mounts[@]}"; do
+for i in "${cleanup_dirs[@]}"; do
   umount -l "$FAI_ROOT"/$i || :
   find "$FAI_ROOT"/$i -mindepth 1 -depth -delete
 done
