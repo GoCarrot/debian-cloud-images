@@ -41,4 +41,6 @@ for i in "${empty_files[@]}"; do
   > "$FAI_ROOT"/$i
 done
 
-fstrim "$FAI_ROOT"
+if ifclass BUILD_IMAGE; then
+  fstrim "$FAI_ROOT"
+fi
