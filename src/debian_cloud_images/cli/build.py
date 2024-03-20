@@ -68,6 +68,7 @@ class Classes(collections.abc.MutableSet):
 class Check:
     def __init__(self):
         self.classes = Classes()
+        self.classes.add('BUILD_IMAGE')
         self.classes.add('BASE')
         self.classes.add('DEBIAN')
         self.classes.add('CLOUD')
