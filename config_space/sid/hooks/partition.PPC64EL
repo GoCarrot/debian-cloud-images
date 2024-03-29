@@ -30,8 +30,3 @@ partprobe "$device"
 wait_for_device "$device_root"
 mkfs.ext4 -U "$FSUUID_ROOT" "$device_root"
 tune2fs -c 0 -i 0 "$device_root"
-
-cat > "$LOGDIR/fstab" <<EOF
-# /etc/fstab: static file system information
-PARTUUID=${PARTUUID_ROOT} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
-EOF

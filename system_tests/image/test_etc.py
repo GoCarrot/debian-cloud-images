@@ -15,7 +15,9 @@ class TestEtc:
             assert f.read() == 'LANG=C.UTF-8\n', 'Default locale is not C.UTF-8'
 
     def test_etc_fstab(self, image_path):
-        assert (image_path / 'etc' / 'fstab').exists()
+        p = image_path / 'etc/fstab'
+        assert p.is_file()
+        assert not p.is_symlink()
 
     def test_etc_resolv_conf(self, image_path):
         p = image_path / 'etc' / 'resolv.conf'
