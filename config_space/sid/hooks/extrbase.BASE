@@ -4,5 +4,3 @@ set -euE
 touch "${LOGDIR}/skip.extrbase"
 
 debootstrap --variant minbase --arch "$DEBOOTSTRAP_ARCH" "$SUITE" "$FAI_ROOT" "$DEBOOTSTRAP_MIRROR"
-
-cp "${LOGDIR}/fstab" "$FAI_ROOT/etc/fstab"
