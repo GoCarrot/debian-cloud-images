@@ -20,13 +20,13 @@ class TestCreateManifest:
         input_filename = tmp_path / 'in'
         output_filename = tmp_path / 'out'
         run = CreateManifest(
-            input_filename=input_filename,
+            dpkg_status=input_filename,
             output_filename=output_filename,
             info=self.info,
         )
 
         with input_filename.open('w') as f:
-            f.write('{"apiVersion":"cloud.debian.org/v1alpha1","kind":"Build","metadata":{},"data":{}}')
+            f.write('')
 
         run(True, ['digest'])
 
@@ -38,7 +38,7 @@ class TestCreateManifest:
         input_filename = tmp_path / 'in'
         output_filename = tmp_path / 'out'
         run = CreateManifest(
-            input_filename=input_filename,
+            dpkg_status=input_filename,
             output_filename=output_filename,
             info=self.info,
         )
@@ -50,7 +50,7 @@ class TestCreateManifest:
         input_filename = tmp_path / 'in'
         output_filename = tmp_path / 'out'
         run = CreateManifest(
-            input_filename=input_filename,
+            dpkg_status=input_filename,
             output_filename=output_filename,
             info=self.info,
         )

@@ -2,6 +2,8 @@
 set -euE
 shopt -s extglob nullglob
 
+${ROOTCMD} dpkg -s > "${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.dpkg-status"
+
 exec > ${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.info
 
 function show() {

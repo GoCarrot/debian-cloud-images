@@ -1,16 +1,40 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+from __future__ import annotations
+
 import json
 import logging
 import pathlib
 
-from typing import Dict, Iterable
+from dataclasses import dataclass
+from typing import Dict, Iterable, Optional
 
-from ..api.cdo.build import v1alpha1_BuildSchema
+from ..api.cdo.build import v1alpha1_BuildSchema, Build
 from ..api import wellknown
+from ..utils.dataclasses_deb822 import read_deb822, field_deb822
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Package:
+    package: str = field_deb822('Package')
+    version: str = field_deb822('Version')
+    arch: str = field_deb822('Architecture')
+    multi_arch: Optional[str] = field_deb822(
+        'Multi-Arch',
+        default=None,
+    )
+
+    def get_manifest(self) -> dict[str, str]:
+        ret: dict[str, str] = {
+            'name': self.package,
+            'version': self.version,
+        }
+        if self.multi_arch == 'same':
+            ret['name'] += f':{self.arch}'
+        return ret
 
 
 class CreateManifest:
@@ -20,11 +44,11 @@ class CreateManifest:
 
     def __init__(
             self, *,
-            input_filename: pathlib.Path,
+            dpkg_status: pathlib.Path,
             output_filename: pathlib.Path,
             info: Dict[str, str],
     ):
-        self.input_filename = input_filename
+        self.dpkg_status = dpkg_status
         self.output_filename = output_filename
         self.info = info
 
@@ -32,8 +56,11 @@ class CreateManifest:
         if not run:
             return
 
-        with self.input_filename.open() as f:
-            manifest = v1alpha1_BuildSchema().load(json.load(f))
+        manifest = Build(packages=[])
+
+        with self.dpkg_status.open() as f:
+            for p in read_deb822(Package, f, ignore_unknown=True):
+                manifest.packages.append(p.get_manifest())
 
         manifest.info = self.info
 
