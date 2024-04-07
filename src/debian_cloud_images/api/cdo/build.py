@@ -12,7 +12,7 @@ from ..registry import registry as _registry
 @dataclasses.dataclass
 class Build:
     info: dict[str, str] = dataclasses.field(default_factory=dict)
-    packages: list[str] = dataclasses.field(default_factory=list)
+    packages: list[dict[str, str]] = dataclasses.field(default_factory=list)
     metadata: ObjectMeta = dataclasses.field(default_factory=ObjectMeta)
 
 

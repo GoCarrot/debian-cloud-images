@@ -258,7 +258,7 @@ class BuildCommand(BaseCommand):
 
             image_raw = output / '{}.raw'.format(name)
             image_tar = output / '{}.tar'.format(name)
-            manifest_fai = output / '{}.build-fai.json'.format(name)
+            manifest_dpkg_status = output / '{}.dpkg-status'.format(name)
             manifest_final = output / '{}.build.json'.format(name)
 
             self.fai = RunFAI(
@@ -275,7 +275,7 @@ class BuildCommand(BaseCommand):
             )
 
             self.manifest = CreateManifest(
-                input_filename=manifest_fai,
+                dpkg_status=manifest_dpkg_status,
                 output_filename=manifest_final,
                 info=self.c.info,
             )
