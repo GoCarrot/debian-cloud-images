@@ -1,16 +1,20 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import pathlib
 import logging
 import time
 
 from libcloud.compute.types import VolumeSnapshotState
 
+from .base import cli
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
+from ..images.publicinfo import ImagePublicType
 from ..utils.libcloud.compute.ec2 import ExEC2NodeDriver
 from ..utils.libcloud.storage.s3 import S3BucketStorageDriver
 from ..utils.retry import with_retries
+from ..utils import argparse_ext
 
 
 class EC2Exception(Exception):
@@ -257,24 +261,48 @@ class ImageUploaderEc2:
             )
 
 
-class UploadEc2Command(UploadBaseCommand):
-    argparser_name = 'upload-ec2'
-    argparser_help = 'upload Debian images to Amazon EC2'
-    argparser_epilog = '''
+@cli.register(
+    'upload-ec2',
+    help='upload Debian images to Amazon EC2',
+    usage='%(prog)s [MANIFEST]...',
+    epilog='''
 config options:
   ec2.storage.name     create temporary image file in this S3 bucket
-'''
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+''',
+    arguments=[
+        cli.prepare_argument(
+            'manifests',
+            help='read manifests',
+            metavar='MANIFEST',
+            nargs='*',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--output',
+            default='.',
+            help='write manifests to (default: .)',
+            metavar='DIR',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--variant',
+            action=argparse_ext.ActionEnum,
+            default='dev',
+            dest='public_type',
+            enum=ImagePublicType,
+        ),
+        cli.prepare_argument(
+            '--version-override',
+            dest='override_version',
+        ),
+        cli.prepare_argument(
             '--permission-public',
             action='store_true',
             help='Make snapshot and image public',
-        )
-
+        ),
+    ],
+)
+class UploadEc2Command(UploadBaseCommand):
     def __init__(self, *, regions=[], add_tags={}, permission_public, **kw):
         super().__init__(**kw)
 
@@ -291,4 +319,4 @@ config options:
 
 
 if __name__ == '__main__':
-    UploadEc2Command._main()
+    cli.main(UploadEc2Command)

@@ -4,54 +4,52 @@ import datetime
 import logging
 import pathlib
 
-from .base import BaseCommand
+from .base import cli, BaseCommand
 from ..images.public import PublicImages
 from ..images.publicinfo import ImagePublicType
 from ..utils import argparse_ext
 
 
-class CleanupCommand(BaseCommand):
-    argparser_name = 'cleanup'
-    argparser_help = ''
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+@cli.register(
+    'cleanup',
+    help='',
+    arguments=[
+        cli.prepare_argument(
             '--release',
             action='append',
             default=[],
             dest='releases',
             help='Delete images from release',
             required=True,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--storage',
             help='base path for storage',
             metavar='PATH',
             required=True,
             type=pathlib.Path,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--delete-after',
             help='Delete images after X days',
             metavar='DAYS',
             type=int,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--public-type',
             action=argparse_ext.ActionEnum,
             default='dev',
             dest='public_type',
             enum=ImagePublicType,
             metavar='TYPE',
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--no-op',
             action='store_true',
-        )
-
+        ),
+    ],
+)
+class CleanupCommand(BaseCommand):
     def __init__(
             self, *,
             releases=[],
@@ -88,4 +86,4 @@ class CleanupCommand(BaseCommand):
 
 
 if __name__ == '__main__':
-    CleanupCommand._main()
+    cli.main(CleanupCommand)

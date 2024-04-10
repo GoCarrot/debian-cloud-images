@@ -2,6 +2,15 @@
 requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
 
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = [
+  'requests',
+  'requests.adapters',
+  'urllib3.util.retry',
+  'yaml',
+]
+
 [tool.pytest.ini_options]
 junit_family = "xunit2"
 minversion = "6.0"

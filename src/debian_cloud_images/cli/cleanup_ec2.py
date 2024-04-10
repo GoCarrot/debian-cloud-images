@@ -3,43 +3,41 @@
 import datetime
 import logging
 
-from .base import BaseCommand
+from .base import cli, BaseCommand
 from ..images.ec2 import Ec2Images
 from ..utils.libcloud.compute.ec2 import ExEC2NodeDriver
 
 
-class CleanupEc2Command(BaseCommand):
-    argparser_name = 'cleanup-ec2'
-    argparser_help = ''
-    argparser_epilog = '''
+@cli.register(
+    'cleanup-ec2',
+    help='',
+    epilog='''
 config options:
   ec2.auth.key
   ec2.auth.secret
   ec2.image.regions
-'''
-
-    compute_cls = ExEC2NodeDriver
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+''',
+    arguments=[
+        cli.prepare_argument(
             '--account',
             default='self',
             help='Delete images from account (default: %(default)s)',
             type=str,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--delete-after',
             help='Delete images after X days',
             metavar='DAYS',
             type=int,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--no-op',
             action='store_true',
-        )
+        ),
+    ],
+)
+class CleanupEc2Command(BaseCommand):
+    compute_cls = ExEC2NodeDriver
 
     def __init__(
             self, *,
@@ -83,4 +81,4 @@ config options:
 
 
 if __name__ == '__main__':
-    CleanupEc2Command._main()
+    cli.main(CleanupEc2Command)

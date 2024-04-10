@@ -1,12 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import argparse
 import json
 import logging
 import sys
 import typing
 
-from .base import BaseCommand
+from .base import cli_internal, BaseCommand
 
 
 logger = logging.getLogger()
@@ -41,39 +40,36 @@ class JSONSortedEncoder(json.JSONEncoder):
         return super().default(self, obj)
 
 
-class GenerateCiCommand(BaseCommand):
-    argparser_name = 'generate-generate'
-    argparser_help = 'generate CI config'
-    argparser_usage = '%(prog)s'
-    argparser_argument_public_type = None
-
-    @classmethod
-    def _argparse_register(cls, parser) -> None:
-        super()._argparse_register(parser)
-
-        cls.argparser_argument_public_type = parser.add_argument(
+@cli_internal.register(
+    'generate-ci',
+    help='generate CI config',
+    usage='%(prog)s',
+    arguments=[
+        cli_internal.prepare_argument(
             '--public-type',
             default='dev',
             dest='public_type_name',
             help='the public type to generate config for',
             metavar='TYPE',
-        )
-        parser.add_argument(
+        ),
+        cli_internal.prepare_argument(
             'output',
             metavar='OUTPUT',
             nargs='?',
             help='Where to write file to (default: stdout)',
-        )
-
+        ),
+    ],
+)
+class GenerateCiCommand(BaseCommand):
     def __init__(self, *, output: str, public_type_name: str, **kw):
         super().__init__(**kw)
 
         self.public_type = self.config_image.public_types.get(public_type_name)
 
         if self.public_type is None:
-            raise argparse.ArgumentError(
-                self.argparser_argument_public_type,
-                f'invalid value: {public_type_name}, select one of {", ".join(self.config_image.public_types)}')
+            self.error(
+                f'argument --public-type: invalid value: {public_type_name}, select one of {", ".join(self.config_image.public_types)}'
+            )
 
         self.output = output
 
@@ -263,4 +259,4 @@ class GenerateCiCommand(BaseCommand):
 
 
 if __name__ == '__main__':
-    GenerateCiCommand._main()
+    cli_internal.main(GenerateCiCommand)

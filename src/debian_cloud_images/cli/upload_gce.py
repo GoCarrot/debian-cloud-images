@@ -2,11 +2,15 @@
 
 import json
 import logging
+import pathlib
 import zlib
 
+from .base import cli
 from .upload_base import UploadBaseCommand
 from ..api.cdo.upload import Upload
 from ..api.wellknown import label_ucdo_provider, label_ucdo_type
+from ..images.publicinfo import ImagePublicType
+from ..utils import argparse_ext
 
 from libcloud.compute.types import Provider as ComputeProvider
 from libcloud.compute.providers import get_driver as compute_driver
@@ -147,17 +151,46 @@ class ImageUploaderGce:
         yield c.flush()
 
 
-class UploadGceCommand(UploadBaseCommand):
-    argparser_name = 'upload-gce'
-    argparser_help = 'upload Debian images to GCE'
-    argparser_epilog = '''
+@cli.register(
+    'upload-gce',
+    help='upload Debian images to GCE',
+    usage='%(prog)s [MANIFEST]...',
+    epilog='''
 config options:
   gce.auth.credentialsfile  use file for service account credentials
                          (default: ${GOOGLE_APPLICATION_CREDENTIALS})
   gce.image.project    create images in this Google Cloud project
   gce.storage.name     create temporary image file in this Google Storage bucket
-'''
-
+''',
+    arguments=[
+        cli.prepare_argument(
+            'manifests',
+            help='read manifests',
+            metavar='MANIFEST',
+            nargs='*',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--output',
+            default='.',
+            help='write manifests to (default: .)',
+            metavar='DIR',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--variant',
+            action=argparse_ext.ActionEnum,
+            default='dev',
+            dest='public_type',
+            enum=ImagePublicType,
+        ),
+        cli.prepare_argument(
+            '--version-override',
+            dest='override_version',
+        ),
+    ],
+)
+class UploadGceCommand(UploadBaseCommand):
     def __init__(self, **kw):
         super().__init__(**kw)
 
@@ -174,4 +207,4 @@ config options:
 
 
 if __name__ == '__main__':
-    UploadGceCommand._main()
+    cli.main(UploadGceCommand)

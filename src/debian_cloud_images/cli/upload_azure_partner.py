@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import datetime
+import pathlib
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type, label_aucdo_arch
@@ -11,13 +12,17 @@ from debian_cloud_images.utils.azure.image_version import AzureImageVersion
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 from debian_cloud_images.utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
+from .base import cli
 from .upload_base import UploadBaseCommand
+from ..images.publicinfo import ImagePublicType
+from ..utils import argparse_ext
 
 
-class UploadAzurePartnerlegacyCommand(UploadBaseCommand):
-    argparser_name = 'upload-azure-partner'
-    argparser_help = 'upload Debian images to Azure Partner offers'
-    argparser_epilog = '''
+@cli.register(
+    'upload-azure-partner',
+    usage='%(prog)s [MANIFEST]...',
+    help='upload Debian images to Azure Partner offers',
+    epilog='''
 config options:
   azure.auth.client     application ID of service account, or empty for using az
   azure.auth.secret     secret of service account, or empty for using az
@@ -27,30 +32,53 @@ config options:
   azure.storage.subscription
   azure.storage.group
   azure.storage.name
-'''
-
-    @classmethod
-    def _argparse_register(cls, parser):
-        super()._argparse_register(parser)
-
-        parser.add_argument(
+''',
+    arguments=[
+        cli.prepare_argument(
+            'manifests',
+            help='read manifests',
+            metavar='MANIFEST',
+            nargs='*',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--output',
+            default='.',
+            help='write manifests to (default: .)',
+            metavar='DIR',
+            type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--variant',
+            action=argparse_ext.ActionEnum,
+            default='dev',
+            dest='public_type',
+            enum=ImagePublicType,
+        ),
+        cli.prepare_argument(
+            '--version-override',
+            dest='override_version',
+        ),
+        cli.prepare_argument(
             '--partner-offer',
             help='use specified offer inside Azure Partner interface',
             metavar='OFFER',
             required=True,
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--partner-plan-override',
             help='use specified plan inside Azure Partner interface',
             metavar='PLAN',
-        )
-        parser.add_argument(
+        ),
+        cli.prepare_argument(
             '--partner-version-override',
             help='use specified version inside Azure Partner interface',
             metavar='VERSION',
             type=AzureImageVersion.from_string,
-        )
-
+        ),
+    ],
+)
+class UploadAzurePartnerlegacyCommand(UploadBaseCommand):
     def __init__(
             self, *,
             partner_offer: str,
@@ -188,4 +216,4 @@ config options:
 
 
 if __name__ == '__main__':
-    UploadAzurePartnerlegacyCommand._main()
+    cli.main(UploadAzurePartnerlegacyCommand)
