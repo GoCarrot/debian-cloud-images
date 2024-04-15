@@ -7,12 +7,15 @@ kind: ImageConfig
 archs:
 - name: amd64
   azureName: X64
+  ociArch: amd64
   faiClasses: [AMD64]
 - name: arm64
   azureName: Arm64
+  ociArch: arm64
   faiClasses: [ARM64]
 - name: ppc64el
   faiClasses: [PPC64EL]
+  ociArch: ppc64le
 
 releases:
 - name: buster

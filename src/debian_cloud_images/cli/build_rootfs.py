@@ -18,6 +18,7 @@ from .base import cli, cli_internal, BaseCommand
 from .. import resources
 from ..utils import argparse_ext
 from ..utils import sandbox
+from ..utils.oci_image import OciImage
 
 
 logger = logging.getLogger()
@@ -277,6 +278,8 @@ class BuildCommand(BaseCommand):
         tar --directory=/target --create --sort=name --file /fai/output/{output_tar.name} .
         '''
 
+        oci = OciImage(output_base)
+
         with importlib.resources.as_file(
             importlib.resources.files(resources) / 'fai_config' / self.c.release.basename
         ) as p_fai_config:
@@ -296,6 +299,58 @@ class BuildCommand(BaseCommand):
 
             except CalledProcessError as e:
                 sys.exit(e.returncode)
+
+        info_rootfs = oci.store_blob_from_tmp(output_tar.name)
+
+        info_rootfs_config = oci.store_blob({
+            'architecture': self.c.arch.oci_arch,
+            'os': 'linux',
+            'config': {
+                'Cmd': [
+                    'bash'
+                ],
+                'Env': [
+                    'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+                ],
+            },
+            'rootfs': {
+                'diff_ids': [info_rootfs.digest],
+                'type': 'layers',
+            },
+        })
+
+        info_rootfs_manifest = oci.store_blob({
+            'schemaVersion': 2,
+            'mediaType': 'application/vnd.oci.image.manifest.v1+json',
+            'config': {
+                'mediaType': 'application/vnd.oci.image.config.v1+json',
+                'digest': info_rootfs_config.digest,
+                'size': info_rootfs_config.size,
+            },
+            'layers': [
+                {
+                    'mediaType': 'application/vnd.oci.image.layer.v1.tar',
+                    'digest': info_rootfs.digest,
+                    'size': info_rootfs.size,
+                },
+            ],
+        })
+
+        oci.store_index({
+            'schemaVersion': 2,
+            'mediaType': 'application/vnd.oci.image.index.v1+json',
+            'manifests': [
+                {
+                    'mediaType': 'application/vnd.oci.image.manifest.v1+json',
+                    'digest': info_rootfs_manifest.digest,
+                    'size': info_rootfs_manifest.size,
+                    'platform': {
+                        'architecture': self.c.arch.oci_arch,
+                        'os': 'linux'
+                    },
+                },
+            ],
+        })
 
 
 if __name__ == '__main__':
