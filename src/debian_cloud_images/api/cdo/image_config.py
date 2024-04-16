@@ -45,12 +45,14 @@ class v1alpha1_ImageConfigMatchSchema(Schema):
 class ImageConfigArch:
     name: str
     azure_name: typing.Optional[str] = dataclasses.field(default=None)
+    oci_arch: typing.Optional[str] = dataclasses.field(default=None)
     fai_classes: list[str] = dataclasses.field(default_factory=list)
 
 
 class v1alpha1_ImageConfigArchSchema(Schema):
     name = fields.Str(required=True)
     azure_name = fields.Str(data_key='azureName')
+    oci_arch = fields.Str(data_key='ociArch')
     fai_classes = fields.List(fields.Str(), data_key='faiClasses')
 
     @post_load
