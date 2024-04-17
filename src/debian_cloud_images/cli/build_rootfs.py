@@ -72,7 +72,6 @@ class Check:
         self.classes = Classes()
         self.classes.add('BASE')
         self.classes.add('DEBIAN')
-        self.classes.add('CLOUD')
         self.env = {}
         self.info = {}
 
