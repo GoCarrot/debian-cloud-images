@@ -7,6 +7,8 @@ if ifclass DISABLE_IPV6; then
     ainsl -av /etc/sysctl.d/70-disable-ipv6.conf 'net.ipv6.conf.lo.disable_ipv6 = 0'
 fi
 $ROOTCMD shadowconfig on
-sed -i -e 's/^#PasswordAuthentication yes/PasswordAuthentication no/' $target/etc/ssh/sshd_config
-sed -i -e 's/^PermitRootLogin .*/PermitRootLogin without-password/' $target/etc/ssh/sshd_config
-ainsl /etc/ssh/sshd_config 'ClientAliveInterval 120'
+if [ -e $target/etc/ssh/sshd_config ]; then
+  sed -i -e 's/^#PasswordAuthentication yes/PasswordAuthentication no/' $target/etc/ssh/sshd_config
+  sed -i -e 's/^PermitRootLogin .*/PermitRootLogin without-password/' $target/etc/ssh/sshd_config
+  ainsl /etc/ssh/sshd_config 'ClientAliveInterval 120'
+fi
