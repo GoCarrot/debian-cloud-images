@@ -6,6 +6,7 @@ libpam-systemd
 
 systemd-resolved
 libnss-resolve
+libnss-myhostname
 netplan.io
 
 # needed for systemd-networkd to set hostnames
