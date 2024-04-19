@@ -715,6 +715,19 @@
       "CLOUD_VENDOR": "generic"
     }
   },
+  "generic sid riscv64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "riscv64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
   "generic trixie amd64 build": {
     "extends": ".build",
     "rules": [
@@ -1192,6 +1205,19 @@
     ],
     "variables": {
       "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud sid riscv64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "when": "manual"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "riscv64",
       "CLOUD_RELEASE": "sid",
       "CLOUD_VENDOR": "nocloud"
     }

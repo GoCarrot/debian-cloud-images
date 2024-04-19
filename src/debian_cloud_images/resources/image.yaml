@@ -16,6 +16,9 @@ archs:
 - name: ppc64el
   faiClasses: [PPC64EL]
   ociArch: ppc64le
+- name: riscv64
+  faiClasses: [RISCV64]
+  ociArch: riscv64
 
 releases:
 - name: buster
@@ -37,26 +40,36 @@ releases:
   id: '11'
   baseid: '11'
   faiClasses: [BULLSEYE, LINUX_VERSION_BASE, EXTRAS]
+  matches:
+  - matchArches: [amd64, arm64, ppc64el]
 - name: bullseye-backports
   basename: bullseye-backports
   id: 11-backports
   baseid: '11'
   faiClasses: [BULLSEYE, LINUX_VERSION_BACKPORTS, EXTRAS]
+  matches:
+  - matchArches: [amd64, arm64, ppc64el]
 - name: bookworm
   basename: bookworm
   id: '12'
   baseid: '12'
   faiClasses: [BOOKWORM, LINUX_VERSION_BASE, EXTRAS]
+  matches:
+  - matchArches: [amd64, arm64, ppc64el]
 - name: bookworm-backports
   basename: bookworm-backports
   id: 12-backports
   baseid: '12'
   faiClasses: [BOOKWORM, LINUX_VERSION_BACKPORTS, EXTRAS]
+  matches:
+  - matchArches: [amd64, arm64, ppc64el]
 - name: trixie
   basename: trixie
   id: '13'
   baseid: '13'
   faiClasses: [TRIXIE, LINUX_VERSION_BASE, EXTRAS]
+  matches:
+  - matchArches: [amd64, arm64, ppc64el]
 - name: sid
   basename: sid
   id: sid

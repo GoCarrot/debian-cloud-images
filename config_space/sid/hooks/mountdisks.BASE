@@ -11,7 +11,7 @@ device_root="${device}p1"
 device_efi="${device}p15"
 
 mount -o noatime -o "$options" "$device_root" "$FAI_ROOT"
-if ifclass -o AMD64 ARM64; then
+if ifclass -o AMD64 ARM64 RISCV64; then
   mkdir -p "${FAI_ROOT}/boot/efi"
   mount -o noatime -o "$options" "$device_efi" "${FAI_ROOT}/boot/efi"
 fi
