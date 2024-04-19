@@ -29,6 +29,9 @@ elif ifclass ARM64; then
   grub_install arm64-efi
 elif ifclass PPC64EL; then
   grub_install powerpc-ieee1275
+elif ifclass RISCV64; then
+  mkdir -p "$FAI_ROOT"/boot/efi
+  grub_install riscv64-efi
 fi
 
 if ifclass BUILD_IMAGE; then

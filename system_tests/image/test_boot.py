@@ -32,6 +32,10 @@ class TestBootFiles:
     def test_boot_grub_powerpc_ieee1275(self, image_path):
         self.check_dir_exist(image_path, '/boot/grub/powerpc-ieee1275')
 
+    @pytest.mark.build_arch('riscv64')
+    def test_boot_grub_riscv64_efi(self, image_path):
+        self.check_dir_exist(image_path, '/boot/grub/riscv64-efi')
+
     @pytest.mark.build_arch('amd64')
     def test_boot_grub_x86_64_efi(self, image_path):
         self.check_dir_exist(image_path, '/boot/grub/x86_64-efi')
