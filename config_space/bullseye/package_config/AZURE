@@ -4,11 +4,9 @@ cloud-guest-utils
 hyperv-daemons
 waagent
 
-PACKAGES install-norec BUSTER
+PACKAGES install-norec BUSTER+AZURE
 # Some waagent extensions still need python2.7, and break when it is not present
 python
-# Includes not backported service changes to start as early as possible
-hyperv-daemons/buster-backports
 
 PACKAGES install-norec BULLSEYE
 # Azure needs cloud-init >= 22.1
