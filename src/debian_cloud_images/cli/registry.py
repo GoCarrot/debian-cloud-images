@@ -58,9 +58,6 @@ class CliRegistry:
         parser.set_defaults(__cls=CliCommand, argparser=parser)
         self.subparsers = parser.add_subparsers()
 
-        for w in arguments:
-            parser.add_argument(*w.args, **w.kw)
-
     @staticmethod
     def prepare_argument(*args, **kw) -> _ActionWrapper:
         return _ActionWrapper(args, kw)
