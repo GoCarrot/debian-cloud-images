@@ -13,6 +13,11 @@ class TestImagesAzurePartnerlegacyVersion:
             'https://host/api/publishers/publisher/offers/offer?api-version=2017-10-31',
             json={
                 'definition': {
+                    'offer': {
+                        'microsoft-azure-corevm.leadNotificationEmails': '',
+                        'microsoft-azure-corevm.legacyOfferId': '',
+                        'microsoft-azure-corevm.legacyPublisherId': '',
+                    },
                     'plans': [
                         {
                             'planId': 'plan',
@@ -65,6 +70,9 @@ class TestImagesAzurePartnerlegacyVersion:
 
         assert put.last_request.json() == {
             'definition': {
+                'offer': {
+                    'microsoft-azure-corevm.leadNotificationEmails': '',
+                },
                 'plans': [
                     {
                         'planId': 'plan',
