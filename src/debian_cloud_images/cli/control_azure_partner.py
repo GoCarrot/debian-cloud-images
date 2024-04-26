@@ -92,7 +92,7 @@ class ControlAzurePartnerlegacyCommand(BaseCommand):
 class ControlAzurePartnerlegacyCommandCat(ControlAzurePartnerlegacyCommand):
     def impl(self, partner_offer: ImagesAzurePartnerlegacyOffer) -> None:
         data = partner_offer.get(slot=self._slot)
-        with subprocess.Popen(['pager'], stdin=subprocess.PIPE) as p:
+        with subprocess.Popen(['sensible-pager'], stdin=subprocess.PIPE) as p:
             p.communicate(yaml.safe_dump(data).encode('utf-8'))
 
 
