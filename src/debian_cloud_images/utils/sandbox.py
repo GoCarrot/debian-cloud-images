@@ -179,7 +179,7 @@ class OciBundle:
             ] + [
                 {
                     'destination': str(destination),
-                    'options': ['bind', 'nodev', 'nosuid', 'rw' if readwrite else 'ro'],
+                    'options': ['rbind', 'nodev', 'nosuid', 'rw' if readwrite else 'ro'],
                     'type': 'none',
                     'source': str(source),
                 }
