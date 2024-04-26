@@ -46,6 +46,10 @@ class ImagesAzurePartnerlegacyVersion:
         " Request complete offer, find and return plan "
         response = self.__request(method='GET')
         data = response.parse_body()
+        # Workaround, can't write these key
+        offer = data['definition']['offer']
+        offer.pop('microsoft-azure-corevm.legacyOfferId', None)
+        offer.pop('microsoft-azure-corevm.legacyPublisherId', None)
         plans = list(filter(lambda i: i['planId'] == self.__name_plan, data['definition']['plans']))
         if len(plans) != 1:
             raise RuntimeError('Plan not found')
