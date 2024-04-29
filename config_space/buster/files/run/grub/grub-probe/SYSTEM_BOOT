@@ -1,0 +1,43 @@
+#!/usr/bin/python3
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--device',
+)
+parser.add_argument(
+    '--target',
+    choices=(
+        'abstraction',
+        'compatibility_hint',
+        'device',
+        'hints_string',
+        'fs',
+        'fs_uuid',
+        'partmap',
+        'partuuid',
+    ),
+)
+parser.add_argument(
+    'path',
+    nargs='?',
+)
+
+args = parser.parse_args()
+
+if args.target == 'compatibility_hint':
+    print('hd0,gpt1')
+elif args.target == 'device':
+    print('##DEV##')
+elif args.target == 'fs':
+    print('ext2')
+elif args.target == 'fs_uuid':
+    print('##FSUUID##')
+elif args.target == 'hints_string':
+    # Outputs space at the end [sic]
+    print('--hint-bios=hd0,gpt1 --hint-efi=hd0,gpt1 --hint-baremetal=ahci0,gpt1 ')
+elif args.target == 'partmap':
+    print('gpt')
+elif args.target == 'partuuid':
+    print('##PARTUUID##')

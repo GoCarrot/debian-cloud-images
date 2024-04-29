@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sed -E -i -e 's/^#?timeout .*$/timeout 300;/' $target/etc/dhcp/dhclient.conf

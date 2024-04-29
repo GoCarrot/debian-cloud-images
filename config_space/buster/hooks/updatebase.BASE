@@ -1,0 +1,15 @@
+#!/bin/bash
+set -eu
+
+touch $LOGDIR/skip.updatebase
+
+mount --rbind /dev $FAI_ROOT/dev
+mount --make-private $FAI_ROOT/dev
+mount --bind /proc $FAI_ROOT/proc
+mount --make-private $FAI_ROOT/proc
+mount --bind /sys $FAI_ROOT/sys
+mount --make-private $FAI_ROOT/sys
+
+aptopt="-y -o Dpkg::Options::=--force-confnew"
+$ROOTCMD apt-get -y update
+$ROOTCMD apt-get $aptopt dist-upgrade < /dev/null

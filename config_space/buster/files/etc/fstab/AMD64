@@ -1,0 +1,2 @@
+PARTUUID={%PARTUUID_ROOT%} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
+PARTUUID={%PARTUUID_ESP%} /boot/efi vfat defaults 0 0

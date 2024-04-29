@@ -1,0 +1,3 @@
+[Unit]
+ConditionPathExists=
+BindsTo=sys-devices-virtual-misc-vmbus\x21hv_fcopy.device
