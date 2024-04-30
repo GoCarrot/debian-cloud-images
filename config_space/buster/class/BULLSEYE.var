@@ -1,0 +1,2 @@
+SUITE=bullseye
+SUITE_SECURITY="${SUITE}-security"

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# These are now activated by udev. See /etc/udev/rules.d/50-hyperv-daemons.rules
+${ROOTCMD} systemctl disable hyperv-daemons.hv-fcopy-daemon.service \
+	   hyperv-daemons.hv-kvp-daemon.service \
+	   hyperv-daemons.hv-vss-daemon.service
