@@ -6,8 +6,10 @@ cleanup_dirs=(
   proc
   run
   sys
+  tmp
   var/cache/apt
   var/lib/apt/lists
+  var/tmp
 )
 
 cleanup_files=(

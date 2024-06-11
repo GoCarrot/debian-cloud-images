@@ -9,6 +9,10 @@ mount --bind /proc $FAI_ROOT/proc
 mount --make-private $FAI_ROOT/proc
 mount --bind /sys $FAI_ROOT/sys
 mount --make-private $FAI_ROOT/sys
+mount -t tmpfs none $FAI_ROOT/var/tmp
+mount --make-private $FAI_ROOT/var/tmp
+mount -t tmpfs none $FAI_ROOT/tmp
+mount --make-private $FAI_ROOT/tmp
 
 # When systemd-resolved is installed in the FAI root, it will overwrite
 # /etc/resolv.conf with a symlink to /run/systemd/resolve/stub-resolv.conf
