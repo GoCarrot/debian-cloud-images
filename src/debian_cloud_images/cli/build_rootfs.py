@@ -209,7 +209,7 @@ class BuildCommand(BaseCommand):
         override_name: Optional[str] = None,
         version_date: Optional[datetime] = None,
         **kw
-    ):
+    ) -> None:
         super().__init__(**kw)
 
         arch = self.config_image.archs.get(arch_name)
@@ -265,16 +265,20 @@ class BuildCommand(BaseCommand):
         self.env['CLOUD_BUILD_NAME'] = 'rootfs'
         self.env['CLOUD_BUILD_OUTPUT_DIR'] = '/fai/output'
 
-    def __call__(self):
+    def __call__(self) -> None:
         output_base = self.output / self.name
         output_tmp = output_base / 'tmp'
-        output_tar = output_tmp / 'rootfs.tar'
+        output_tar_root = output_tmp / 'root.tar'
+        output_tar_efi = output_tmp / 'efi.tar'
         output_log = output_tmp / 'log'
 
         script = f'''
         set -euE
         fai -v -u localhost -s file:///fai/config -c '{','.join(self.c.classes)}' install /target
-        tar --directory=/target --create --sort=name --file /fai/output/{output_tar.name} .
+        tar --directory=/target --exclude ./boot/efi/* --create --sort=name --file /fai/output/{output_tar_root.name} .
+        if [[ -d /target/boot/efi ]]; then
+          tar --directory=/target --create --sort=name --file /fai/output/{output_tar_efi.name} ./boot/efi
+        fi
         '''
 
         oci = OciImage(output_base)
@@ -299,9 +303,20 @@ class BuildCommand(BaseCommand):
             except CalledProcessError as e:
                 sys.exit(e.returncode)
 
-        info_rootfs = oci.store_blob_from_tmp(output_tar.name)
+        info_manifest_digests: list[str] = []
+        info_manifest_layers: list[dict] = []
 
-        info_rootfs_config = oci.store_blob({
+        for tar in (output_tar_root, output_tar_efi):
+            if tar.exists():
+                layer = oci.store_blob_from_tmp(tar.name)
+                info_manifest_digests.append(layer.digest)
+                info_manifest_layers.append({
+                    'mediaType': 'application/vnd.oci.image.layer.v1.tar',
+                    'digest': layer.digest,
+                    'size': layer.size,
+                })
+
+        info_config = oci.store_blob({
             'architecture': self.c.arch.oci_arch,
             'os': 'linux',
             'config': {
@@ -313,26 +328,20 @@ class BuildCommand(BaseCommand):
                 ],
             },
             'rootfs': {
-                'diff_ids': [info_rootfs.digest],
+                'diff_ids': info_manifest_digests,
                 'type': 'layers',
             },
         })
 
-        info_rootfs_manifest = oci.store_blob({
+        info_manifest = oci.store_blob({
             'schemaVersion': 2,
             'mediaType': 'application/vnd.oci.image.manifest.v1+json',
             'config': {
                 'mediaType': 'application/vnd.oci.image.config.v1+json',
-                'digest': info_rootfs_config.digest,
-                'size': info_rootfs_config.size,
+                'digest': info_config.digest,
+                'size': info_config.size,
             },
-            'layers': [
-                {
-                    'mediaType': 'application/vnd.oci.image.layer.v1.tar',
-                    'digest': info_rootfs.digest,
-                    'size': info_rootfs.size,
-                },
-            ],
+            'layers': info_manifest_layers,
         })
 
         oci.store_index({
@@ -341,8 +350,8 @@ class BuildCommand(BaseCommand):
             'manifests': [
                 {
                     'mediaType': 'application/vnd.oci.image.manifest.v1+json',
-                    'digest': info_rootfs_manifest.digest,
-                    'size': info_rootfs_manifest.size,
+                    'digest': info_manifest.digest,
+                    'size': info_manifest.size,
                     'platform': {
                         'architecture': self.c.arch.oci_arch,
                         'os': 'linux'
