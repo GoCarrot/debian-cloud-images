@@ -26,11 +26,9 @@ class OciBlobInfo:
 
 class OciImage:
     _base: Path
-    _blobs: Path
 
     def __init__(self, base: Path) -> None:
         self._base = base
-        self._blobs = base / 'blobs' / 'sha256'
 
         layout = base / 'oci-layout'
         if not base.is_dir():
@@ -44,12 +42,34 @@ class OciImage:
                 if (v := json.load(f).get('imageLayoutVersion')) != '1.0.0':
                     raise AttributeError(f'Directory exists, found unsupported version {v}')
 
-        self._blobs.mkdir(parents=True, exist_ok=True)
+        blobs = base / 'blobs' / 'sha256'
+        blobs.mkdir(parents=True, exist_ok=True)
+
+    def _path_blob(self, h: str, enc: str) -> Path:
+        return self._base / 'blobs' / h / enc
+
+    def path_blob(self, digest: str) -> Path:
+        return self._path_blob(*digest.split(':', 1))
+
+    def _path_index(self) -> Path:
+        return self._base / 'index.json'
+
+    def get_blob(self, digest: str) -> dict[str, str | int | dict | list]:
+        path = self.path_blob(digest)
+        with path.open('r', encoding='utf-8') as f:
+            data = f.read(1024 * 1024)
+        return json.loads(data)
+
+    def get_index(self) -> dict[str, str | int | dict | list]:
+        path = self._path_index()
+        with path.open('r', encoding='utf-8') as f:
+            data = f.read(1024 * 1024)
+        return json.loads(data)
 
     def store_blob(self, content: dict[str, str | int | dict | list]) -> OciBlobInfo:
         data = json.dumps(content).encode('utf-8')
         enc = hashlib.sha256(data).hexdigest()
-        path = self._blobs / enc
+        path = self._path_blob('sha256', enc)
         with path.open('wb') as f:
             f.write(data)
         return OciBlobInfo('sha256', enc, len(data))
@@ -59,12 +79,12 @@ class OciImage:
         with path_in.open('rb') as f:
             enc = hashlib.file_digest(f, 'sha256').hexdigest()
         size = path_in.stat().st_size
-        path = self._blobs / enc
+        path = self._path_blob('sha256', enc)
         path.hardlink_to(path_in)
         return OciBlobInfo('sha256', enc, size)
 
     def store_index(self, content: dict[str, str | int | dict | list]) -> None:
-        data = json.dumps(content).encode('utf-8')
-        path = self._base / 'index.json'
-        with path.open('wb') as f:
+        path = self._path_index()
+        data = json.dumps(content)
+        with path.open('w', encoding='utf-8') as f:
             f.write(data)
