@@ -275,7 +275,7 @@ class BuildCommand(BaseCommand):
         script = f'''
         set -euE
         fai -v -u localhost -s file:///fai/config -c '{','.join(self.c.classes)}' install /target
-        tar --directory=/target --exclude ./boot/efi/* --create --sort=name --file /fai/output/{output_tar_root.name} .
+        tar --directory=/target --exclude ./boot/efi/* --create --sort=name --xattrs --xattrs-include='*' --file /fai/output/{output_tar_root.name} .
         if [[ -d /target/boot/efi ]]; then
           tar --directory=/target --create --sort=name --file /fai/output/{output_tar_efi.name} ./boot/efi
         fi
