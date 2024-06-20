@@ -268,8 +268,8 @@ class BuildCommand(BaseCommand):
     def __call__(self) -> None:
         output_base = self.output / self.name
         output_tmp = output_base / 'tmp'
-        output_tar_root = output_tmp / 'root.tar'
-        output_tar_efi = output_tmp / 'efi.tar'
+        output_tar_root = output_tmp / 'rootfs.data.root.tar'
+        output_tar_efi = output_tmp / 'rootfs.data.efi.tar'
         output_log = output_tmp / 'log'
 
         script = f'''
@@ -306,15 +306,35 @@ class BuildCommand(BaseCommand):
         info_manifest_digests: list[str] = []
         info_manifest_layers: list[dict] = []
 
-        for tar in (output_tar_root, output_tar_efi):
-            if tar.exists():
-                layer = oci.store_blob_from_tmp(tar.name)
-                info_manifest_digests.append(layer.digest)
-                info_manifest_layers.append({
-                    'mediaType': 'application/vnd.oci.image.layer.v1.tar',
-                    'digest': layer.digest,
-                    'size': layer.size,
-                })
+        uuid_fs_root = (output_tmp / 'rootfs.data.root.fsuuid').open().read()
+        uuid_part_root = (output_tmp / 'rootfs.data.root.partuuid').open().read()
+        uuid_part_efi = (output_tmp / 'rootfs.data.efi.partuuid').open().read()
+
+        layer = oci.store_blob_from_tmp(output_tar_root.name)
+        info_manifest_digests.append(layer.digest)
+        info_manifest_layers.append({
+            'mediaType': 'application/vnd.oci.image.layer.v1.tar',
+            'digest': layer.digest,
+            'size': layer.size,
+            'annotations': {
+                'org.debian.cloud.images.internal.part.type': 'root',
+                'org.debian.cloud.images.internal.part.uuid': uuid_part_root,
+                'org.debian.cloud.images.internal.part.fs.uuid': uuid_fs_root,
+            }
+        })
+
+        if output_tar_efi.exists():
+            layer = oci.store_blob_from_tmp(output_tar_efi.name)
+            info_manifest_digests.append(layer.digest)
+            info_manifest_layers.append({
+                'mediaType': 'application/vnd.oci.image.layer.v1.tar',
+                'digest': layer.digest,
+                'size': layer.size,
+                'annotations': {
+                    'org.debian.cloud.images.internal.part.type': 'efi',
+                    'org.debian.cloud.images.internal.part.uuid': uuid_part_efi,
+                }
+            })
 
         info_config = oci.store_blob({
             'architecture': self.c.arch.oci_arch,

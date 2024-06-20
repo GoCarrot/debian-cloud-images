@@ -4,6 +4,10 @@ shopt -s extglob nullglob
 
 ${ROOTCMD} dpkg -s > "${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.dpkg-status"
 
+echo -n ${PARTUUID_ROOT} > "${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.data.root.partuuid"
+echo -n ${PARTUUID_ESP} > "${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.data.efi.partuuid"
+echo -n ${FSUUID_ROOT} > "${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.data.root.fsuuid"
+
 exec > ${CLOUD_BUILD_OUTPUT_DIR}/${CLOUD_BUILD_NAME}.info
 
 function show() {
