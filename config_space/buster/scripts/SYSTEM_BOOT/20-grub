@@ -16,6 +16,7 @@ grub_install() {
     --force \
     --force-extra-removable \
     --skip-fs-probe \
+    --modules="ext2 part_gpt" \
     -v \
     "$@"
 }
