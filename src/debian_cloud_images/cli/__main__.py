@@ -7,6 +7,7 @@ from .base import cli
 # Import to register all the commands
 from . import (  # noqa: F401
     build,
+    build_diskimage,
     build_rootfs,
     cleanup,
     cleanup_azure_partner,
