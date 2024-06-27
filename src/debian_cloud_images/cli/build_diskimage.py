@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 import struct
-import tarfile
 from pathlib import Path
 from subprocess import CalledProcessError
 from uuid import uuid4
@@ -120,22 +119,46 @@ class BuildDiskimageCommand(BaseCommand):
             raise
 
     def copy_grub_x86(self, input_tar: Path, part_bios_boot: PartitionEntry, part: Partition) -> None:
-        with tarfile.TarFile(input_tar, mode='r') as tar:
-            def read(name: str) -> bytearray:
-                info = tar.getmember(name)
-                file = tar.extractfile(info)
-                assert file is not None
-                return bytearray(file.read())
+        output_tmp = self.output / 'tmp'
+        output_out_boot = output_tmp / 'diskimage.data.grub.boot.img'
+        output_out_core = output_tmp / 'diskimage.data.grub.core.img'
+        output_out_boot.unlink(missing_ok=True)
+        output_out_core.unlink(missing_ok=True)
 
-            try:
-                boot_img = read('./boot/grub/i386-pc/boot.img')
-                core_img = read('./boot/grub/i386-pc/core.img')
-            except KeyError:
-                logger.info('grub files not found, not installing BIOS boot info')
-                return
+        logger.info('Extract grub boot files')
 
-        # We only need the first 440 bytes of the boot.img, rest is partition table and magic
-        del boot_img[440:]
+        input_tar_relative = input_tar.relative_to(self.output)
+
+        script = f'''
+        set -euE
+        tar --directory=/target --extract --file /input/{input_tar_relative!s} ./boot/grub/i386-pc/boot.img ./boot/grub/i386-pc/core.img
+        mv /target/boot/grub/i386-pc/boot.img /output/{output_out_boot.name}
+        mv /target/boot/grub/i386-pc/core.img /output/{output_out_core.name}
+        '''
+
+        try:
+            sandbox.run_shell(
+                script,
+                bindmounts=[
+                    (self.output.resolve(), Path('/input'), False),
+                    (output_tmp.resolve(), Path('/output'), True),
+                ],
+                env={
+                    'LC_ALL': 'C.UTF-8',
+                },
+            )
+
+        except CalledProcessError:
+            output_out_boot.unlink()
+            output_out_core.unlink()
+            raise
+
+        with output_out_boot.open('rb') as f:
+            # We only need the first 440 bytes of the boot.img, rest is partition table and magic
+            boot_img = bytearray(f.read(440))
+
+        with output_out_core.open('rb') as f:
+            core_img = bytearray(f.read(3 * 1024 * 1024))
 
         # Patch absolute location of core.img start into boot.img
         GRUB_BOOT_MACHINE_KERNEL_SECTOR = 0x5c
@@ -178,7 +201,12 @@ class BuildDiskimageCommand(BaseCommand):
 
         for layer in manifest['layers']:
             a = layer['annotations']
-            if part_type := a.get('org.debian.cloud.images.internal.part.type', None):
+            if not layer['mediaType'] in (
+                'application/vnd.oci.image.layer.v1.tar',
+                'application/vnd.oci.image.layer.v1.tar+zstd',
+            ):
+                logger.info('Ignore layer, no tar')
+            elif part_type := a.get('org.debian.cloud.images.internal.part.type', None):
                 logger.info(f'Found layer with partition type "{part_type}"')
 
                 if part_type == 'root':
