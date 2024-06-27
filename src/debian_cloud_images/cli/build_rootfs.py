@@ -268,16 +268,18 @@ class BuildCommand(BaseCommand):
     def __call__(self) -> None:
         output_base = self.output / self.name
         output_tmp = output_base / 'tmp'
-        output_tar_root = output_tmp / 'rootfs.data.root.tar'
-        output_tar_efi = output_tmp / 'rootfs.data.efi.tar'
+        output_tarzst_root = output_tmp / 'rootfs.data.root.tar.zst'
+        output_tarzst_efi = output_tmp / 'rootfs.data.efi.tar.zst'
         output_log = output_tmp / 'log'
 
         script = f'''
         set -euE
         fai -v -u localhost -s file:///fai/config -c '{','.join(self.c.classes)}' install /target
-        tar --directory=/target --exclude ./boot/efi/* --create --sort=name --xattrs --xattrs-include='*' --file /fai/output/{output_tar_root.name} .
+        tar --directory=/target --exclude ./boot/efi/* --create --sort=name --xattrs --xattrs-include='*' . | \\
+          zstd -f -T0 -10 -o /fai/output/{output_tarzst_root.name}
         if [[ -d /target/boot/efi ]]; then
-          tar --directory=/target --create --sort=name --file /fai/output/{output_tar_efi.name} ./boot/efi
+          tar --directory=/target --create --sort=name ./boot/efi | \\
+            zstd -f -T0 -10 -o /fai/output/{output_tarzst_efi.name}
         fi
         '''
 
@@ -310,10 +312,10 @@ class BuildCommand(BaseCommand):
         uuid_part_root = (output_tmp / 'rootfs.data.root.partuuid').open().read()
         uuid_part_efi = (output_tmp / 'rootfs.data.efi.partuuid').open().read()
 
-        layer = oci.store_blob_from_tmp(output_tar_root.name)
+        layer = oci.store_blob_from_tmp(output_tarzst_root.name)
         info_manifest_digests.append(layer.digest)
         info_manifest_layers.append({
-            'mediaType': 'application/vnd.oci.image.layer.v1.tar',
+            'mediaType': 'application/vnd.oci.image.layer.v1.tar+zstd',
             'digest': layer.digest,
             'size': layer.size,
             'annotations': {
@@ -323,11 +325,11 @@ class BuildCommand(BaseCommand):
             }
         })
 
-        if output_tar_efi.exists():
-            layer = oci.store_blob_from_tmp(output_tar_efi.name)
+        if output_tarzst_efi.exists():
+            layer = oci.store_blob_from_tmp(output_tarzst_efi.name)
             info_manifest_digests.append(layer.digest)
             info_manifest_layers.append({
-                'mediaType': 'application/vnd.oci.image.layer.v1.tar',
+                'mediaType': 'application/vnd.oci.image.layer.v1.tar+zstd',
                 'digest': layer.digest,
                 'size': layer.size,
                 'annotations': {
