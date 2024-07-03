@@ -21,20 +21,6 @@ archs:
   ociArch: riscv64
 
 releases:
-- name: buster
-  basename: buster
-  id: '10'
-  baseid: '10'
-  faiClasses: [BUSTER, LINUX_VERSION_BUSTER, EXTRAS]
-  matches:
-  - matchArches: [amd64, arm64]
-- name: buster-backports
-  basename: buster-backports
-  id: 10-backports
-  baseid: '10'
-  faiClasses: [BUSTER, LINUX_VERSION_BUSTER_LTS, EXTRAS]
-  matches:
-  - matchArches: [amd64, arm64]
 - name: bullseye
   basename: bullseye
   id: '11'
@@ -83,7 +69,7 @@ vendors:
   matches:
   - matchArches: [amd64]
   - matchArches: [arm64]
-    matchReleases: [buster, buster-backports, bullseye]
+    matchReleases: [bullseye]
     op: Disable
   - matchArches: [arm64]
 - name: ec2
@@ -104,11 +90,6 @@ vendors:
 - name: genericcloud
   faiClasses: [SYSTEM_BOOT, CLOUD, GENERIC, LINUX_VARIANT_CLOUD, TIME_SYSTEMD]
   size: 2
-  matches:
-  - matchReleases: [buster]
-    matchArches: [arm64]
-    op: Disable
-  - matchArches: [amd64, arm64]
 - name: nocloud
   faiClasses: [SYSTEM_BOOT, NOCLOUD, LINUX_VARIANT_BASE, TIME_SYSTEMD]
   size: 2
@@ -128,10 +109,6 @@ publicTypes:
 - name: dev
 - name: daily
   matches:
-  - matchVendors: [azure]
-    matchReleases: [buster, buster-backports]
-    uploadGroup: debian-10-daily
-    op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [bullseye, bullseye-backports]
     uploadGroup: debian-11-daily
@@ -157,10 +134,6 @@ publicTypes:
     op: Disable
   - matchReleases: [trixie]
     op: Disable
-  - matchVendors: [azure]
-    matchReleases: [buster, buster-backports]
-    uploadGroup: debian-10
-    op: EnableUpload
   - matchVendors: [azure]
     matchReleases: [bullseye, bullseye-backports]
     uploadGroup: debian-11
