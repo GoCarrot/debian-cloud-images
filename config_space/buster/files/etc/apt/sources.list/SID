@@ -1,2 +1,0 @@
-deb {%apt_cdn%}/debian {%SUITE%} main
-deb-src {%apt_cdn%}/debian {%SUITE%} main

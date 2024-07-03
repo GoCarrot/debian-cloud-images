@@ -1,8 +1,0 @@
-PACKAGES install-norec
-awscli
-python3-boto
-cloud-init
-cloud-guest-utils
-
-PACKAGES install-norec BULLSEYE SID
-amazon-ec2-utils

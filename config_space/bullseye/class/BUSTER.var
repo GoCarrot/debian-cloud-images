@@ -1,2 +1,0 @@
-SUITE=buster
-SUITE_SECURITY="${SUITE}/updates"
