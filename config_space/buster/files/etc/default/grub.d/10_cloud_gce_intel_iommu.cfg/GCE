@@ -1,3 +1,0 @@
-# Disable Intel DMA remapping which causes boot failures on some large machine types.
-
-GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX intel_iommu=off"

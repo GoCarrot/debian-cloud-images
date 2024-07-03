@@ -1,5 +1,0 @@
-PACKAGES install-norec EC2
-python-boto
-
-PACKAGES install-norec CLOUD
-bsdmainutils

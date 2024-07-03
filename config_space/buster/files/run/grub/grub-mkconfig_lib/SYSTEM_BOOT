@@ -1,2 +1,0 @@
-export grub_probe="/run/grub/grub-probe"
-. /usr/lib/grub/grub-mkconfig_lib

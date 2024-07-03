@@ -1,2 +1,0 @@
-SUITE=bookworm
-SUITE_SECURITY="${SUITE}-security"

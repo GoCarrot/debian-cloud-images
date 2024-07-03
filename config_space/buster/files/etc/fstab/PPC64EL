@@ -1,1 +1,0 @@
-PARTUUID={%PARTUUID_ROOT%} / ext4 rw,discard,errors=remount-ro,x-systemd.growfs 0 1
