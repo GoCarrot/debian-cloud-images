@@ -1,0 +1,2279 @@
+# Generated with "debian-cloud-images internal generate-ci --public-type daily"
+{
+  "azure bookworm amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure bookworm amd64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-12-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm arm64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure bookworm arm64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-12-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm-backports amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure bookworm-backports amd64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-12-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm-backports arm64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure bookworm-backports arm64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-12-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_UPLOAD_GROUP": "debian-11-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure bullseye amd64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-11-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_UPLOAD_GROUP": "debian-11-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-11-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye-backports amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure bullseye-backports amd64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-11-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-11-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-11-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye-backports arm64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure bullseye-backports arm64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-11-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-11-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure group-debian-11-daily postupload": {
+    "extends": ".azure postupload",
+    "needs": [
+      {
+        "job": "azure bullseye amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bullseye amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bullseye-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bullseye-backports amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bullseye-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bullseye-backports arm64 upload",
+        "optional": true
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_UPLOAD_GROUP": "debian-11-daily"
+    }
+  },
+  "azure group-debian-12-daily postupload": {
+    "extends": ".azure postupload",
+    "needs": [
+      {
+        "job": "azure bookworm amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bookworm arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bookworm-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm-backports amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bookworm-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm-backports arm64 upload",
+        "optional": true
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_UPLOAD_GROUP": "debian-12-daily"
+    }
+  },
+  "azure group-debian-13-daily postupload": {
+    "extends": ".azure postupload",
+    "needs": [
+      {
+        "job": "azure trixie amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure trixie amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure trixie arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure trixie arm64 upload",
+        "optional": true
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_UPLOAD_GROUP": "debian-13-daily"
+    }
+  },
+  "azure group-debian-sid-daily postupload": {
+    "extends": ".azure postupload",
+    "needs": [
+      {
+        "job": "azure sid amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure sid amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure sid arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure sid arm64 upload",
+        "optional": true
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_UPLOAD_GROUP": "debian-sid-daily"
+    }
+  },
+  "azure sid amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_UPLOAD_GROUP": "debian-sid-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure sid amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure sid amd64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-sid-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_UPLOAD_GROUP": "debian-sid-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure sid arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_UPLOAD_GROUP": "debian-sid-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure sid arm64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure sid arm64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-sid-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_UPLOAD_GROUP": "debian-sid-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_UPLOAD_GROUP": "debian-13-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure trixie amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure trixie amd64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-13-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_UPLOAD_GROUP": "debian-13-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_UPLOAD_GROUP": "debian-13-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure trixie arm64 upload": {
+    "extends": ".azure upload",
+    "needs": [
+      {
+        "job": "azure trixie arm64 build",
+        "optional": false
+      }
+    ],
+    "resource_group": "azure group-debian-13-daily upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_UPLOAD_GROUP": "debian-13-daily",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "bookworm upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure bookworm amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "generic bookworm amd64 build",
+        "optional": false
+      },
+      {
+        "job": "generic bookworm arm64 build",
+        "optional": false
+      },
+      {
+        "job": "generic bookworm ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bookworm amd64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bookworm arm64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bookworm ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bookworm amd64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bookworm arm64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bookworm ppc64el build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bookworm"
+    }
+  },
+  "bookworm-backports upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure bookworm-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm-backports amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm-backports arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm-backports amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm-backports arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "generic bookworm-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "generic bookworm-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "generic bookworm-backports ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bookworm-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bookworm-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bookworm-backports ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bookworm-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bookworm-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bookworm-backports ppc64el build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bookworm-backports"
+    }
+  },
+  "bullseye upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure bullseye amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bullseye amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "generic bullseye amd64 build",
+        "optional": false
+      },
+      {
+        "job": "generic bullseye arm64 build",
+        "optional": false
+      },
+      {
+        "job": "generic bullseye ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bullseye amd64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bullseye arm64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bullseye ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bullseye amd64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bullseye arm64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bullseye ppc64el build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bullseye"
+    }
+  },
+  "bullseye-backports upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure bullseye-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bullseye-backports amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "azure bullseye-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure bullseye-backports arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye-backports amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye-backports arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "generic bullseye-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "generic bullseye-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "generic bullseye-backports ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bullseye-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bullseye-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud bullseye-backports ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bullseye-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bullseye-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud bullseye-backports ppc64el build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bullseye-backports"
+    }
+  },
+  "ec2 bookworm amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 bookworm amd64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 bookworm arm64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 bookworm-backports amd64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 bookworm-backports arm64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 bullseye amd64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 bullseye arm64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye-backports amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 bullseye-backports amd64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye-backports arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 bullseye-backports arm64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 postupload": {
+    "extends": ".ec2 postupload",
+    "needs": [
+      {
+        "job": "ec2 bookworm amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bookworm arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bookworm-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm-backports amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bookworm-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm-backports arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bullseye amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bullseye arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bullseye-backports amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye-backports amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bullseye-backports arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye-backports arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 sid amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 sid amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 sid arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 sid arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 trixie amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 trixie amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 trixie arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 trixie arm64 upload",
+        "optional": true
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {}
+  },
+  "ec2 sid amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 sid amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 sid amd64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 sid arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 sid arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 sid arm64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 trixie amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 trixie amd64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 trixie arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [
+      {
+        "job": "ec2 trixie arm64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "generic bookworm amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bookworm-backports ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic bullseye-backports ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic sid amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic sid arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic sid ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic sid riscv64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "riscv64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "generic trixie ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "generic"
+    }
+  },
+  "genericcloud bookworm amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bookworm-backports ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud bullseye-backports ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud sid amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud sid arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud sid ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud sid riscv64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "riscv64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "genericcloud trixie ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "genericcloud"
+    }
+  },
+  "nocloud bookworm amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bookworm-backports ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye-backports amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye-backports arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud bullseye-backports ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud sid amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud sid arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud sid ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud sid riscv64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "riscv64",
+      "CLOUD_RELEASE": "sid",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud trixie amd64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud trixie arm64 build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "nocloud trixie ppc64el build": {
+    "extends": ".build",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "ppc64el",
+      "CLOUD_RELEASE": "trixie",
+      "CLOUD_VENDOR": "nocloud"
+    }
+  },
+  "sid upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure sid amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure sid amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "azure sid arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure sid arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 sid amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 sid amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 sid arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 sid arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "generic sid amd64 build",
+        "optional": false
+      },
+      {
+        "job": "generic sid arm64 build",
+        "optional": false
+      },
+      {
+        "job": "generic sid ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "generic sid riscv64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud sid amd64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud sid arm64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud sid ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud sid riscv64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud sid amd64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud sid arm64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud sid ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "nocloud sid riscv64 build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_SID"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "sid"
+    }
+  },
+  "trixie upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure trixie amd64 build",
+        "optional": false
+      },
+      {
+        "job": "azure trixie amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "azure trixie arm64 build",
+        "optional": false
+      },
+      {
+        "job": "azure trixie arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 trixie amd64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 trixie amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 trixie arm64 build",
+        "optional": false
+      },
+      {
+        "job": "ec2 trixie arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "generic trixie amd64 build",
+        "optional": false
+      },
+      {
+        "job": "generic trixie arm64 build",
+        "optional": false
+      },
+      {
+        "job": "generic trixie ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud trixie amd64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud trixie arm64 build",
+        "optional": false
+      },
+      {
+        "job": "genericcloud trixie ppc64el build",
+        "optional": false
+      },
+      {
+        "job": "nocloud trixie amd64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud trixie arm64 build",
+        "optional": false
+      },
+      {
+        "job": "nocloud trixie ppc64el build",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_TRIXIE"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "trixie"
+    }
+  },
+  "variables": {
+    "PIPELINE_RELEASE_BOOKWORM": "1",
+    "PIPELINE_RELEASE_BOOKWORM_BACKPORTS": "1",
+    "PIPELINE_RELEASE_BULLSEYE": "1",
+    "PIPELINE_RELEASE_BULLSEYE_BACKPORTS": "1",
+    "PIPELINE_RELEASE_SID": "1",
+    "PIPELINE_RELEASE_TRIXIE": "1"
+  }
+}

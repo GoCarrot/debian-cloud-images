@@ -1,0 +1,451 @@
+# Generated with "debian-cloud-images internal generate-ci --public-type release"
+{
+  "azure bookworm amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [],
+    "resource_group": "azure group-debian-12 upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_UPLOAD_GROUP": "debian-12",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm arm64 upload": {
+    "extends": ".azure upload",
+    "needs": [],
+    "resource_group": "azure group-debian-12 upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_UPLOAD_GROUP": "debian-12",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm-backports amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [],
+    "resource_group": "azure group-debian-12 upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-12",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bookworm-backports arm64 upload": {
+    "extends": ".azure upload",
+    "needs": [],
+    "resource_group": "azure group-debian-12 upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-12",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [],
+    "resource_group": "azure group-debian-11 upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_UPLOAD_GROUP": "debian-11",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye-backports amd64 upload": {
+    "extends": ".azure upload",
+    "needs": [],
+    "resource_group": "azure group-debian-11 upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-11",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure bullseye-backports arm64 upload": {
+    "extends": ".azure upload",
+    "needs": [],
+    "resource_group": "azure group-debian-11 upload",
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_UPLOAD_GROUP": "debian-11",
+      "CLOUD_VENDOR": "azure"
+    }
+  },
+  "azure group-debian-11 postupload": {
+    "extends": ".azure postupload",
+    "needs": [
+      {
+        "job": "azure bullseye amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bullseye-backports amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bullseye-backports arm64 upload",
+        "optional": true
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_UPLOAD_GROUP": "debian-11"
+    }
+  },
+  "azure group-debian-12 postupload": {
+    "extends": ".azure postupload",
+    "needs": [
+      {
+        "job": "azure bookworm amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bookworm arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bookworm-backports amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "azure bookworm-backports arm64 upload",
+        "optional": true
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_UPLOAD_GROUP": "debian-12"
+    }
+  },
+  "bookworm upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure bookworm amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm arm64 upload",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bookworm"
+    }
+  },
+  "bookworm-backports upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure bookworm-backports amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "azure bookworm-backports arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm-backports amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bookworm-backports arm64 upload",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bookworm-backports"
+    }
+  },
+  "bullseye upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure bullseye amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye arm64 upload",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bullseye"
+    }
+  },
+  "bullseye-backports upload": {
+    "extends": ".upload",
+    "needs": [
+      {
+        "job": "azure bullseye-backports amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "azure bullseye-backports arm64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye-backports amd64 upload",
+        "optional": false
+      },
+      {
+        "job": "ec2 bullseye-backports arm64 upload",
+        "optional": false
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_RELEASE": "bullseye-backports"
+    }
+  },
+  "ec2 bookworm amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bookworm-backports arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bookworm-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye-backports amd64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "amd64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 bullseye-backports arm64 upload": {
+    "extends": ".ec2 upload",
+    "needs": [],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {
+      "CLOUD_ARCH": "arm64",
+      "CLOUD_RELEASE": "bullseye-backports",
+      "CLOUD_VENDOR": "ec2"
+    }
+  },
+  "ec2 postupload": {
+    "extends": ".ec2 postupload",
+    "needs": [
+      {
+        "job": "ec2 bookworm amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bookworm arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bookworm-backports amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bookworm-backports arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bullseye amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bullseye arm64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bullseye-backports amd64 upload",
+        "optional": true
+      },
+      {
+        "job": "ec2 bullseye-backports arm64 upload",
+        "optional": true
+      }
+    ],
+    "rules": [
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BOOKWORM_BACKPORTS"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE"
+      },
+      {
+        "if": "$PIPELINE_RELEASE_BULLSEYE_BACKPORTS"
+      }
+    ],
+    "variables": {}
+  }
+}

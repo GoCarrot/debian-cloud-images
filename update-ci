@@ -1,0 +1,5 @@
+#!/bin/sh
+bin/debian-cloud-images internal generate-ci --public-type dev .gitlab/ci/generated.yml
+bin/debian-cloud-images internal generate-ci --public-type daily .gitlab/ci/generated-daily.yml
+bin/debian-cloud-images internal generate-ci --public-type release .gitlab/ci/generated-release.yml
+git add .gitlab/ci/generated.yml .gitlab/ci/generated-daily.yml .gitlab/ci/generated-release.yml
