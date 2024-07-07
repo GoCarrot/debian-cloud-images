@@ -253,7 +253,7 @@ class GenerateCiCommand(BaseCommand):
             self.dump(sys.stdout, out)
 
     def dump(self, f: typing.TextIO, data: typing.Any) -> None:
-        print(f'# Generated with "python3 -m debian_cloud_images.cli.generate_ci {" ".join(sys.argv[1:])}"', file=f)
+        print(f'# Generated with "debian-cloud-images internal generate-ci --public-type {self.public_type.name}"', file=f)
         json.dump(data, f, indent=2, sort_keys=True, cls=JSONSortedEncoder)
         print(file=f)
 

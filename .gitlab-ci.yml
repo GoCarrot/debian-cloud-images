@@ -27,6 +27,13 @@ before_script:
       rm /usr/bin/crun
     fi
 
+test ci:
+  stage: source test
+  script:
+  - diff -u <(bin/debian-cloud-images internal generate-ci --public-type dev) .gitlab/ci/generated.yml
+  - diff -u <(bin/debian-cloud-images internal generate-ci --public-type daily) .gitlab/ci/generated-daily.yml
+  - diff -u <(bin/debian-cloud-images internal generate-ci --public-type release) .gitlab/ci/generated-release.yml
+
 test flake8:
   stage: source test
   image: debian:sid
