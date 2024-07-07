@@ -28,7 +28,7 @@ class TestCreateManifest:
         with input_filename.open('w') as f:
             f.write('')
 
-        run(True, ['digest'])
+        run.write(True, ['digest'])
 
         with output_filename.open() as f:
             data = json.load(f)
@@ -44,7 +44,7 @@ class TestCreateManifest:
         )
 
         with pytest.raises(FileNotFoundError):
-            run(True, [])
+            run.write(True, [])
 
     def test___call___noop(self, tmp_path):
         input_filename = tmp_path / 'in'
@@ -55,4 +55,4 @@ class TestCreateManifest:
             info=self.info,
         )
 
-        run(False, [])
+        run.write(False, [])
