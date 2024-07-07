@@ -39,23 +39,27 @@ class Package:
 
 class CreateManifest:
     input_filename: pathlib.Path
-    output_filename: pathlib.Path
+    output_filename: pathlib.Path | None
     info: Dict[str, str]
 
     def __init__(
             self, *,
             dpkg_status: pathlib.Path,
-            output_filename: pathlib.Path,
+            output_filename: pathlib.Path | None,
             info: Dict[str, str],
     ):
         self.dpkg_status = dpkg_status
         self.output_filename = output_filename
         self.info = info
 
-    def __call__(self, run: bool, digest: Iterable[str]) -> None:
-        if not run:
+    def write(self, run: bool, digest: Iterable[str]) -> None:
+        if not run or not self.output_filename:
             return
 
+        with self.output_filename.open('w') as f:
+            json.dump(self(digest), f, indent=4, separators=(',', ': '), sort_keys=True)
+
+    def __call__(self, digest: Iterable[str] = ()) -> dict:
         manifest = Build(packages=[])
 
         with self.dpkg_status.open() as f:
@@ -73,7 +77,7 @@ class CreateManifest:
             manifest.metadata.labels[wellknown.label_bcdo_build_id] = self.info['build_id']
             manifest.metadata.labels[wellknown.label_bcdo_type] = self.info['type']
 
-        manifest.metadata.annotations[wellknown.annotation_cdo_digest] = ','.join(digest)
+        if digest:
+            manifest.metadata.annotations[wellknown.annotation_cdo_digest] = ','.join(digest)
 
-        with self.output_filename.open('w') as f:
-            json.dump(v1alpha1_BuildSchema().dump(manifest), f, indent=4, separators=(',', ': '), sort_keys=True)
+        return v1alpha1_BuildSchema().dump(manifest)
