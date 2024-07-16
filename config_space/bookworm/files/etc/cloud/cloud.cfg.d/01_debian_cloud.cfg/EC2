@@ -1,0 +1,19 @@
+apt:
+  generate_mirrorlists: true
+
+system_info:
+  default_user:
+    name: admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: True
+    gecos: Debian
+    groups: [adm, audio, cdrom, dialout, dip, floppy, plugdev, sudo, video]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+
+  package_mirrors:
+  - arches: [default]
+    failsafe:
+      primary: https://cdn-aws.deb.debian.org/debian
+      security: https://cdn-aws.deb.debian.org/debian-security

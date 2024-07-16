@@ -1,0 +1,9 @@
+DEBOOTSTRAP_MIRROR=https://deb.debian.org/debian/
+
+KEYMAP=utf-8
+CONSOLEFONT=
+# errors in tasks greater than this value will cause the installation to stop
+STOP_ON_ERROR=400
+TIMEZONE=UTC
+FAI_DISABLE_PACKAGE_NAME_CHECK=1
+FCOPY_NOBACKUP=1

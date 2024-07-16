@@ -1,0 +1,13 @@
+PACKAGES install-norec LINUX_VERSION_BASE+LINUX_VARIANT_BASE LINUX_VERSION_BACKPORTS+LINUX_VARIANT_BASE
+linux-image-arm64
+
+PACKAGES install-norec LINUX_VERSION_BASE+LINUX_VARIANT_CLOUD LINUX_VERSION_BACKPORTS+LINUX_VARIANT_CLOUD
+linux-image-cloud-arm64
+
+PACKAGES install-norec BOOKWORM
+grub-efi-arm64
+grub-efi-arm64-signed
+shim-signed
+
+PACKAGES install-norec TRIXIE SID
+grub-cloud-arm64

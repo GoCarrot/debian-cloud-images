@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+touch $LOGDIR/skip.repository
+cp -v /etc/resolv.conf $FAI_ROOT/etc
+fcopy -SBMir -v /etc/apt/preferences.d
+fcopy -SBMr -v /etc/apt/mirrors /etc/apt/sources.list.d

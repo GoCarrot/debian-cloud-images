@@ -1,0 +1,5 @@
+PACKAGES install-norec
+awscli
+cloud-init
+cloud-guest-utils
+amazon-ec2-utils

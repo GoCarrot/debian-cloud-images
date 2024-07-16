@@ -1,0 +1,5 @@
+PACKAGES install-norec LINUX_VERSION_BASE LINUX_VERSION_BACKPORTS
+linux-image-riscv64
+
+PACKAGES install-norec
+grub-efi-riscv64

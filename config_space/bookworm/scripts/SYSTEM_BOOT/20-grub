@@ -1,0 +1,65 @@
+#!/bin/bash
+set -euE
+
+# Workaround: allow grub-install to succeed on tmpfs
+mkfs.ext4 -U "$FSUUID_ROOT" "$FAI_ROOT"/run/target 1024
+
+grub_install() {
+  target=$1
+  shift
+  chroot $FAI_ROOT grub-install \
+    --target="$target" \
+    --boot-directory /boot \
+    --efi-directory /boot/efi \
+    --no-nvram \
+    --no-bootsector \
+    --force \
+    --force-extra-removable \
+    --skip-fs-probe \
+    --modules="ext2 part_gpt" \
+    -v \
+    "$@"
+}
+
+if ifclass AMD64; then
+  mkdir -p "$FAI_ROOT"/boot/efi
+  grub_install i386-pc /dev/null
+  grub_install x86_64-efi
+elif ifclass ARM64; then
+  mkdir -p "$FAI_ROOT"/boot/efi
+  grub_install arm64-efi
+elif ifclass PPC64EL; then
+  grub_install powerpc-ieee1275
+elif ifclass RISCV64; then
+  mkdir -p "$FAI_ROOT"/boot/efi
+  grub_install riscv64-efi
+fi
+
+if ifclass BUILD_IMAGE; then
+  set -- $disklist
+  DEVICE="/dev/${1}"
+
+  if ifclass AMD64; then
+    chroot $FAI_ROOT /usr/lib/grub/i386-pc/grub-bios-setup \
+      --directory='/boot/grub/i386-pc' \
+      --device-map='/boot/grub/device.map' \
+      --force \
+      --skip-fs-probe \
+      "$DEVICE"
+  elif ifclass PPC64EL; then
+    cat "$FAI_ROOT"/boot/grub/grub > "${DEVICE}p15"
+  fi
+fi
+
+# Call `grub-mkconfig` while using our own `grub-probe`.
+# `pkgdatadir` can be defined from the outside and is used to find
+# `grub-mkconfig_lib`.  `grub-mkconfig_lib` is then used to set a different
+# path for `grub-probe`.  `grub-mkconfig` won't emit root with UUID/PARTUUID,
+# if it can't find them in `/dev/disks`, so use a static string and replace it
+# here.
+pkgdatadir=/run/grub $ROOTCMD grub-mkconfig | \
+  sed \
+    -e "s|##DEV##|PARTUUID=${PARTUUID_ROOT}|" \
+    -e "s|##FSUUID##|${FSUUID_ROOT}|" \
+    -e "s|##PARTUUID##|${PARTUUID_ROOT}|" \
+  > "$FAI_ROOT"/boot/grub/grub.cfg

@@ -1,0 +1,19 @@
+apt:
+  generate_mirrorlists: true
+
+system_info:
+  default_user:
+    name: debian
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: True
+    gecos: Debian
+    groups: [adm, audio, cdrom, dialout, dip, floppy, plugdev, sudo, video]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+
+  package_mirrors:
+  - arches: [default]
+    failsafe:
+      primary: http://azure.deb.debian.cloud/debian
+      security: http://azure.deb.debian.cloud/debian-security

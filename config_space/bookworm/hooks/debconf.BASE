@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+touch $LOGDIR/skip.debconf
+# debconf task does not support clean skip, forcing it

@@ -1,0 +1,3 @@
+PARTUUID_ROOT=$(python3 -c 'import uuid; print(uuid.uuid4())')
+PARTUUID_ESP=$(python3 -c 'import uuid; print(uuid.uuid4())')
+FSUUID_ROOT=$(python3 -c 'import uuid; print(uuid.uuid4())')
