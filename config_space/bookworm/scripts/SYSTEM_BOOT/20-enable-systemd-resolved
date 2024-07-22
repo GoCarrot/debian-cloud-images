@@ -1,0 +1,7 @@
+#! /bin/bash
+
+set -euE
+
+$ROOTCMD systemctl enable systemd-resolved.service
+
+ln -sf /run/systemd/resolve/resolv.conf $target/etc/resolv.conf

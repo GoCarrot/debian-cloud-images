@@ -1,0 +1,11 @@
+Types: deb deb-src
+URIs: mirror+file:///etc/apt/mirrors/debian.list
+Suites: {%SUITE%} {%SUITE%}-updates {%SUITE%}-backports
+Components: main
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb deb-src
+URIs: mirror+file:///etc/apt/mirrors/debian-security.list
+Suites: {%SUITE%}-security
+Components: main
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg

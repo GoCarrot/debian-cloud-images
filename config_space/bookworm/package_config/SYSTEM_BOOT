@@ -1,0 +1,41 @@
+PACKAGES install-norec
+sudo
+
+# needed for any useful login session
+libpam-systemd
+
+systemd-resolved
+libnss-resolve
+libnss-myhostname
+netplan.io
+
+# needed for systemd-networkd to set hostnames
+polkitd
+
+unattended-upgrades
+
+# Recommends of linux-image-*
+apparmor
+zstd
+
+# Packages from important
+apt-utils
+init
+iptables
+iputils-ping
+less
+nano
+netbase
+vim-tiny
+whiptail
+
+PACKAGES install-norec TIME_CHRONY
+chrony
+
+PACKAGES install-norec TIME_SYSTEMD
+systemd-timesyncd
+
+# Remove libnss-resolve per:
+# https://lists.debian.org/debian-cloud/2024/03/msg00018.html
+PACKAGES remove BOOKWORM BOOKWORM_BACKPORTS
+libnss-resolve

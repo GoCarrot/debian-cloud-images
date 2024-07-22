@@ -1,6 +1,5 @@
 PACKAGES install-norec
+awscli
 cloud-init
 cloud-guest-utils
-hyperv-daemons
-waagent
-azure-nvme-utils
+amazon-ec2-utils

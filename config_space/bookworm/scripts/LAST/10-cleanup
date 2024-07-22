@@ -1,0 +1,49 @@
+#!/bin/bash
+set -euE
+
+cleanup_dirs=(
+  dev
+  proc
+  run
+  sys
+  tmp
+  var/cache/apt
+  var/lib/apt/lists
+  var/tmp
+)
+
+cleanup_files=(
+  etc/apt/sources.list.d/localdebs.list
+  etc/mailname
+  etc/ssh/ssh_host_*
+  var/lib/dbus/machine-id
+  var/log/alternatives.log
+  var/log/apt
+  var/log/bootstrap.log
+  var/log/dpkg.log
+  var/log/fai
+  var/log/install_packages.list
+)
+
+empty_files=(
+  etc/hostname
+  etc/machine-id
+  var/lib/dpkg/available
+)
+
+for i in "${cleanup_dirs[@]}"; do
+  umount -l "$FAI_ROOT"/$i || :
+  find "$FAI_ROOT"/$i -mindepth 1 -depth -delete
+done
+
+for i in "${cleanup_files[@]}"; do
+  find "$FAI_ROOT"/$i -depth -delete || :
+done
+
+for i in "${empty_files[@]}"; do
+  > "$FAI_ROOT"/$i
+done
+
+if ifclass BUILD_IMAGE; then
+  fstrim "$FAI_ROOT"
+fi

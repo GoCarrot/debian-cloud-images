@@ -1,0 +1,3 @@
+# Workaround for bug in Azure HyperV host
+
+GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX initcall_blacklist=arm_pmu_acpi_init transparent_hugepage=madvise"
