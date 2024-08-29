@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import collections.abc
+import libcloud
 import logging
 import typing
 
@@ -43,7 +44,13 @@ class StepCloudVersion:
             image_name = snapshot.extra['tags']['AMI']
             if not self._info.noop:
                 logger.debug(f'Deleting snapshot {snapshot.id} for image {image_name} from region {region}')
-                snapshot.driver.destroy_volume_snapshot(snapshot)
+                try:
+                    snapshot.driver.destroy_volume_snapshot(snapshot)
+                except libcloud.common.exceptions.BaseHTTPError as e:
+                    if e.message.startswith('InvalidSnapshot.NotFound'):
+                        logging.warning(f'Skipping snapshot deletion: {e}')
+                    else:
+                        raise e
             else:
                 logger.info(f'Would delete snapshot {snapshot.id} for image {image_name} from region {region}')
 
