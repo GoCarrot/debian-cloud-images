@@ -149,6 +149,31 @@ class TestCleanup:
                                                        hour=1, minute=10, second=49, microsecond=0,),
                           )()
 
+    def test_cleanup_cloud_versions_internal_error(self, monkeypatch, mock_ec2info, mock_ec2_config, caplog):
+        def raise_exception(*args):
+            raise exception_from_message(code=500,
+                                         message="InternalError: An internal error has occurred",
+                                         headers={})
+
+        v = StepCloudVersions(mock_ec2info)
+        v._children["20240823-1848"] = StepCloudVersion(v, ImageVersion.from_string("20240823-1848"))
+        v._children["20240701-1001"] = StepCloudVersion(v, ImageVersion.from_string("20240701-1001"))
+        monkeypatch.setattr(ExEC2NodeDriver, "ex_list_regions", TestCleanup.mockregions)
+        monkeypatch.setattr(ExEC2NodeDriver, "list_images", TestCleanup.mocklistimages)
+        monkeypatch.setattr(ExEC2NodeDriver, "list_snapshots", TestCleanup.mocklistsnapshots)
+        monkeypatch.setattr(ExEC2NodeDriver, "delete_image", TestCleanup.mockdelete_image)
+        monkeypatch.setattr(ExEC2NodeDriver, "destroy_volume_snapshot", raise_exception)
+        monkeypatch.setenv("NO_RETRY_DELAY", "true")
+        caplog.set_level(logging.DEBUG)
+
+        with pytest.raises(BaseHTTPError) as e:
+            CleanupEc2Command(config=mock_ec2_config,
+                              delete_after=30,
+                              date_today=datetime.datetime(2024, 8, 28,
+                                                           hour=1, minute=10, second=49, microsecond=0,),
+                              )()
+            assert "InternalError" in str(e.value)
+
 
 # Local variables:
 # mode: python
