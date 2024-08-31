@@ -5,6 +5,7 @@ import logging
 import time
 
 from libcloud.compute.types import VolumeSnapshotState
+from libcloud.common.exceptions import BaseHTTPError
 
 from .base import cli
 from .upload_base import UploadBaseCommand
@@ -40,6 +41,7 @@ class ImageUploaderEc2:
         self.regions = regions
         self.add_tags = add_tags or {}
         self.permission_public = permission_public
+        self._api_error_count = 0
 
         self.__compute = self.__storage = None
 
@@ -99,6 +101,9 @@ class ImageUploaderEc2:
 
         finally:
             self.delete_file(image, obj)
+
+        if self._api_error_count > 0:
+            raise EC2Exception(f'Encountered {self._api_error_count} API errors')
 
     def generate_permissions(self, name):
         if self.permission_public:
@@ -161,11 +166,19 @@ class ImageUploaderEc2:
             logging.info('Image %s/%s arch %s registered from %s', driver.region_name, ec2_image.id, architecture, snapshot.id)
 
             with_retries(lambda: driver.ex_create_tags(ec2_image, self.generate_tags(image, public_info)))
-            with_retries(lambda: driver.ex_modify_image_attribute(
-                ec2_image,
-                self.generate_permissions('LaunchPermission'),
-            ))
-
+            try:
+                with_retries(lambda: driver.ex_modify_image_attribute(
+                    ec2_image,
+                    self.generate_permissions('LaunchPermission'),
+                ))
+            except BaseHTTPError as e:
+                # some regions have a very low default public image limit, leading to an API failure
+                # record these occurrances, but don't abort the entire upload job
+                if e.message.find('ResourceLimitExceeded') != -1:
+                    self._api_error_count = self._api_error_count + 1
+                    logging.error(f'{driver.region_name}: {e}')
+                else:
+                    raise
             logging.info('Finished setting tags and attributes on %s', ec2_image.id)
             ec2_images[driver.region_name] = ec2_image
 

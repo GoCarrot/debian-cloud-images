@@ -3,6 +3,7 @@
 import pytest
 
 from debian_cloud_images.cli.upload_ec2 import UploadEc2Command
+from libcloud.common.exceptions import BaseHTTPError
 
 
 class TestCommand:
@@ -20,6 +21,12 @@ class TestCommand:
         ret = MagicMock()
         monkeypatch.setattr(upload_ec2, 'ImageUploaderEc2', ret)
         return ret
+
+    @pytest.fixture
+    def raise_basehttperror(self):
+        def _raise_basehttperror(*args):
+            raise BaseHTTPError(code=418, message="ResourceLimitExceeded: testing")
+        return _raise_basehttperror
 
     def test___init__(self, config_files, mock_uploader):
         c = UploadEc2Command(
@@ -56,7 +63,7 @@ class TestCommand:
             token='access_session_token',
         )
 
-    def test_create_image(self, monkeypatch):
+    def test_create_image(self, monkeypatch, raise_basehttperror):
         from debian_cloud_images.cli import upload_ec2
         from unittest.mock import MagicMock
         pi = MagicMock()
@@ -121,3 +128,26 @@ class TestCommand:
 
         test_driver.ex_create_tags.assert_called_once()
         test_driver.ex_modify_image_attribute.assert_called_once()
+
+        test_driver.reset_mock()
+        monkeypatch.setenv("NO_RETRY_DELAY", "true")
+        monkeypatch.setattr(test_driver, 'ex_modify_image_attribute', raise_basehttperror)
+
+        uploader.create_image(image, pi, [snapshot])
+        test_driver.ex_register_image.assert_called_once_with(
+            name='debian-tests',
+            description="debian tests vendor description",
+            architecture='arm64',
+            block_device_mapping=[{'DeviceName': '/dev/xvda',
+                                   'Ebs': {'SnapshotId': "snap-012345689",
+                                           'VolumeType': 'gp3',
+                                           'DeleteOnTermination': 'true',
+                                           'Iops': 3000,
+                                           'Throughput': 125}}],
+            root_device_name='/dev/xvda',
+            virtualization_type='hvm',
+            ena_support=True,
+            sriov_net_support='simple')
+
+        test_driver.ex_create_tags.assert_called_once()
+        assert uploader._api_error_count == 1
