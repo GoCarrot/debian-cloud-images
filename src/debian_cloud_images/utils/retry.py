@@ -2,6 +2,7 @@
 
 import logging
 
+from os import getenv
 from time import sleep
 
 
@@ -16,4 +17,5 @@ def with_retries(fn, max_tries=10, retry_delay=10):
             if tries_remaining == 0:
                 raise
             logging.info('fn failed, will retry up to %d more times', tries_remaining)
-            sleep(retry_delay)
+            if not getenv("NO_RETRY_DELAY") == "true":
+                sleep(retry_delay)
