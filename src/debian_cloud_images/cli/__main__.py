@@ -12,6 +12,7 @@ from . import (  # noqa: F401
     cleanup,
     cleanup_azure_partner,
     cleanup_ec2,
+    cleanup_ssm,
     configdump,
     control_azure_partner,
     generate_ci,
