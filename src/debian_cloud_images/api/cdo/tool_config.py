@@ -65,11 +65,29 @@ class v1alpha1_ToolConfigEc2SSMSchema(Schema):
     prefix = fields.Str()
 
 
+class v1alpha1_ToolConfigAwsMarketplaceEntitySchema(Schema):
+    id = fields.Str()
+    instancetype = fields.Str()
+
+
+class v1alpha1_ToolConfigAwsMarketplaceListingSchema(Schema):
+    releasenotes = fields.Str()
+    entities = fields.Dict(fields.Str(), fields.Nested(v1alpha1_ToolConfigAwsMarketplaceEntitySchema))
+
+
+class v1alpha1_ToolConfigAwsMarketplaceSchema(Schema):
+    role = fields.Str()
+    api_region = fields.Str()
+    listings = fields.Dict(fields.Str(),
+                           fields.Nested(v1alpha1_ToolConfigAwsMarketplaceListingSchema))
+
+
 class v1alpha1_ToolConfigEc2Schema(Schema):
     auth = fields.Nested(v1alpha1_ToolConfigEc2AuthSchema)
     image = fields.Nested(v1alpha1_ToolConfigEc2ImageSchema)
     storage = fields.Nested(v1alpha1_ToolConfigEc2StorageSchema)
     ssm = fields.Nested(v1alpha1_ToolConfigEc2SSMSchema)
+    marketplace = fields.Nested(v1alpha1_ToolConfigAwsMarketplaceSchema)
 
 
 class v1alpha1_ToolConfigGceAuthSchema(Schema):
