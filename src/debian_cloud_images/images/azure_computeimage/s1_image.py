@@ -57,6 +57,9 @@ class ImagesAzureComputeimageImage:
             return self.wait_create()
         return data['properties']
 
+    def delete(self) -> None:
+        self.__request(method='DELETE')
+
     def get(self) -> typing.Any:
         response = self.__request(method='GET')
         data = response.parse_body()

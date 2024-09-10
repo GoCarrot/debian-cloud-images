@@ -29,6 +29,7 @@ before_script:
 
 test ci:
   stage: source test
+  image: debian:sid
   script:
   - diff -u <(bin/debian-cloud-images internal generate-ci --public-type dev) .gitlab/ci/generated.yml
   - diff -u <(bin/debian-cloud-images internal generate-ci --public-type daily) .gitlab/ci/generated-daily.yml
