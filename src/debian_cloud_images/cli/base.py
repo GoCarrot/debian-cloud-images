@@ -116,6 +116,6 @@ class BaseCommand(CliCommand):
             ret = self.config.get(key, self._marker)
             if ret != self._marker:
                 return ret
-        if default == self._marker:
+        if default == self._marker and self.argparser is not None:
             self.argparser.error(f'the following config option is required: {keys[0]}')
         return default
