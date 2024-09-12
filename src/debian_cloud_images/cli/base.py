@@ -64,8 +64,7 @@ class BaseCommand(CliCommand):
         )
 
         config_overrides = [config]
-        if self.argparser is not None:
-            config_overrides.insert(0, self.config_env())
+        config_overrides.insert(0, self.config_env())
         self._config = Config(overrides=config_overrides)
         if config_files:
             self._config.read(*config_files)
