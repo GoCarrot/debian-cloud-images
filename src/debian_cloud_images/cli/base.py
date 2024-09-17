@@ -64,8 +64,7 @@ class BaseCommand(CliCommand):
         )
 
         config_overrides = [config]
-        if self.argparser is not None:
-            config_overrides.insert(0, self.config_env())
+        config_overrides.insert(0, self.config_env())
         self._config = Config(overrides=config_overrides)
         if config_files:
             self._config.read(*config_files)
@@ -116,6 +115,6 @@ class BaseCommand(CliCommand):
             ret = self.config.get(key, self._marker)
             if ret != self._marker:
                 return ret
-        if default == self._marker:
+        if default == self._marker and self.argparser is not None:
             self.argparser.error(f'the following config option is required: {keys[0]}')
         return default

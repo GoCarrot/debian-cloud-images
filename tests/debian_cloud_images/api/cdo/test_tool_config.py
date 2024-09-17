@@ -60,6 +60,25 @@ class Test_v1alpha1_ToolConfigSchema:
                     'regions': ['all'],
                     'tags': ['Tag=Value'],
                 },
+                'marketplace': {
+                    'role': 'dummy-arn',
+                    'api_region': 'us-east-1',
+                    'listings': {
+                        'buster': {
+                            'releasenotes': 'test url',
+                            'entities': {
+                                'arm64': {
+                                    'id': 'arm64_entity_id',
+                                    'instancetype': 't4g.medium',
+                                },
+                                'x86_64': {
+                                    'id': 'x86_64_entity_id',
+                                    'instancetype': 't3.medium',
+                                },
+                            },
+                        },
+                    },
+                },
             },
             'gce': {
                 'auth': {
@@ -75,6 +94,8 @@ class Test_v1alpha1_ToolConfigSchema:
         }
 
         obj = self.schema.load(data)
+        assert obj['ec2']['marketplace']['api_region'] == 'us-east-1'
+        assert obj['ec2']['marketplace']['listings']['buster']['entities']['arm64']['id'] == 'arm64_entity_id'
         assert data == self.schema.dump(obj)
 
     def test_unknown(self):

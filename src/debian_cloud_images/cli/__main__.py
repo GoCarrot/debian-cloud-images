@@ -16,6 +16,7 @@ from . import (  # noqa: F401
     configdump,
     control_azure_partner,
     generate_ci,
+    update_aws_marketplace,
     upload,
     upload_azure,
     upload_azure_computegallery,
