@@ -23,6 +23,7 @@ apt-utils
 init
 iptables
 iputils-ping
+linux-sysctl-defaults
 less
 nano
 netbase
