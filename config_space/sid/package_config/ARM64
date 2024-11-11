@@ -11,3 +11,6 @@ shim-signed
 
 PACKAGES install-norec TRIXIE SID
 grub-cloud-arm64
+
+PACKAGES install-norec
+dosfstools

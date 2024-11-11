@@ -3,3 +3,4 @@ linux-image-riscv64
 
 PACKAGES install-norec
 grub-efi-riscv64
+dosfstools
