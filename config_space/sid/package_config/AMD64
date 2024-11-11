@@ -6,3 +6,4 @@ linux-image-cloud-amd64
 
 PACKAGES install-norec
 grub-cloud-amd64
+dosfstools
