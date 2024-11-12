@@ -9,7 +9,10 @@ from ..utils.libcloud.other.aws_marketplace import MarketplaceConnection, Change
 
 
 CONFIG_PREFIX = 'ec2.marketplace.listings'
-USAGE_INSTRUCTIONS = "Once the instance is running, connect to it using a Secure Shell (SSH) client with the configured SSH key."
+USAGE_INSTRUCTIONS = """\
+After launching your instance, connect to it using a Secure Shell (SSH) \
+client with the SSH key you specified at launch. The default username is \
+'admin'."""
 
 
 class MarketplaceUpdater:
