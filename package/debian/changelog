@@ -1,3 +1,9 @@
+debian-cloud-images (0.0.9) UNRELEASED; urgency=medium
+
+  * Drop Google Cloud packages.
+
+ -- Bastian Blank <waldi@debian.org>  Thu, 02 Jan 2025 11:52:45 +0100
+
 debian-cloud-images (0.0.8) unstable; urgency=medium
 
   * Remove dependencies on conflicting packages.  (closes: #1062955)
