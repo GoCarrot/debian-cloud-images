@@ -1,9 +1,9 @@
-debian-cloud-images (0.0.9) UNRELEASED; urgency=medium
+debian-cloud-images (0.0.9) unstable; urgency=medium
 
   * Drop Google Cloud packages.
   * Add riscv64 packages.
 
- -- Bastian Blank <waldi@debian.org>  Thu, 02 Jan 2025 11:52:45 +0100
+ -- Bastian Blank <waldi@debian.org>  Thu, 02 Jan 2025 11:54:13 +0100
 
 debian-cloud-images (0.0.8) unstable; urgency=medium
 
