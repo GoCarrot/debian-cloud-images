@@ -21,6 +21,7 @@ class_arch = {
     'EC2': 'amd64 arm64',
     'GCE': 'amd64 arm64',
     'PPC64EL': 'ppc64el',
+    'RISCV64': 'riscv64',
 }
 
 packages = set()
