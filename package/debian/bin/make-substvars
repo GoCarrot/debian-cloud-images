@@ -9,6 +9,7 @@ import sys
 class_exclude = {
     'BUSTER', # Ignore buster-specific dependencies as we're not packaged for buster.
     'DEVEL',
+    'GCE',
     'GCE_SDK',
     'TIME_SYSTEMD', # chrony and systemd-timesyncd conflict
 }
@@ -20,6 +21,7 @@ class_arch = {
     'EC2': 'amd64 arm64',
     'GCE': 'amd64 arm64',
     'PPC64EL': 'ppc64el',
+    'RISCV64': 'riscv64',
 }
 
 packages = set()
