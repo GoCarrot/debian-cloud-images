@@ -45,7 +45,7 @@ test flake8:
 
 test package:
   stage: source test
-  image: debian:bookworm
+  image: debian:trixie
   before_script:
   - apt-get update
   - apt-get build-dep -y ./package
