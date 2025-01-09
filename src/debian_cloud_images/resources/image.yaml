@@ -86,13 +86,13 @@ vendors:
   - matchArches: [amd64]
 - name: generic
   faiClasses: [SYSTEM_BOOT, CLOUD, GENERIC, LINUX_VARIANT_BASE, TIME_SYSTEMD]
-  size: 2
+  size: 3
 - name: genericcloud
   faiClasses: [SYSTEM_BOOT, CLOUD, GENERIC, LINUX_VARIANT_CLOUD, TIME_SYSTEMD]
-  size: 2
+  size: 3
 - name: nocloud
   faiClasses: [SYSTEM_BOOT, NOCLOUD, LINUX_VARIANT_BASE, TIME_SYSTEMD]
-  size: 2
+  size: 3
 
 types:
 - name: dev
