@@ -4,3 +4,4 @@ cloud-guest-utils
 hyperv-daemons
 waagent
 azure-vm-utils
+python3-passlib
