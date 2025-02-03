@@ -1,20 +1,30 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
+import logging
 import pathlib
+
+from typing import (
+    Any,
+    cast,
+)
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
+from debian_cloud_images.images.azure_computedisk import (
+    ImagesAzureComputedisk,
+    ImagesAzureComputediskArch,
+)
 from debian_cloud_images.images.azure_computeimage.s1_image import ImagesAzureComputeimageImage
-from debian_cloud_images.images.azure_storage.s1_folder import ImagesAzureStorageFolder
-from debian_cloud_images.images.azure_storage.s2_blob import ImagesAzureStorageBlob
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
-from debian_cloud_images.utils.libcloud.storage.azure_arm import AzureResourceManagementStorageDriver
 
 from .base import cli
 from .upload_base import UploadBaseCommand
 from ..images.publicinfo import ImagePublicType
 from ..utils import argparse_ext
+
+
+logger = logging.getLogger(__name__)
 
 
 @staticmethod
@@ -29,10 +39,6 @@ config options:
   azure.image.tenant
   azure.image.subscription
   azure.image.group
-  azure.storage.tenant
-  azure.storage.subscription
-  azure.storage.group
-  azure.storage.name
 ''',
     arguments=[
         cli.prepare_argument(
@@ -41,6 +47,12 @@ config options:
             metavar='MANIFEST',
             nargs='*',
             type=pathlib.Path
+        ),
+        cli.prepare_argument(
+            '--generation',
+            choices=(1, 2),
+            default=2,
+            type=int,
         ),
         cli.prepare_argument(
             '--output',
@@ -69,132 +81,124 @@ config options:
     ],
 )
 class UploadAzureCommand(UploadBaseCommand):
+    generation: int
+    wait: bool
+
     def __init__(
             self,
             *,
+            generation: int,
             wait: bool,
             **kw,
     ) -> None:
         super().__init__(**kw)
 
-        self._wait = wait
+        self.generation = generation
+        self.wait = wait
 
         self._client_id = str(self.config_get('azure.auth.client', default=None))
         self._client_secret = self.config_get('azure.auth.secret', default=None)
 
-        self._computeimage_tenant = str(self.config_get('azure.image.tenant'))
-        self._computeimage_subscription = str(self.config_get('azure.image.subscription'))
-        self._computeimage_group = self.config_get('azure.image.group')
-
-        self._storage_tenant = str(self.config_get('azure.storage.tenant'))
-        self._storage_subscription = str(self.config_get('azure.storage.subscription'))
-        self._storage_group = self.config_get('azure.storage.group')
-        self._storage_name = self.config_get('azure.storage.name')
-        self._storage_folder = 'vhds'
+        self._tenant = str(self.config_get('azure.image.tenant'))
+        self._subscription = str(self.config_get('azure.image.subscription'))
+        self._group = self.config_get('azure.image.group')
+        self._location = self.config_get('azure.image.location')
 
         if len(self.images) > 1:
             raise RuntimeError('Can only handle one image at a time')
 
-    def __call__(self):
-        computeimage_conn = AzureGenericOAuth2Connection(
+    def __call__(self) -> None:
+        computedisk: ImagesAzureComputedisk | None = None
+        computeimage: ImagesAzureComputeimageImage | None = None
+
+        conn = AzureGenericOAuth2Connection(
             client_id=self._client_id,
             client_secret=self._client_secret,
-            tenant_id=self._computeimage_tenant,
-            subscription_id=self._computeimage_subscription,
+            tenant_id=self._tenant,
+            subscription_id=self._subscription,
             host='management.azure.com',
             login_resource='https://management.core.windows.net/',
         )
-        storage_driver = AzureResourceManagementStorageDriver(
-            client_id=self._client_id,
-            client_secret=self._client_secret,
-            tenant_id=self._storage_tenant,
-            subscription_id=self._storage_subscription,
-        )
-        storage_obj = storage_driver.get_storage(
-            self._storage_name,
-            self._storage_group,
-        )
-        location = storage_obj.extra['location']
-
-        image_folder = ImagesAzureStorageFolder(
-            self._storage_group,
-            self._storage_name,
-            self._storage_folder,
-            storage_driver,
-            storage_obj,
-        )
-        image_folder.create()
 
         for image in self.images.values():
             try:
+                image_arch = ImagesAzureComputediskArch[image.build_info['arch']]
                 image_public_info = self.image_public_info.apply(image.build_info)
-                image_blob_name = f'{image_public_info.vendor_name}.vhd'
-                image_blob = ImagesAzureStorageBlob(
-                    self._storage_group,
-                    self._storage_name,
-                    self._storage_folder,
-                    image_blob_name,
-                    storage_driver,
-                    storage_obj,
+                image_name = image_public_info.vendor_name_extra(f'g{self.generation}')
+
+                if image_arch is not ImagesAzureComputediskArch.amd64:
+                    raise RuntimeError('Image architecture must be amd64')
+
+                computedisk = ImagesAzureComputedisk(
+                    self._group,
+                    image_name,
+                    conn,
                 )
 
-                print('Uploading image')
+                computeimage = ImagesAzureComputeimageImage(
+                    self._group,
+                    image_name,
+                    conn,
+                )
 
                 with image.open_image('vhd') as f:
-                    image_blob.put(f)
-
-                computeimage_images = []
-
-                for generation in (1, 2):
-                    computeimage_image_name = image_public_info.vendor_name_extra(f'g{generation}')
-
-                    computeimage_image = ImagesAzureComputeimageImage(
-                        self._computeimage_group,
-                        computeimage_image_name,
-                        computeimage_conn,
+                    f.seek(0, 2)
+                    size = f.tell()
+                    f.seek(0, 0)
+                    computedisk.create(
+                        arch=image_arch,
+                        generation=self.generation,
+                        location=self._location,
+                        size=size,
                     )
-                    computeimage_images.append(computeimage_image)
 
-                    print(f'Creating image: {computeimage_image_name}')
+                    logger.info(f'Uploading Azure disk: {image_name}')
 
-                    computeimage_image.create(location, {
-                        'hyperVGeneration': f'V{generation}',
+                    computedisk.upload(f)
+
+                    logger.info(f'Creating Azure image: {image_name}')
+
+                    computeimage.create(self._location, {
+                        'hyperVGeneration': f'V{self.generation}',
                         'storageProfile': {
                             'osDisk': {
                                 'osType': 'Linux',
-                                'blobUri': image_blob.url,
+                                'managedDisk': {
+                                    'id': f'subscriptions/{self._subscription}/resourceGroups/{self._group}/providers/Microsoft.Compute/disks/{image_name}',
+                                },
                                 'osState': 'Generalized',
                             },
                         },
-                    }, wait=False)
-
-                if self._wait:
-                    for computeimage_image in computeimage_images:
-                        computeimage_image.wait_create()
+                    }, wait=self.wait)
 
                 metadata = image.build.metadata.copy()
                 metadata.labels[label_ucdo_type] = image_public_info.public_type.name
 
                 manifests = [Upload(
                     metadata=metadata,
-                    provider=computeimage_conn.connection.host,
-                    ref=i.path,
-                ) for i in computeimage_images]
+                    provider=cast(Any, conn.connection).host,
+                    ref=computeimage.path,
+                )]
 
                 image.write_manifests('upload-azure', manifests, output=self.output)
 
-                for computeimage_image in computeimage_images:
-                    print(f'Created image successfully: {computeimage_image.path}')
+                logger.info(f'Created image successfully: {computeimage.path}')
 
-                # Blob is read in the background, so can't delete if we don't wait
-                if self._wait:
-                    image_blob.delete()
-                else:
-                    print('Not deleting blob')
+                # We are succesful, don't need to clean it up
+                computeimage = None
 
-            except BaseException:
-                image_blob.delete()
-                raise
+            finally:
+                if computeimage:
+                    try:
+                        computeimage.delete()
+                    except BaseException:
+                        logger.exception('Failed to cleanup Azure image')
+
+                if computedisk:
+                    try:
+                        computedisk.delete()
+                    except BaseException:
+                        logger.exception('Failed to cleanup Azure disk')
 
 
 if __name__ == '__main__':
