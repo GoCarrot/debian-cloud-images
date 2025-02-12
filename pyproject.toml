@@ -16,3 +16,6 @@ junit_family = "xunit2"
 minversion = "6.0"
 norecursedirs = ["system_tests"]
 testpaths = ["src", "tests"]
+addopts = [
+  "--import-mode=importlib",
+]
