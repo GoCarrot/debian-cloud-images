@@ -26,7 +26,6 @@ class v1alpha1_ToolConfigAzureComputegallerySchema(Schema):
 
 
 class v1alpha1_ToolConfigAzureImageSchema(Schema):
-    location = fields.Str()
     group = fields.Str()
     subscription = fields.UUID()
     tenant = fields.UUID()
