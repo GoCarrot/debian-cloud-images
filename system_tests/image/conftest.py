@@ -4,7 +4,9 @@ import pytest
 
 import collections
 import subprocess
-import typing
+
+from collections.abc import Callable
+from typing import Any
 
 
 @pytest.fixture(autouse=True)
@@ -16,18 +18,20 @@ def raise_test(request) -> None:
 
 
 class Fixtures:
-    def __init__(self) -> None:
-        self.__func = {}
+    _func: dict[str, Callable[[Any], dict[str, Any]]]
 
-    def parametrize(self, name: str, metafunc: typing.Any) -> None:
-        if func := self.__func.get(name):
+    def __init__(self) -> None:
+        self._func = {}
+
+    def parametrize(self, name: str, metafunc: pytest.Metafunc) -> None:
+        if func := self._func.get(name):
             try:
                 metafunc.parametrize(name, [pytest.param(i[1], id=i[0]) for i in sorted(func(metafunc).items())])
             except BaseException as e:
                 metafunc.parametrize('raise_test', [e], indirect=True)
 
-    def register(self, f: typing.Any) -> None:
-        self.__func[f.__name__ + '_entry'] = f
+    def register(self, f: Callable[[Any], dict[str, Any]]) -> Any:
+        self._func[f.__name__ + '_entry'] = f
         return pytest.fixture(f)
 
 
@@ -42,7 +46,7 @@ PasswdEntry = collections.namedtuple('PasswdEntry', ['name', 'passwd', 'uid', 'g
 # Read infos from /etc/group as it apears in the image and create entries as
 # test parameters
 @_fixtures.register
-def image_etc_group(request):
+def image_etc_group(request) -> dict[str, GroupEntry]:
     path = request.config.getoption('mount_path') / 'etc' / 'group'
     if path.exists():
         with path.open() as f:
@@ -57,7 +61,7 @@ def image_etc_group(request):
 # Read infos from /etc/passwd as it apears in the image and create entries as
 # test parameters
 @_fixtures.register
-def image_etc_passwd(request):
+def image_etc_passwd(request) -> dict[str, PasswdEntry]:
     path = request.config.getoption('mount_path') / 'etc' / 'passwd'
     if path.exists():
         with path.open() as f:
@@ -70,7 +74,7 @@ def image_etc_passwd(request):
 
 
 @_fixtures.register
-def image_packages(request):
+def image_packages(request) -> dict[str, PackageEntry]:
     path = request.config.getoption('mount_path') / 'var/lib/dpkg'
     proc = subprocess.run(
         [

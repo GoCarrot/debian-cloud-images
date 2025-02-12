@@ -21,11 +21,6 @@ before_script:
       # Workaround unsupported SEEK_HOLE in overlayfs (Docker default)
       mount -t tmpfs none /tmp
     fi
-  - |
-    # Neither buster nor bullseye are usr-merged, nor have a suitable crun
-    if [ "$CI_JOB_IMAGE" = "debian:buster" ] || [ "$CI_JOB_IMAGE" = "debian:bullseye" ]; then
-      rm /usr/bin/crun
-    fi
 
 test ci:
   stage: source test
@@ -34,6 +29,7 @@ test ci:
   - diff -u <(bin/debian-cloud-images internal generate-ci --public-type dev) .gitlab/ci/generated.yml
   - diff -u <(bin/debian-cloud-images internal generate-ci --public-type daily) .gitlab/ci/generated-daily.yml
   - diff -u <(bin/debian-cloud-images internal generate-ci --public-type release) .gitlab/ci/generated-release.yml
+  - diff -u <(cd package; debian/bin/make-substvars) package/debian/source.substvars
 
 test flake8:
   stage: source test
@@ -69,10 +65,6 @@ test package:
     -vrxXs
     --color=yes
     tests
-
-test python bullseye:
-  extends: .test python
-  image: debian:bullseye
 
 test python bookworm:
   extends: .test python
