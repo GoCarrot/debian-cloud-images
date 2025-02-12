@@ -11,6 +11,7 @@ from typing import (
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
+from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
 from debian_cloud_images.images.azure_computedisk import (
     ImagesAzureComputedisk,
     ImagesAzureComputediskArch,
@@ -49,6 +50,9 @@ config options:
             type=pathlib.Path
         ),
         cli.prepare_argument(
+            '--location',
+        ),
+        cli.prepare_argument(
             '--generation',
             choices=(1, 2),
             default=2,
@@ -81,18 +85,21 @@ config options:
     ],
 )
 class UploadAzureCommand(UploadBaseCommand):
+    location: str | None
     generation: int
     wait: bool
 
     def __init__(
             self,
             *,
+            location: str | None,
             generation: int,
             wait: bool,
             **kw,
     ) -> None:
         super().__init__(**kw)
 
+        self.location = location
         self.generation = generation
         self.wait = wait
 
@@ -102,7 +109,6 @@ class UploadAzureCommand(UploadBaseCommand):
         self._tenant = str(self.config_get('azure.image.tenant'))
         self._subscription = str(self.config_get('azure.image.subscription'))
         self._group = self.config_get('azure.image.group')
-        self._location = self.config_get('azure.image.location')
 
         if len(self.images) > 1:
             raise RuntimeError('Can only handle one image at a time')
@@ -119,6 +125,11 @@ class UploadAzureCommand(UploadBaseCommand):
             host='management.azure.com',
             login_resource='https://management.core.windows.net/',
         )
+
+        location = self.location or ImagesAzureResourcegroup.get(
+            self._group,
+            conn,
+        ).location
 
         for image in self.images.values():
             try:
@@ -148,7 +159,7 @@ class UploadAzureCommand(UploadBaseCommand):
                     computedisk.create(
                         arch=image_arch,
                         generation=self.generation,
-                        location=self._location,
+                        location=location,
                         size=size,
                     )
 
@@ -158,7 +169,7 @@ class UploadAzureCommand(UploadBaseCommand):
 
                     logger.info(f'Creating Azure image: {image_name}')
 
-                    computeimage.create(self._location, {
+                    computeimage.create(location, {
                         'hyperVGeneration': f'V{self.generation}',
                         'storageProfile': {
                             'osDisk': {
