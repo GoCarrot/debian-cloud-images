@@ -2,20 +2,38 @@
 
 import http
 
-from debian_cloud_images.images.azure_computedisk import (
+from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputedisk,
     ImagesAzureComputediskArch,
 )
 
+from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
+
 
 class TestImagesAzureComputeimageImage:
     def test_create(self, azure_conn, requests_mock):
+        # https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get
+        requests_mock.get(
+            'https://host/subscriptions/subscription/resourceGroups/resource_group',
+            status_code=http.HTTPStatus.OK,
+            json={
+                'id': None,
+                'name': None,
+                'location': 'location',
+                'properties': {
+                    'provisioningState': 'Succeeded',
+                },
+            },
+        )
+
         # https://learn.microsoft.com/en-us/rest/api/compute/disks/get
         requests_mock.get(
             'https://host/subscriptions/subscription/resourceGroups/resource_group/providers/Microsoft.Compute/disks/disk?api-version=2024-03-02',
             status_code=http.HTTPStatus.OK,
             json={
-                'name': 'disk',
+                'id': None,
+                'name': None,
+                'location': 'location',
                 'properties': {
                     'provisioningState': 'Succeeded',
                 },
@@ -27,37 +45,57 @@ class TestImagesAzureComputeimageImage:
             'https://host/subscriptions/subscription/resourceGroups/resource_group/providers/Microsoft.Compute/disks/disk?api-version=2024-03-02',
             status_code=http.HTTPStatus.ACCEPTED,
             json={
-                'name': 'disk',
+                'id': None,
+                'name': None,
+                'location': 'location',
                 'properties': {
                     'provisioningState': 'Updating',
                 },
             },
         )
 
-        disk = ImagesAzureComputedisk(
+        group = ImagesAzureResourcegroup(
             'resource_group',
-            'disk',
             azure_conn,
         )
 
-        properties = disk.create(
+        disk = ImagesAzureComputedisk.create(
+            group,
+            'disk',
+            conn=azure_conn,
             arch=ImagesAzureComputediskArch.amd64,
             generation=2,
             location='location',
             size=10,
         )
 
-        assert properties == {
+        assert disk.properties == {
             'provisioningState': 'Succeeded',
         }
 
     def test_upload(self, azure_conn, requests_mock):
+        # https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get
+        requests_mock.get(
+            'https://host/subscriptions/subscription/resourceGroups/resource_group',
+            status_code=http.HTTPStatus.OK,
+            json={
+                'id': None,
+                'name': None,
+                'location': 'location',
+                'properties': {
+                    'provisioningState': 'Succeeded',
+                },
+            },
+        )
+
         # https://learn.microsoft.com/en-us/rest/api/compute/disks/get
         requests_mock.get(
             'https://host/subscriptions/subscription/resourceGroups/resource_group/providers/Microsoft.Compute/disks/disk?api-version=2024-03-02',
             status_code=http.HTTPStatus.OK,
             json={
-                'name': 'disk',
+                'id': None,
+                'name': None,
+                'location': 'location',
                 'properties': {
                     'diskState': 'ReadyToUpload',
                 },
@@ -100,8 +138,13 @@ class TestImagesAzureComputeimageImage:
             status_code=http.HTTPStatus.CREATED,
         )
 
-        disk = ImagesAzureComputedisk(
+        group = ImagesAzureResourcegroup(
             'resource_group',
+            azure_conn,
+        )
+
+        disk = ImagesAzureComputedisk(
+            group,
             'disk',
             azure_conn,
         )

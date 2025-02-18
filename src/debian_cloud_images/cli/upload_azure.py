@@ -12,7 +12,7 @@ from typing import (
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
 from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
-from debian_cloud_images.images.azure_computedisk import (
+from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputedisk,
     ImagesAzureComputediskArch,
 )
@@ -126,10 +126,10 @@ class UploadAzureCommand(UploadBaseCommand):
             login_resource='https://management.core.windows.net/',
         )
 
-        location = self.location or ImagesAzureResourcegroup.get(
+        group = ImagesAzureResourcegroup(
             self._group,
             conn,
-        ).location
+        )
 
         for image in self.images.values():
             try:
@@ -139,12 +139,6 @@ class UploadAzureCommand(UploadBaseCommand):
 
                 if image_arch is not ImagesAzureComputediskArch.amd64:
                     raise RuntimeError('Image architecture must be amd64')
-
-                computedisk = ImagesAzureComputedisk(
-                    self._group,
-                    image_name,
-                    conn,
-                )
 
                 computeimage = ImagesAzureComputeimageImage(
                     self._group,
@@ -156,10 +150,13 @@ class UploadAzureCommand(UploadBaseCommand):
                     f.seek(0, 2)
                     size = f.tell()
                     f.seek(0, 0)
-                    computedisk.create(
+
+                    computedisk = ImagesAzureComputedisk.create(
+                        group,
+                        image_name,
+                        conn,
                         arch=image_arch,
                         generation=self.generation,
-                        location=location,
                         size=size,
                     )
 
@@ -169,7 +166,7 @@ class UploadAzureCommand(UploadBaseCommand):
 
                     logger.info(f'Creating Azure image: {image_name}')
 
-                    computeimage.create(location, {
+                    computeimage.create(group.location, {
                         'hyperVGeneration': f'V{self.generation}',
                         'storageProfile': {
                             'osDisk': {
