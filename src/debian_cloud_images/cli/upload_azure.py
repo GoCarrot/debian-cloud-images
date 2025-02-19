@@ -16,7 +16,7 @@ from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputedisk,
     ImagesAzureComputediskArch,
 )
-from debian_cloud_images.images.azure_computeimage.s1_image import ImagesAzureComputeimageImage
+from debian_cloud_images.images.azure.computeimage import ImagesAzureComputeimage
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 
 from .base import cli
@@ -115,7 +115,7 @@ class UploadAzureCommand(UploadBaseCommand):
 
     def __call__(self) -> None:
         computedisk: ImagesAzureComputedisk | None = None
-        computeimage: ImagesAzureComputeimageImage | None = None
+        computeimage: ImagesAzureComputeimage | None = None
 
         conn = AzureGenericOAuth2Connection(
             client_id=self._client_id,
@@ -140,12 +140,6 @@ class UploadAzureCommand(UploadBaseCommand):
                 if image_arch is not ImagesAzureComputediskArch.amd64:
                     raise RuntimeError('Image architecture must be amd64')
 
-                computeimage = ImagesAzureComputeimageImage(
-                    self._group,
-                    image_name,
-                    conn,
-                )
-
                 with image.open_image('vhd') as f:
                     f.seek(0, 2)
                     size = f.tell()
@@ -166,18 +160,13 @@ class UploadAzureCommand(UploadBaseCommand):
 
                     logger.info(f'Creating Azure image: {image_name}')
 
-                    computeimage.create(group.location, {
-                        'hyperVGeneration': f'V{self.generation}',
-                        'storageProfile': {
-                            'osDisk': {
-                                'osType': 'Linux',
-                                'managedDisk': {
-                                    'id': f'subscriptions/{self._subscription}/resourceGroups/{self._group}/providers/Microsoft.Compute/disks/{image_name}',
-                                },
-                                'osState': 'Generalized',
-                            },
-                        },
-                    }, wait=self.wait)
+                    computeimage = ImagesAzureComputeimage.create(
+                        group,
+                        image_name,
+                        conn,
+                        disk=computedisk,
+                        wait=self.wait,
+                    )
 
                 metadata = image.build.metadata.copy()
                 metadata.labels[label_ucdo_type] = image_public_info.public_type.name
