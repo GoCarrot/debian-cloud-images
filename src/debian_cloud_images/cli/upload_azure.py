@@ -12,11 +12,11 @@ from typing import (
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
 from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
-from debian_cloud_images.images.azure_computedisk import (
+from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputedisk,
     ImagesAzureComputediskArch,
 )
-from debian_cloud_images.images.azure_computeimage.s1_image import ImagesAzureComputeimageImage
+from debian_cloud_images.images.azure.computeimage import ImagesAzureComputeimage
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 
 from .base import cli
@@ -115,7 +115,7 @@ class UploadAzureCommand(UploadBaseCommand):
 
     def __call__(self) -> None:
         computedisk: ImagesAzureComputedisk | None = None
-        computeimage: ImagesAzureComputeimageImage | None = None
+        computeimage: ImagesAzureComputeimage | None = None
 
         conn = AzureGenericOAuth2Connection(
             client_id=self._client_id,
@@ -126,10 +126,10 @@ class UploadAzureCommand(UploadBaseCommand):
             login_resource='https://management.core.windows.net/',
         )
 
-        location = self.location or ImagesAzureResourcegroup.get(
+        group = ImagesAzureResourcegroup(
             self._group,
             conn,
-        ).location
+        )
 
         for image in self.images.values():
             try:
@@ -140,26 +140,17 @@ class UploadAzureCommand(UploadBaseCommand):
                 if image_arch is not ImagesAzureComputediskArch.amd64:
                     raise RuntimeError('Image architecture must be amd64')
 
-                computedisk = ImagesAzureComputedisk(
-                    self._group,
-                    image_name,
-                    conn,
-                )
-
-                computeimage = ImagesAzureComputeimageImage(
-                    self._group,
-                    image_name,
-                    conn,
-                )
-
                 with image.open_image('vhd') as f:
                     f.seek(0, 2)
                     size = f.tell()
                     f.seek(0, 0)
-                    computedisk.create(
+
+                    computedisk = ImagesAzureComputedisk.create(
+                        group,
+                        image_name,
+                        conn,
                         arch=image_arch,
                         generation=self.generation,
-                        location=location,
                         size=size,
                     )
 
@@ -169,18 +160,13 @@ class UploadAzureCommand(UploadBaseCommand):
 
                     logger.info(f'Creating Azure image: {image_name}')
 
-                    computeimage.create(location, {
-                        'hyperVGeneration': f'V{self.generation}',
-                        'storageProfile': {
-                            'osDisk': {
-                                'osType': 'Linux',
-                                'managedDisk': {
-                                    'id': f'subscriptions/{self._subscription}/resourceGroups/{self._group}/providers/Microsoft.Compute/disks/{image_name}',
-                                },
-                                'osState': 'Generalized',
-                            },
-                        },
-                    }, wait=self.wait)
+                    computeimage = ImagesAzureComputeimage.create(
+                        group,
+                        image_name,
+                        conn,
+                        disk=computedisk,
+                        wait=self.wait,
+                    )
 
                 metadata = image.build.metadata.copy()
                 metadata.labels[label_ucdo_type] = image_public_info.public_type.name
