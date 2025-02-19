@@ -35,12 +35,14 @@ class ImagesAzureComputediskArch(enum.StrEnum):
 
 
 @dataclass
-class ImagesAzureComputedisk(ImagesAzureBase):
+class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
     api_version: ClassVar[str] = '2024-03-02'
+
+    parent: ImagesAzureResourcegroup
 
     @property
     def path(self) -> str:
-        return f'{self.resourcegroup.path}/providers/Microsoft.Compute/disks/{self.name}'
+        return f'{self.parent.path}/providers/Microsoft.Compute/disks/{self.name}'
 
     @classmethod
     def create(
@@ -75,7 +77,7 @@ class ImagesAzureComputedisk(ImagesAzureBase):
             },
         }
         return cls(
-            resourcegroup=resourcegroup,
+            parent=resourcegroup,
             name=name,
             conn=conn,
             _create_data=data,

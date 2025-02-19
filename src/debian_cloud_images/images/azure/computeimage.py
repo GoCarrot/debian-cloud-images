@@ -22,12 +22,12 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureComputeimage(ImagesAzureBase):
+class ImagesAzureComputeimage(ImagesAzureBase[ImagesAzureResourcegroup]):
     api_version: ClassVar[str] = '2021-11-01'
 
     @property
     def path(self) -> str:
-        return f'{self.resourcegroup.path}/providers/Microsoft.Compute/images/{self.name}'
+        return f'{self.parent.path}/providers/Microsoft.Compute/images/{self.name}'
 
     @classmethod
     def create(
@@ -55,7 +55,7 @@ class ImagesAzureComputeimage(ImagesAzureBase):
             },
         }
         return cls(
-            resourcegroup=resourcegroup,
+            parent=resourcegroup,
             name=name,
             conn=conn,
             _create_data=data,
