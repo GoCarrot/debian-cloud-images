@@ -29,9 +29,9 @@ from .resourcegroup import ImagesAzureResourcegroup
 logger = logging.getLogger(__name__)
 
 
-class ImagesAzureComputediskArch(enum.StrEnum):
-    amd64 = 'X64'
-    arm64 = 'Arm64'
+class ImagesAzureComputediskArch(enum.Enum):
+    amd64 = 'x64'
+    arm64 = 'arm64'
 
 
 class ImagesAzureComputediskGeneration(enum.Enum):
@@ -73,7 +73,7 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
                 'osType': 'Linux',
                 'supportedCapabilities': {
                     'acceleratedNetwork': True,
-                    'architecture': str(arch),
+                    'architecture': arch.value,
                     'diskControllerTypes': 'NVME, SCSI',
                 },
             },
