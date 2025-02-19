@@ -34,6 +34,11 @@ class ImagesAzureComputediskArch(enum.StrEnum):
     arm64 = 'Arm64'
 
 
+class ImagesAzureComputediskGeneration(enum.Enum):
+    v1 = 'V1'
+    v2 = 'V2'
+
+
 @dataclass
 class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
     api_version: ClassVar[str] = '2024-03-02'
@@ -53,7 +58,7 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
         *,
         wait: bool = True,
         arch: ImagesAzureComputediskArch,
-        generation: int,
+        generation: ImagesAzureComputediskGeneration,
         location: str | None = None,
         size: int,
     ) -> Self:
@@ -64,7 +69,7 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
                     'createOption': 'Upload',
                     'uploadSizeBytes': size,
                 },
-                'hyperVGeneration': f'V{generation}',
+                'hyperVGeneration': generation.value,
                 'osType': 'Linux',
                 'supportedCapabilities': {
                     'acceleratedNetwork': True,
