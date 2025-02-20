@@ -29,18 +29,25 @@ from .resourcegroup import ImagesAzureResourcegroup
 logger = logging.getLogger(__name__)
 
 
-class ImagesAzureComputediskArch(enum.StrEnum):
-    amd64 = 'X64'
-    arm64 = 'Arm64'
+class ImagesAzureComputediskArch(enum.Enum):
+    amd64 = 'x64'
+    arm64 = 'arm64'
+
+
+class ImagesAzureComputediskGeneration(enum.Enum):
+    v1 = 'V1'
+    v2 = 'V2'
 
 
 @dataclass
-class ImagesAzureComputedisk(ImagesAzureBase):
+class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
     api_version: ClassVar[str] = '2024-03-02'
+
+    parent: ImagesAzureResourcegroup
 
     @property
     def path(self) -> str:
-        return f'{self.resourcegroup.path}/providers/Microsoft.Compute/disks/{self.name}'
+        return f'{self.parent.path}/providers/Microsoft.Compute/disks/{self.name}'
 
     @classmethod
     def create(
@@ -51,7 +58,7 @@ class ImagesAzureComputedisk(ImagesAzureBase):
         *,
         wait: bool = True,
         arch: ImagesAzureComputediskArch,
-        generation: int,
+        generation: ImagesAzureComputediskGeneration,
         location: str | None = None,
         size: int,
     ) -> Self:
@@ -62,11 +69,11 @@ class ImagesAzureComputedisk(ImagesAzureBase):
                     'createOption': 'Upload',
                     'uploadSizeBytes': size,
                 },
-                'hyperVGeneration': f'V{generation}',
+                'hyperVGeneration': generation.value,
                 'osType': 'Linux',
                 'supportedCapabilities': {
                     'acceleratedNetwork': True,
-                    'architecture': str(arch),
+                    'architecture': arch.value,
                     'diskControllerTypes': 'NVME, SCSI',
                 },
             },
@@ -75,7 +82,7 @@ class ImagesAzureComputedisk(ImagesAzureBase):
             },
         }
         return cls(
-            resourcegroup=resourcegroup,
+            parent=resourcegroup,
             name=name,
             conn=conn,
             _create_data=data,

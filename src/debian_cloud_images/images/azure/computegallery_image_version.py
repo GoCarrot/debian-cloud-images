@@ -15,24 +15,25 @@ from debian_cloud_images.utils.typing import JSONObject
 
 from .base import ImagesAzureBase
 from .computedisk import ImagesAzureComputedisk
-from .resourcegroup import ImagesAzureResourcegroup
+from .computegallery_image import ImagesAzureComputegalleryImage
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureComputeimage(ImagesAzureBase[ImagesAzureResourcegroup]):
-    api_version: ClassVar[str] = '2021-11-01'
+class ImagesAzureComputegalleryImageVersion(ImagesAzureBase[ImagesAzureComputegalleryImage]):
+    api_version: ClassVar[str] = '2024-03-03'
 
     @property
     def path(self) -> str:
-        return f'{self.parent.path}/providers/Microsoft.Compute/images/{self.name}'
+        return f'{self.parent.path}/versions/{self.name}'
 
     @classmethod
     def create(
         cls,
-        resourcegroup: ImagesAzureResourcegroup,
+        computegallery_image: ImagesAzureComputegalleryImage,
+        # TODO: take as object
         name: str,
         conn: AzureGenericOAuth2Connection,
         *,
@@ -42,20 +43,19 @@ class ImagesAzureComputeimage(ImagesAzureBase[ImagesAzureResourcegroup]):
         data: JSONObject = {
             'location': disk.location,
             'properties': {
-                'hyperVGeneration': disk.properties['hyperVGeneration'],
+                'publishingProfile': {
+                },
                 'storageProfile': {
-                    'osDisk': {
-                        'osType': 'Linux',
-                        'managedDisk': {
+                    'osDiskImage': {
+                        'source': {
                             'id': disk.path,
                         },
-                        'osState': 'Generalized',
                     },
                 },
             },
         }
         return cls(
-            parent=resourcegroup,
+            parent=computegallery_image,
             name=name,
             conn=conn,
             _create_data=data,

@@ -14,27 +14,25 @@ from typing import (
     Any,
     cast,
     ClassVar,
-    TYPE_CHECKING,
+    Generic,
+    TypeVar,
 )
 
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 from debian_cloud_images.utils.typing import JSONObject
 
 
-if TYPE_CHECKING:
-    from .resourcegroup import ImagesAzureResourcegroup
+Parent = TypeVar('Parent', bound='ImagesAzureBase')
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureBase:
+class ImagesAzureBase(Generic[Parent]):
     api_version: ClassVar[str]
 
-    # Most objects in Azure reference to a resource group, except of the resource group itself.
-    # This is overridden in ImagesAzureResourcegroup to not show up
-    resourcegroup: ImagesAzureResourcegroup
+    parent: Parent
     name: str
     conn: AzureGenericOAuth2Connection = field(repr=False, compare=False)
     data: JSONObject = field(init=False, compare=False)

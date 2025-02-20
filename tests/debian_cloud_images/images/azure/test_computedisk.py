@@ -5,6 +5,7 @@ import http
 from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputedisk,
     ImagesAzureComputediskArch,
+    ImagesAzureComputediskGeneration,
 )
 
 from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
@@ -64,7 +65,7 @@ class TestImagesAzureComputeimageImage:
             'disk',
             conn=azure_conn,
             arch=ImagesAzureComputediskArch.amd64,
-            generation=2,
+            generation=ImagesAzureComputediskGeneration.v2,
             location='location',
             size=10,
         )

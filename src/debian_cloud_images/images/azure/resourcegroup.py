@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class ImagesAzureResourcegroup(ImagesAzureBase):
     api_version: ClassVar[str] = '2021-04-01'
 
-    resourcegroup: Self = field(init=False, repr=False)
+    parent: Self = field(init=False, repr=False)
 
     @property
     def path(self) -> str:

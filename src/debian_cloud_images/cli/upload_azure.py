@@ -15,6 +15,7 @@ from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegr
 from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputedisk,
     ImagesAzureComputediskArch,
+    ImagesAzureComputediskGeneration,
 )
 from debian_cloud_images.images.azure.computeimage import ImagesAzureComputeimage
 from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
@@ -86,7 +87,7 @@ config options:
 )
 class UploadAzureCommand(UploadBaseCommand):
     location: str | None
-    generation: int
+    generation: ImagesAzureComputediskGeneration
     wait: bool
 
     def __init__(
@@ -100,7 +101,7 @@ class UploadAzureCommand(UploadBaseCommand):
         super().__init__(**kw)
 
         self.location = location
-        self.generation = generation
+        self.generation = ImagesAzureComputediskGeneration[f'v{generation}']
         self.wait = wait
 
         self._client_id = str(self.config_get('azure.auth.client', default=None))
@@ -135,7 +136,7 @@ class UploadAzureCommand(UploadBaseCommand):
             try:
                 image_arch = ImagesAzureComputediskArch[image.build_info['arch']]
                 image_public_info = self.image_public_info.apply(image.build_info)
-                image_name = image_public_info.vendor_name_extra(f'g{self.generation}')
+                image_name = image_public_info.vendor_name_extra(self.generation.name)
 
                 if image_arch is not ImagesAzureComputediskArch.amd64:
                     raise RuntimeError('Image architecture must be amd64')
