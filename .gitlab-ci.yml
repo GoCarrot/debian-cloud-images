@@ -58,7 +58,7 @@ test package:
   script:
   - >
     apt-get install --no-install-recommends -y
-    python3-pytest python3-requests-mock
+    python3-pytest python3-requests-mock python3-pytest-mock
   - >
     PYTHONPATH=src
     py.test-3
@@ -78,7 +78,7 @@ test python latest:
   stage: source test
   image: python:slim
   before_script:
-  - pip install -e .[mypy,tests] pytest pytest-cov pytest-mypy
+  - pip install -e .[mypy,tests] pytest pytest-cov pytest-mock pytest-mypy
   script:
   - >
     pytest
