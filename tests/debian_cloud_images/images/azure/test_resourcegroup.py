@@ -4,6 +4,7 @@ import pytest
 import unittest.mock
 
 from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
+from debian_cloud_images.images.azure.subscription import ImagesAzureSubscription
 
 
 class TestImagesAzureResourcegroup:
@@ -34,7 +35,11 @@ class TestImagesAzureResourcegroup:
         return ret
 
     def test_get(self, azure_conn):
+        subscription = unittest.mock.NonCallableMock(spec=ImagesAzureSubscription)
+        subscription.path = ''
+
         r = ImagesAzureResourcegroup(
+            subscription,
             'resource_group',
             azure_conn,
         )
@@ -52,7 +57,11 @@ class TestImagesAzureResourcegroup:
         ])
 
     def test_delete(self, azure_conn):
+        subscription = unittest.mock.NonCallableMock(spec=ImagesAzureSubscription)
+        subscription.path = ''
+
         r = ImagesAzureResourcegroup(
+            subscription,
             'resource_group',
             azure_conn,
         )

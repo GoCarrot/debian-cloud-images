@@ -82,7 +82,7 @@ class ImagesAzureBase(Generic[Parent]):
         response = self._request(method=method, data=data)
         ret: JSONObject = response.parse_body()
         del ret['id']
-        del ret['name']
+        ret.pop('name', None)
         self.data = ret
 
     def _do_delete(self) -> None:

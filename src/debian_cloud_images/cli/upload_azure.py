@@ -11,6 +11,7 @@ from typing import (
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
+from debian_cloud_images.images.azure.subscription import ImagesAzureSubscription
 from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
 from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputedisk,
@@ -127,7 +128,13 @@ class UploadAzureCommand(UploadBaseCommand):
             login_resource='https://management.core.windows.net/',
         )
 
+        subscription = ImagesAzureSubscription(
+            self._subscription,
+            conn,
+        )
+
         group = ImagesAzureResourcegroup(
+            subscription,
             self._group,
             conn,
         )
