@@ -1,14 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
+import httpx
 import logging
 import pathlib
 import secrets
-
-from typing import (
-    Any,
-    cast,
-)
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
@@ -23,7 +19,7 @@ from debian_cloud_images.images.azure.computegallery import ImagesAzureComputega
 from debian_cloud_images.images.azure.computegallery_image import ImagesAzureComputegalleryImage
 from debian_cloud_images.images.azure.computegallery_image_version import ImagesAzureComputegalleryImageVersion
 from debian_cloud_images.utils.azure.image_version import AzureImageVersion
-from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
+from debian_cloud_images.utils.httpx.azure import AzureAuth, AzureAuthServiceAccount
 
 from .base import cli
 from .upload_base import UploadBaseCommand
@@ -127,26 +123,26 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
             raise RuntimeError('Can only handle one image at a time')
 
     def __call__(self) -> None:
+        auth: AzureAuth
+        if self._client_id and self._client_secret:
+            auth = AzureAuthServiceAccount(self._tenant, self._client_id, self._client_secret)
+        else:
+            auth = AzureAuth()
+
+        with auth.get_client() as client:
+            self._run(client)
+
+    def _run(self, client: httpx.Client) -> None:
         computedisk: ImagesAzureComputedisk | None = None
         computegallery_version: ImagesAzureComputegalleryImageVersion | None = None
 
-        conn = AzureGenericOAuth2Connection(
-            client_id=self._client_id,
-            client_secret=self._client_secret,
-            tenant_id=self._tenant,
-            subscription_id=self._subscription,
-            host='management.azure.com',
-            login_resource='https://management.core.windows.net/',
-        )
-
         subscription = ImagesAzureSubscription(
             self._subscription,
-            conn,
+            client,
         )
         group = ImagesAzureResourcegroup(
             subscription,
             self._group,
-            conn,
         )
 
         for image in self.images.values():
@@ -165,13 +161,11 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
                 computegallery = ImagesAzureComputegallery(
                     group,
                     self._computegallery,
-                    conn,
                 )
 
                 computegallery_image = ImagesAzureComputegalleryImage(
                     computegallery,
                     self._computegallery,
-                    conn,
                 )
 
                 computegallery_image_arch = ImagesAzureComputediskArch(computegallery_image.properties['architecture'])
@@ -188,7 +182,6 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
                     computedisk = ImagesAzureComputedisk.create(
                         group,
                         disk_name,
-                        conn,
                         arch=computegallery_image_arch,
                         generation=computegallery_image_generation,
                         size=size,
@@ -203,7 +196,6 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
                 computegallery_version = ImagesAzureComputegalleryImageVersion.create(
                     computegallery_image,
                     str(image_version),
-                    conn,
                     disk=computedisk,
                     wait=self.wait,
                 )
@@ -213,7 +205,8 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
 
                 manifests = [Upload(
                     metadata=metadata,
-                    provider=cast(Any, conn.connection).host,
+                    # TODO
+                    provider='https://management.azure.com',
                     family_ref=computegallery_version.path.rsplit('/', 2)[0],
                     ref=computegallery_version.path,
                 )]

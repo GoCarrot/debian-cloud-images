@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import httpx
 import logging
 
 from dataclasses import (
@@ -24,6 +25,11 @@ class ImagesAzureSubscription(ImagesAzureBase):
     api_version: ClassVar[str] = '2024-11-01'
 
     parent: Self = field(init=False, repr=False)
+    _client: httpx.Client
+
+    @property
+    def client(self) -> httpx.Client:
+        return self._client
 
     @property
     def path(self) -> str:

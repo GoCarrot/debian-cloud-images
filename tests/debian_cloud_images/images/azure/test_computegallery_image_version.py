@@ -10,16 +10,19 @@ from debian_cloud_images.images.azure.computegallery_image_version import Images
 
 class TestImagesAzureComputegalleryImageVersion:
     @pytest.fixture
-    def azure_conn(self) -> unittest.mock.Mock:
+    def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
         ret.request = unittest.mock.Mock(side_effect=self.mock_request)
         return ret
 
-    def mock_request(self, path, *, method, **kw) -> unittest.mock.Mock:
-        ret = unittest.mock.NonCallableMock()
+    def mock_request(self, *, url, method, **kw) -> unittest.mock.Mock:
+        ret = unittest.mock.Mock()
+        ret.headers = {
+            'content-type': 'application/json',
+        }
 
         if method == 'GET':
-            ret.parse_body = unittest.mock.Mock(return_value={
+            ret.json = unittest.mock.Mock(return_value={
                 'id': None,
                 'name': None,
                 'location': 'location',
@@ -28,7 +31,7 @@ class TestImagesAzureComputegalleryImageVersion:
                 },
             })
         elif method == 'PUT':
-            ret.parse_body = unittest.mock.Mock(return_value={
+            ret.json = unittest.mock.Mock(return_value={
                 'id': None,
                 'name': None,
                 'location': 'location',
@@ -39,21 +42,21 @@ class TestImagesAzureComputegalleryImageVersion:
         elif method == 'DELETE':
             pass
         else:
-            raise RuntimeError(path, method, kw)
+            raise RuntimeError(url, method, kw)
 
         return ret
 
-    def test_get(self, azure_conn) -> None:
+    def test_get(self, client) -> None:
         computegallery_image = unittest.mock.NonCallableMock(spec=ImagesAzureComputegalleryImage)
-        computegallery_image.path = ''
+        computegallery_image.client = client
+        computegallery_image.path = 'BASE'
 
         r = ImagesAzureComputegalleryImageVersion(
             computegallery_image,
             'version',
-            azure_conn,
         )
 
-        assert r.path == '/versions/version'
+        assert r.path == 'BASE/versions/version'
         assert r.data == {
             'location': 'location',
             'properties': {
@@ -61,22 +64,22 @@ class TestImagesAzureComputegalleryImageVersion:
             },
         }
 
-        azure_conn.assert_has_calls([
-            unittest.mock.call.request(r.path, method='GET', data=None, params={'api-version': r.api_version}),
+        client.assert_has_calls([
+            unittest.mock.call.request(url=r.url(), method='GET', json=None, params={'api-version': r.api_version}),
         ])
 
-    def test_create(self, azure_conn) -> None:
+    def test_create(self, client) -> None:
         computegallery_image = unittest.mock.NonCallableMock(spec=ImagesAzureComputegalleryImage)
-        computegallery_image.path = ''
+        computegallery_image.client = client
+        computegallery_image.path = 'BASE'
 
         computedisk = unittest.mock.NonCallableMock(spec=ImagesAzureComputedisk)
         computedisk.location = 'location'
-        computedisk.path = ''
+        computedisk.path = 'DISK'
 
         r = ImagesAzureComputegalleryImageVersion.create(
             computegallery_image,
             'version',
-            azure_conn,
             disk=computedisk,
         )
 
@@ -87,6 +90,6 @@ class TestImagesAzureComputegalleryImageVersion:
             },
         }
 
-        azure_conn.assert_has_calls([
-            unittest.mock.call.request(r.path, method='PUT', data=unittest.mock.ANY, params={'api-version': r.api_version}),
+        client.assert_has_calls([
+            unittest.mock.call.request(url=r.url(), method='PUT', json=unittest.mock.ANY, params={'api-version': r.api_version}),
         ])

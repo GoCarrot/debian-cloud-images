@@ -1,13 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
+import httpx
 import logging
 import pathlib
-
-from typing import (
-    Any,
-    cast,
-)
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
@@ -19,7 +15,7 @@ from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputediskGeneration,
 )
 from debian_cloud_images.images.azure.computeimage import ImagesAzureComputeimage
-from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
+from debian_cloud_images.utils.httpx.azure import AzureAuth, AzureAuthServiceAccount
 
 from .base import cli
 from .upload_base import UploadBaseCommand
@@ -116,27 +112,27 @@ class UploadAzureCommand(UploadBaseCommand):
             raise RuntimeError('Can only handle one image at a time')
 
     def __call__(self) -> None:
+        auth: AzureAuth
+        if self._client_id and self._client_secret:
+            auth = AzureAuthServiceAccount(self._tenant, self._client_id, self._client_secret)
+        else:
+            auth = AzureAuth()
+
+        with auth.get_client() as client:
+            self._run(client)
+
+    def _run(self, client: httpx.Client) -> None:
         computedisk: ImagesAzureComputedisk | None = None
         computeimage: ImagesAzureComputeimage | None = None
 
-        conn = AzureGenericOAuth2Connection(
-            client_id=self._client_id,
-            client_secret=self._client_secret,
-            tenant_id=self._tenant,
-            subscription_id=self._subscription,
-            host='management.azure.com',
-            login_resource='https://management.core.windows.net/',
-        )
-
         subscription = ImagesAzureSubscription(
             self._subscription,
-            conn,
+            client
         )
 
         group = ImagesAzureResourcegroup(
             subscription,
             self._group,
-            conn,
         )
 
         for image in self.images.values():
@@ -156,7 +152,6 @@ class UploadAzureCommand(UploadBaseCommand):
                     computedisk = ImagesAzureComputedisk.create(
                         group,
                         image_name,
-                        conn,
                         arch=image_arch,
                         generation=self.generation,
                         size=size,
@@ -171,7 +166,6 @@ class UploadAzureCommand(UploadBaseCommand):
                     computeimage = ImagesAzureComputeimage.create(
                         group,
                         image_name,
-                        conn,
                         disk=computedisk,
                         wait=self.wait,
                     )
@@ -181,7 +175,8 @@ class UploadAzureCommand(UploadBaseCommand):
 
                 manifests = [Upload(
                     metadata=metadata,
-                    provider=cast(Any, conn.connection).host,
+                    # TODO
+                    provider='https://management.azure.com',
                     ref=computeimage.path,
                 )]
 
