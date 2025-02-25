@@ -1,67 +1,111 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import http
+import pytest
+import unittest.mock
 
 from debian_cloud_images.images.azure.computedisk import (
     ImagesAzureComputedisk,
     ImagesAzureComputediskArch,
     ImagesAzureComputediskGeneration,
 )
-
 from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
 
 
-class TestImagesAzureComputeimageImage:
-    def test_create(self, azure_conn, requests_mock):
-        # https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get
-        requests_mock.get(
-            'https://host/subscriptions/subscription/resourceGroups/resource_group',
-            status_code=http.HTTPStatus.OK,
-            json={
+class TestImagesAzureComputedisk:
+    @pytest.fixture
+    def azure_conn(self) -> unittest.mock.Mock:
+        ret = unittest.mock.NonCallableMock()
+        ret.request = unittest.mock.Mock(side_effect=self.mock_request)
+        return ret
+
+    def mock_request(self, path, *, method, **kw) -> unittest.mock.Mock:
+        ret = unittest.mock.NonCallableMock()
+
+        if path == '/providers/Microsoft.Compute/disks/disk' and method == 'GET':
+            ret.parse_body = unittest.mock.Mock(return_value={
                 'id': None,
                 'name': None,
                 'location': 'location',
                 'properties': {
+                    'diskState': 'ReadyToUpload',
                     'provisioningState': 'Succeeded',
                 },
-            },
-        )
-
-        # https://learn.microsoft.com/en-us/rest/api/compute/disks/get
-        requests_mock.get(
-            'https://host/subscriptions/subscription/resourceGroups/resource_group/providers/Microsoft.Compute/disks/disk?api-version=2024-03-02',
-            status_code=http.HTTPStatus.OK,
-            json={
+            })
+        elif path == '/providers/Microsoft.Compute/disks/disk' and method == 'PUT':
+            ret.parse_body = unittest.mock.Mock(return_value={
                 'id': None,
                 'name': None,
                 'location': 'location',
                 'properties': {
-                    'provisioningState': 'Succeeded',
+                    'provisioningState': 'Creating',
                 },
-            },
+            })
+        elif path == '/providers/Microsoft.Compute/disks/disk/beginGetAccess' and method == 'POST':
+            ret.status = http.HTTPStatus.ACCEPTED
+            ret.headers = {
+                'location': '/monitor/beginGetAccess',
+            }
+        elif path == '/providers/Microsoft.Compute/disks/disk/endGetAccess' and method == 'POST':
+            ret.status = http.HTTPStatus.ACCEPTED
+            ret.headers = {
+                'location': '/monitor/endGetAccess',
+            }
+        elif path == '/monitor/beginGetAccess?' and method == 'GET':
+            ret.status = http.HTTPStatus.OK
+            ret.parse_body = unittest.mock.Mock(return_value={
+                'accessSAS': 'https://storage/',
+            })
+        elif path == '/monitor/endGetAccess?' and method == 'GET':
+            ret.status = http.HTTPStatus.OK
+        else:
+            raise RuntimeError(path, method, kw)
+
+        return ret
+
+    @pytest.fixture
+    def storage_conn_cls(self) -> unittest.mock.Mock:
+        conn = unittest.mock.NonCallableMock()
+        conn.request = unittest.mock.Mock(side_effect=self.mock_storage)
+        ret = unittest.mock.Mock(return_value=conn)
+        return ret
+
+    def mock_storage(self, path, *, method, **kw) -> unittest.mock.Mock:
+        ret = unittest.mock.NonCallableMock()
+
+        if method == 'PUT':
+            ret.status = http.HTTPStatus.CREATED
+        else:
+            raise RuntimeError(path, method, kw)
+
+        return ret
+
+    def test_get(self, azure_conn):
+        resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
+        resourcegroup.path = ''
+
+        r = ImagesAzureComputedisk(
+            resourcegroup,
+            'disk',
+            conn=azure_conn,
         )
 
-        # https://learn.microsoft.com/en-us/rest/api/compute/disks/create-or-update
-        requests_mock.put(
-            'https://host/subscriptions/subscription/resourceGroups/resource_group/providers/Microsoft.Compute/disks/disk?api-version=2024-03-02',
-            status_code=http.HTTPStatus.ACCEPTED,
-            json={
-                'id': None,
-                'name': None,
-                'location': 'location',
-                'properties': {
-                    'provisioningState': 'Updating',
-                },
-            },
-        )
+        assert r.path == '/providers/Microsoft.Compute/disks/disk'
+        assert r.properties == {
+            'diskState': 'ReadyToUpload',
+            'provisioningState': 'Succeeded',
+        }
 
-        group = ImagesAzureResourcegroup(
-            'resource_group',
-            azure_conn,
-        )
+        azure_conn.assert_has_calls([
+            unittest.mock.call.request(r.path, method='GET', data=unittest.mock.ANY, params={'api-version': r.api_version}),
+        ])
 
-        disk = ImagesAzureComputedisk.create(
-            group,
+    def test_create(self, azure_conn):
+        resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
+        resourcegroup.path = ''
+
+        r = ImagesAzureComputedisk.create(
+            resourcegroup,
             'disk',
             conn=azure_conn,
             arch=ImagesAzureComputediskArch.amd64,
@@ -70,85 +114,34 @@ class TestImagesAzureComputeimageImage:
             size=10,
         )
 
-        assert disk.properties == {
+        assert r.properties == {
+            'diskState': 'ReadyToUpload',
             'provisioningState': 'Succeeded',
         }
 
-    def test_upload(self, azure_conn, requests_mock):
-        # https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/get
-        requests_mock.get(
-            'https://host/subscriptions/subscription/resourceGroups/resource_group',
-            status_code=http.HTTPStatus.OK,
-            json={
-                'id': None,
-                'name': None,
-                'location': 'location',
-                'properties': {
-                    'provisioningState': 'Succeeded',
-                },
-            },
-        )
+        azure_conn.assert_has_calls([
+            unittest.mock.call.request(r.path, method='PUT', data=unittest.mock.ANY, params={'api-version': r.api_version}),
+        ])
 
-        # https://learn.microsoft.com/en-us/rest/api/compute/disks/get
-        requests_mock.get(
-            'https://host/subscriptions/subscription/resourceGroups/resource_group/providers/Microsoft.Compute/disks/disk?api-version=2024-03-02',
-            status_code=http.HTTPStatus.OK,
-            json={
-                'id': None,
-                'name': None,
-                'location': 'location',
-                'properties': {
-                    'diskState': 'ReadyToUpload',
-                },
-            },
-        )
+    def test_upload(self, azure_conn, storage_conn_cls, mocker):
+        # Compute disk support uses plain Connection right now
+        mocker.patch('debian_cloud_images.images.azure.computedisk.Connection', storage_conn_cls)
 
-        # https://learn.microsoft.com/en-us/rest/api/compute/disks/grant-access
-        requests_mock.post(
-            'https://host/subscriptions/subscription/resourceGroups/resource_group/providers/Microsoft.Compute/disks/disk/beginGetAccess?api-version=2024-03-02',
-            status_code=http.HTTPStatus.ACCEPTED,
-            headers={
-                'Location': 'https://host/beginGetAccess/monitor',
-            },
-        )
+        resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
+        resourcegroup.path = ''
 
-        requests_mock.get(
-            'https://host/beginGetAccess/monitor',
-            status_code=http.HTTPStatus.OK,
-            json={
-                'accessSAS': 'https://storage/',
-            },
-        )
-
-        # https://learn.microsoft.com/en-us/rest/api/compute/disks/revoke-access
-        requests_mock.post(
-            'https://host/subscriptions/subscription/resourceGroups/resource_group/providers/Microsoft.Compute/disks/disk/endGetAccess?api-version=2024-03-02',
-            status_code=http.HTTPStatus.ACCEPTED,
-            headers={
-                'Location': 'https://host/endGetAccess/monitor',
-            },
-        )
-
-        requests_mock.get(
-            'https://host/endGetAccess/monitor',
-            status_code=http.HTTPStatus.OK,
-        )
-
-        requests_mock.put(
-            'https://storage',
-            status_code=http.HTTPStatus.CREATED,
-        )
-
-        group = ImagesAzureResourcegroup(
-            'resource_group',
-            azure_conn,
-        )
-
-        disk = ImagesAzureComputedisk(
-            group,
+        r = ImagesAzureComputedisk(
+            resourcegroup,
             'disk',
             azure_conn,
         )
 
         with open(__file__, 'rb') as f:
-            disk.upload(f)
+            r.upload(f)
+
+        azure_conn.assert_has_calls([
+            unittest.mock.call.request(f'{r.path}/beginGetAccess', method='POST', data=unittest.mock.ANY, params={'api-version': r.api_version}),
+            unittest.mock.call.request('/monitor/beginGetAccess?', method='GET'),
+            unittest.mock.call.request(f'{r.path}/endGetAccess', method='POST', data={}, params={'api-version': r.api_version}),
+            unittest.mock.call.request('/monitor/endGetAccess?', method='GET'),
+        ])
