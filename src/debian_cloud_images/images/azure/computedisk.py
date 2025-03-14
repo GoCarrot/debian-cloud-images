@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import enum
-import http
+import httpx
 import logging
 import time
-import urllib.parse
 
 from dataclasses import dataclass
 from typing import (
@@ -16,10 +15,7 @@ from typing import (
     Self,
 )
 
-from libcloud.common.base import Connection
-
 from debian_cloud_images.utils.files import ChunkedFile
-from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 from debian_cloud_images.utils.typing import JSONObject
 
 from .base import ImagesAzureBase
@@ -54,7 +50,6 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
         cls,
         resourcegroup: ImagesAzureResourcegroup,
         name: str,
-        conn: AzureGenericOAuth2Connection,
         *,
         wait: bool = True,
         arch: ImagesAzureComputediskArch,
@@ -84,7 +79,6 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
         return cls(
             parent=resourcegroup,
             name=name,
-            conn=conn,
             _create_data=data,
             _create_wait=wait,
         )
@@ -97,14 +91,14 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
         }
         response = self._request(method='POST', subresource='beginGetAccess', data=data)
 
-        if response.status == http.HTTPStatus.ACCEPTED:
-            monitor = urllib.parse.urlsplit(response.headers['location'])
+        if response.status_code == httpx.codes.ACCEPTED:
+            monitor = response.headers['location']
             for _ in range(10):
-                response = self.conn.request(f'{monitor.path}?{monitor.query}', method='GET')  # type: ignore
-                if response.status == http.HTTPStatus.OK:
-                    rdata = response.parse_body()
-                    return cast(str, rdata['accessSAS'])
-                elif response.status == http.HTTPStatus.ACCEPTED:
+                response = self.client.request(url=monitor, method='GET')
+                if response.status_code == httpx.codes.OK:
+                    response_data = response.json()
+                    return cast(str, response_data['accessSAS'])
+                elif response.status_code == httpx.codes.ACCEPTED:
                     time.sleep(1)
                 else:
                     break
@@ -114,39 +108,39 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
     def _upload_access_end(self) -> None:
         response = self._request(method='POST', subresource='endGetAccess', data={})
 
-        if response.status == http.HTTPStatus.ACCEPTED:
-            monitor = urllib.parse.urlsplit(response.headers['location'])
+        if response.status_code == httpx.codes.ACCEPTED:
+            monitor = response.headers['location']
             for _ in range(30):
-                response = self.conn.request(f'{monitor.path}?{monitor.query}', method='GET')  # type: ignore
-                if response.status == http.HTTPStatus.OK:
+                response = self.client.request(url=monitor, method='GET')
+                if response.status_code == httpx.codes.OK:
                     return
-                elif response.status == http.HTTPStatus.ACCEPTED:
+                elif response.status_code == httpx.codes.ACCEPTED:
                     time.sleep(1)
                 else:
                     break
 
         raise NotImplementedError
 
-    def _upload_chunk(self, conn: Connection, path: str, chunk: ChunkedFile.ChunkData) -> None:
+    def _upload_chunk(self, url: str, chunk: ChunkedFile.ChunkData) -> None:
         """ Upload a single block up to 4MB to Azure storage """
         buf = chunk.read()
         logging.debug('uploading start=%s, size=%s', chunk.offset, chunk.size)
 
-        headers = {
-            'Content-Length': chunk.size,
+        headers: dict[str, str] = {
+            'Content-Length': str(chunk.size),
             'Range': 'bytes={}-{}'.format(chunk.offset, chunk.offset + chunk.size - 1),
             'x-ms-page-write': 'update',
         }
 
-        r = conn.request(
-            path,
+        r = self.client.request(
+            url=url,
             method='PUT',
             params={'comp': 'page'},
             headers=headers,
-            data=buf,
-        )  # type: ignore
-        if r.status != http.HTTPStatus.CREATED:
-            raise RuntimeError('Error uploading file block: {0.error} ({0.status})'.format(r))
+            content=buf,
+        )
+        if r.status_code != httpx.codes.CREATED:
+            raise RuntimeError('Error uploading file block: {0.status_code}'.format(r))
 
     def upload(self, f: IO[bytes]) -> None:
         chunked = ChunkedFile(f, 4 * 1024 * 1024)
@@ -154,13 +148,10 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
         if cast(str, self.properties['diskState']).lower() not in ('readytoupload', 'activeupload'):
             raise RuntimeError('Image already uploaded')
 
-        url = urllib.parse.urlsplit(self._upload_access_begin())
-        conn = Connection(
-            host=url.netloc,
-        )  # type: ignore
+        url = self._upload_access_begin()
 
         for chunk in chunked:
             if chunk.is_data:
-                self._upload_chunk(conn, f'{url.path}?{url.query}', chunk)
+                self._upload_chunk(url, chunk)
 
         self._upload_access_end()

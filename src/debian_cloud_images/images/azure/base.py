@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import httpx
 import logging
 import time
+import urllib.parse
 
 from dataclasses import (
     dataclass,
@@ -11,14 +13,12 @@ from dataclasses import (
     InitVar,
 )
 from typing import (
-    Any,
     cast,
     ClassVar,
     Generic,
     TypeVar,
 )
 
-from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 from debian_cloud_images.utils.typing import JSONObject
 
 
@@ -34,7 +34,6 @@ class ImagesAzureBase(Generic[Parent]):
 
     parent: Parent
     name: str
-    conn: AzureGenericOAuth2Connection = field(repr=False, compare=False)
     data: JSONObject = field(init=False, compare=False)
     _create_data: InitVar[JSONObject | None] = field(default=None, kw_only=True)
     _create_wait: InitVar[bool] = field(default=False, kw_only=True)
@@ -52,6 +51,10 @@ class ImagesAzureBase(Generic[Parent]):
             self._do_get()
 
     @property
+    def client(self) -> httpx.Client:
+        return self.parent.client
+
+    @property
     def location(self) -> str:
         return cast(str, self.data['location'])
 
@@ -63,26 +66,34 @@ class ImagesAzureBase(Generic[Parent]):
     def properties(self) -> JSONObject:
         return cast(JSONObject, self.data['properties'])
 
+    def url(self, subresource: str | None = None) -> str:
+        path = self.path
+        if subresource:
+            path = f'{path}/{subresource}'
+        return urllib.parse.urljoin('https://management.azure.com', path)
+
     def _request(
         self, *,
         subresource: str | None = None,
         method: str,
         data: JSONObject | None = None,
-    ) -> Any:
-        path = self.path
-        if subresource:
-            path = f'{path}/{subresource}'
-        return self.conn.request(path, method=method, data=data, params={'api-version': self.api_version})  # type: ignore
+    ) -> httpx.Response:
+        url = self.url(subresource)
+        resp = self.client.request(url=url, method=method, json=data, params={'api-version': self.api_version})
+        resp.raise_for_status()
+        return resp
 
     def _request_data(
         self, *,
         method: str,
         data: JSONObject | None = None,
     ) -> None:
-        response = self._request(method=method, data=data)
-        ret: JSONObject = response.parse_body()
+        resp = self._request(method=method, data=data)
+        if not resp.headers['content-type'].startswith('application/json'):
+            raise RuntimeError
+        ret = resp.json()
         del ret['id']
-        del ret['name']
+        ret.pop('name', None)
         self.data = ret
 
     def _do_delete(self) -> None:

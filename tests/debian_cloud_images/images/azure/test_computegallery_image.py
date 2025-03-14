@@ -9,16 +9,19 @@ from debian_cloud_images.images.azure.computegallery_image import ImagesAzureCom
 
 class TestImagesAzureComputegalleryImage:
     @pytest.fixture
-    def azure_conn(self) -> unittest.mock.Mock:
+    def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
         ret.request = unittest.mock.Mock(side_effect=self.mock_request)
         return ret
 
-    def mock_request(self, path, *, method, **kw) -> unittest.mock.Mock:
-        ret = unittest.mock.NonCallableMock()
+    def mock_request(self, *, url, method, **kw) -> unittest.mock.Mock:
+        ret = unittest.mock.Mock()
+        ret.headers = {
+            'content-type': 'application/json',
+        }
 
         if method == 'GET':
-            ret.parse_body = unittest.mock.Mock(return_value={
+            ret.json = unittest.mock.Mock(return_value={
                 'id': None,
                 'name': None,
                 'location': 'location',
@@ -29,21 +32,21 @@ class TestImagesAzureComputegalleryImage:
         elif method == 'DELETE':
             pass
         else:
-            raise RuntimeError(path, method, kw)
+            raise RuntimeError(url, method, kw)
 
         return ret
 
-    def test_get(self, azure_conn) -> None:
+    def test_get(self, client) -> None:
         computegallery = unittest.mock.NonCallableMock(spec=ImagesAzureComputegallery)
-        computegallery.path = ''
+        computegallery.client = client
+        computegallery.path = 'BASE'
 
         r = ImagesAzureComputegalleryImage(
             computegallery,
             'image',
-            azure_conn,
         )
 
-        assert r.path == '/images/image'
+        assert r.path == 'BASE/images/image'
         assert r.data == {
             'location': 'location',
             'properties': {
@@ -51,6 +54,6 @@ class TestImagesAzureComputegalleryImage:
             },
         }
 
-        azure_conn.assert_has_calls([
-            unittest.mock.call.request(r.path, method='GET', data=None, params={'api-version': r.api_version}),
+        client.assert_has_calls([
+            unittest.mock.call.request(url=r.url(), method='GET', json=None, params={'api-version': r.api_version}),
         ])

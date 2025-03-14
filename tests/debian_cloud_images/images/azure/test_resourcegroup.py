@@ -4,21 +4,24 @@ import pytest
 import unittest.mock
 
 from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
+from debian_cloud_images.images.azure.subscription import ImagesAzureSubscription
 
 
 class TestImagesAzureResourcegroup:
     @pytest.fixture
-    def azure_conn(self) -> unittest.mock.Mock:
+    def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
         ret.request = unittest.mock.Mock(side_effect=self.mock_request)
-        ret.subscription_id = 'subscription'
         return ret
 
-    def mock_request(self, path, *, method, **kw) -> unittest.mock.Mock:
-        ret = unittest.mock.NonCallableMock()
+    def mock_request(self, *, url, method, **kw) -> unittest.mock.Mock:
+        ret = unittest.mock.Mock()
+        ret.headers = {
+            'content-type': 'application/json',
+        }
 
         if method == 'GET':
-            ret.parse_body = unittest.mock.Mock(return_value={
+            ret.json = unittest.mock.Mock(return_value={
                 'id': None,
                 'name': None,
                 'location': 'location',
@@ -29,17 +32,21 @@ class TestImagesAzureResourcegroup:
         elif method == 'DELETE':
             pass
         else:
-            raise RuntimeError(path, method, kw)
+            raise RuntimeError(url, method, kw)
 
         return ret
 
-    def test_get(self, azure_conn):
+    def test_get(self, client):
+        subscription = unittest.mock.NonCallableMock(spec=ImagesAzureSubscription)
+        subscription.client = client
+        subscription.path = 'BASE'
+
         r = ImagesAzureResourcegroup(
+            subscription,
             'resource_group',
-            azure_conn,
         )
 
-        assert r.path == '/subscriptions/subscription/resourceGroups/resource_group'
+        assert r.path == 'BASE/resourceGroups/resource_group'
         assert r.data == {
             'location': 'location',
             'properties': {
@@ -47,17 +54,21 @@ class TestImagesAzureResourcegroup:
             },
         }
 
-        azure_conn.assert_has_calls([
-            unittest.mock.call.request(r.path, method='GET', data=None, params={'api-version': r.api_version}),
+        client.assert_has_calls([
+            unittest.mock.call.request(url=r.url(), method='GET', json=None, params={'api-version': r.api_version}),
         ])
 
-    def test_delete(self, azure_conn):
+    def test_delete(self, client):
+        subscription = unittest.mock.NonCallableMock(spec=ImagesAzureSubscription)
+        subscription.client = client
+        subscription.path = 'BASE'
+
         r = ImagesAzureResourcegroup(
+            subscription,
             'resource_group',
-            azure_conn,
         )
         r.delete()
 
-        azure_conn.assert_has_calls([
-            unittest.mock.call.request(r.path, method='DELETE', data=None, params={'api-version': r.api_version}),
+        client.assert_has_calls([
+            unittest.mock.call.request(url=r.url(), method='DELETE', json=None, params={'api-version': r.api_version}),
         ])

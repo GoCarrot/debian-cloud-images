@@ -4,27 +4,20 @@ from __future__ import annotations
 
 import logging
 
-from dataclasses import (
-    dataclass,
-    field,
-)
-from typing import (
-    ClassVar,
-    Self,
-)
+from dataclasses import dataclass
+from typing import ClassVar
 
 from .base import ImagesAzureBase
+from .subscription import ImagesAzureSubscription
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureResourcegroup(ImagesAzureBase):
+class ImagesAzureResourcegroup(ImagesAzureBase[ImagesAzureSubscription]):
     api_version: ClassVar[str] = '2021-04-01'
-
-    parent: Self = field(init=False, repr=False)
 
     @property
     def path(self) -> str:
-        return f'/subscriptions/{self.conn.subscription_id}/resourceGroups/{self.name}'
+        return f'{self.parent.path}/resourceGroups/{self.name}'

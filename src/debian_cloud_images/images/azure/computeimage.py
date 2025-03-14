@@ -10,7 +10,6 @@ from typing import (
     Self,
 )
 
-from debian_cloud_images.utils.libcloud.common.azure import AzureGenericOAuth2Connection
 from debian_cloud_images.utils.typing import JSONObject
 
 from .base import ImagesAzureBase
@@ -34,7 +33,6 @@ class ImagesAzureComputeimage(ImagesAzureBase[ImagesAzureResourcegroup]):
         cls,
         resourcegroup: ImagesAzureResourcegroup,
         name: str,
-        conn: AzureGenericOAuth2Connection,
         *,
         wait: bool = True,
         disk: ImagesAzureComputedisk,
@@ -57,7 +55,6 @@ class ImagesAzureComputeimage(ImagesAzureBase[ImagesAzureResourcegroup]):
         return cls(
             parent=resourcegroup,
             name=name,
-            conn=conn,
             _create_data=data,
             _create_wait=wait,
         )

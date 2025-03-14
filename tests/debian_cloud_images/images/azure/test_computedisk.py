@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import http
+import httpx
 import pytest
 import unittest.mock
 
@@ -14,16 +14,19 @@ from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegr
 
 class TestImagesAzureComputedisk:
     @pytest.fixture
-    def azure_conn(self) -> unittest.mock.Mock:
+    def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
         ret.request = unittest.mock.Mock(side_effect=self.mock_request)
         return ret
 
-    def mock_request(self, path, *, method, **kw) -> unittest.mock.Mock:
-        ret = unittest.mock.NonCallableMock()
+    def mock_request(self, *, url, method, **kw) -> unittest.mock.Mock:
+        ret = unittest.mock.Mock()
+        ret.headers = {
+            'content-type': 'application/json',
+        }
 
-        if path == '/providers/Microsoft.Compute/disks/disk' and method == 'GET':
-            ret.parse_body = unittest.mock.Mock(return_value={
+        if url == 'https://management.azure.com/BASE/providers/Microsoft.Compute/disks/disk' and method == 'GET':
+            ret.json = unittest.mock.Mock(return_value={
                 'id': None,
                 'name': None,
                 'location': 'location',
@@ -32,8 +35,8 @@ class TestImagesAzureComputedisk:
                     'provisioningState': 'Succeeded',
                 },
             })
-        elif path == '/providers/Microsoft.Compute/disks/disk' and method == 'PUT':
-            ret.parse_body = unittest.mock.Mock(return_value={
+        elif url == 'https://management.azure.com/BASE/providers/Microsoft.Compute/disks/disk' and method == 'PUT':
+            ret.json = unittest.mock.Mock(return_value={
                 'id': None,
                 'name': None,
                 'location': 'location',
@@ -41,73 +44,60 @@ class TestImagesAzureComputedisk:
                     'provisioningState': 'Creating',
                 },
             })
-        elif path == '/providers/Microsoft.Compute/disks/disk/beginGetAccess' and method == 'POST':
-            ret.status = http.HTTPStatus.ACCEPTED
+        elif url == 'https://management.azure.com/BASE/providers/Microsoft.Compute/disks/disk/beginGetAccess' and method == 'POST':
+            ret.status_code = httpx.codes.ACCEPTED
             ret.headers = {
+                'content-type': 'undefined',
                 'location': '/monitor/beginGetAccess',
             }
-        elif path == '/providers/Microsoft.Compute/disks/disk/endGetAccess' and method == 'POST':
-            ret.status = http.HTTPStatus.ACCEPTED
+        elif url == 'https://management.azure.com/BASE/providers/Microsoft.Compute/disks/disk/endGetAccess' and method == 'POST':
+            ret.status_code = httpx.codes.ACCEPTED
             ret.headers = {
+                'content-type': 'undefined',
                 'location': '/monitor/endGetAccess',
             }
-        elif path == '/monitor/beginGetAccess?' and method == 'GET':
-            ret.status = http.HTTPStatus.OK
-            ret.parse_body = unittest.mock.Mock(return_value={
-                'accessSAS': 'https://storage/',
+        elif url == '/monitor/beginGetAccess' and method == 'GET':
+            ret.status_code = httpx.codes.OK
+            ret.json = unittest.mock.Mock(return_value={
+                'accessSAS': '/storage',
             })
-        elif path == '/monitor/endGetAccess?' and method == 'GET':
-            ret.status = http.HTTPStatus.OK
+        elif url == '/monitor/endGetAccess' and method == 'GET':
+            ret.status_code = httpx.codes.OK
+        elif url == '/storage' and method == 'PUT':
+            ret.status_code = httpx.codes.CREATED
         else:
-            raise RuntimeError(path, method, kw)
+            raise RuntimeError(url, method, kw)
 
         return ret
 
-    @pytest.fixture
-    def storage_conn_cls(self) -> unittest.mock.Mock:
-        conn = unittest.mock.NonCallableMock()
-        conn.request = unittest.mock.Mock(side_effect=self.mock_storage)
-        ret = unittest.mock.Mock(return_value=conn)
-        return ret
-
-    def mock_storage(self, path, *, method, **kw) -> unittest.mock.Mock:
-        ret = unittest.mock.NonCallableMock()
-
-        if method == 'PUT':
-            ret.status = http.HTTPStatus.CREATED
-        else:
-            raise RuntimeError(path, method, kw)
-
-        return ret
-
-    def test_get(self, azure_conn):
+    def test_get(self, client):
         resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
-        resourcegroup.path = ''
+        resourcegroup.client = client
+        resourcegroup.path = 'BASE'
 
         r = ImagesAzureComputedisk(
             resourcegroup,
             'disk',
-            conn=azure_conn,
         )
 
-        assert r.path == '/providers/Microsoft.Compute/disks/disk'
+        assert r.path == 'BASE/providers/Microsoft.Compute/disks/disk'
         assert r.properties == {
             'diskState': 'ReadyToUpload',
             'provisioningState': 'Succeeded',
         }
 
-        azure_conn.assert_has_calls([
-            unittest.mock.call.request(r.path, method='GET', data=unittest.mock.ANY, params={'api-version': r.api_version}),
+        client.assert_has_calls([
+            unittest.mock.call.request(url=r.url(), method='GET', json=unittest.mock.ANY, params={'api-version': r.api_version}),
         ])
 
-    def test_create(self, azure_conn):
+    def test_create(self, client):
         resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
-        resourcegroup.path = ''
+        resourcegroup.client = client
+        resourcegroup.path = 'BASE'
 
         r = ImagesAzureComputedisk.create(
             resourcegroup,
             'disk',
-            conn=azure_conn,
             arch=ImagesAzureComputediskArch.amd64,
             generation=ImagesAzureComputediskGeneration.v2,
             location='location',
@@ -119,29 +109,27 @@ class TestImagesAzureComputedisk:
             'provisioningState': 'Succeeded',
         }
 
-        azure_conn.assert_has_calls([
-            unittest.mock.call.request(r.path, method='PUT', data=unittest.mock.ANY, params={'api-version': r.api_version}),
+        client.assert_has_calls([
+            unittest.mock.call.request(url=r.url(), method='PUT', json=unittest.mock.ANY, params={'api-version': r.api_version}),
         ])
 
-    def test_upload(self, azure_conn, storage_conn_cls, mocker):
-        # Compute disk support uses plain Connection right now
-        mocker.patch('debian_cloud_images.images.azure.computedisk.Connection', storage_conn_cls)
-
+    def test_upload(self, client):
         resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
-        resourcegroup.path = ''
+        resourcegroup.client = client
+        resourcegroup.path = 'BASE'
 
         r = ImagesAzureComputedisk(
             resourcegroup,
             'disk',
-            azure_conn,
         )
 
         with open(__file__, 'rb') as f:
             r.upload(f)
 
-        azure_conn.assert_has_calls([
-            unittest.mock.call.request(f'{r.path}/beginGetAccess', method='POST', data=unittest.mock.ANY, params={'api-version': r.api_version}),
-            unittest.mock.call.request('/monitor/beginGetAccess?', method='GET'),
-            unittest.mock.call.request(f'{r.path}/endGetAccess', method='POST', data={}, params={'api-version': r.api_version}),
-            unittest.mock.call.request('/monitor/endGetAccess?', method='GET'),
+        client.assert_has_calls([
+            unittest.mock.call.request(url=f'{r.url()}/beginGetAccess', method='POST', json=unittest.mock.ANY, params={'api-version': r.api_version}),
+            unittest.mock.call.request(url='/monitor/beginGetAccess', method='GET'),
+            unittest.mock.call.request(url='/storage', method='PUT', params={'comp': 'page'}, headers=unittest.mock.ANY, content=unittest.mock.ANY),
+            unittest.mock.call.request(url=f'{r.url()}/endGetAccess', method='POST', json={}, params={'api-version': r.api_version}),
+            unittest.mock.call.request(url='/monitor/endGetAccess', method='GET'),
         ])
