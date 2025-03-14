@@ -57,7 +57,7 @@ class TestImagesAzureComputegalleryImageVersion:
         )
 
         assert r.path == 'BASE/versions/version'
-        assert r.data == {
+        assert r.data() == {
             'location': 'location',
             'properties': {
                 'provisioningState': 'Succeeded',
@@ -83,7 +83,7 @@ class TestImagesAzureComputegalleryImageVersion:
             disk=computedisk,
         )
 
-        assert r.data == {
+        assert r.data() == {
             'location': 'location',
             'properties': {
                 'provisioningState': 'Succeeded',

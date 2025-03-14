@@ -34,7 +34,7 @@ class ImagesAzureBase(Generic[Parent]):
 
     parent: Parent
     name: str
-    data: JSONObject = field(init=False, compare=False)
+    _data: JSONObject = field(init=False, compare=False)
     _create_data: InitVar[JSONObject | None] = field(default=None, kw_only=True)
     _create_wait: InitVar[bool] = field(default=False, kw_only=True)
 
@@ -54,17 +54,18 @@ class ImagesAzureBase(Generic[Parent]):
     def client(self) -> httpx.Client:
         return self.parent.client
 
-    @property
+    def data(self) -> JSONObject:
+        return self._data
+
     def location(self) -> str:
-        return cast(str, self.data['location'])
+        return cast(str, self.data()['location'])
 
     @property
     def path(self) -> str:
         raise NotImplementedError
 
-    @property
     def properties(self) -> JSONObject:
-        return cast(JSONObject, self.data['properties'])
+        return cast(JSONObject, self.data()['properties'])
 
     def url(self, subresource: str | None = None) -> str:
         path = self.path
@@ -87,23 +88,24 @@ class ImagesAzureBase(Generic[Parent]):
         self, *,
         method: str,
         data: JSONObject | None = None,
-    ) -> None:
+    ) -> JSONObject:
         resp = self._request(method=method, data=data)
         if not resp.headers['content-type'].startswith('application/json'):
             raise RuntimeError
         ret = resp.json()
         del ret['id']
         ret.pop('name', None)
-        self.data = ret
+        self._data = ret
+        return ret
 
     def _do_delete(self) -> None:
         self._request(method='DELETE')
 
-    def _do_get(self) -> None:
-        self._request_data(method='GET')
+    def _do_get(self) -> JSONObject:
+        return self._request_data(method='GET')
 
-    def _do_put(self, data: JSONObject) -> None:
-        self._request_data(method='PUT', data=data)
+    def _do_put(self, data: JSONObject) -> JSONObject:
+        return self._request_data(method='PUT', data=data)
 
     def delete(self) -> None:
         self._do_delete()
@@ -115,8 +117,7 @@ class ImagesAzureBase(Generic[Parent]):
         start_time = time.time()
 
         while time.time() - start_time < timeout:
-            self._do_get()
-            state = cast(str, self.properties['provisioningState']).lower()
+            state = cast(str, self._do_get()['properties']['provisioningState']).lower()
             logging.debug('Privisioning state of resource: %s', state)
 
             if state == 'succeeded':

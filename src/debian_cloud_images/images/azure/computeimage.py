@@ -40,7 +40,7 @@ class ImagesAzureComputeimage(ImagesAzureBase[ImagesAzureResourcegroup]):
         data: JSONObject = {
             'location': disk.location,
             'properties': {
-                'hyperVGeneration': disk.properties['hyperVGeneration'],
+                'hyperVGeneration': disk.properties()['hyperVGeneration'],
                 'storageProfile': {
                     'osDisk': {
                         'osType': 'Linux',

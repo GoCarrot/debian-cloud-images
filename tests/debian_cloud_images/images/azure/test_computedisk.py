@@ -70,7 +70,7 @@ class TestImagesAzureComputedisk:
 
         return ret
 
-    def test_get(self, client):
+    def test_get(self, client) -> None:
         resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
         resourcegroup.client = client
         resourcegroup.path = 'BASE'
@@ -81,16 +81,19 @@ class TestImagesAzureComputedisk:
         )
 
         assert r.path == 'BASE/providers/Microsoft.Compute/disks/disk'
-        assert r.properties == {
-            'diskState': 'ReadyToUpload',
-            'provisioningState': 'Succeeded',
+        assert r.data() == {
+            'location': 'location',
+            'properties': {
+                'diskState': 'ReadyToUpload',
+                'provisioningState': 'Succeeded',
+            },
         }
 
         client.assert_has_calls([
             unittest.mock.call.request(url=r.url(), method='GET', json=unittest.mock.ANY, params={'api-version': r.api_version}),
         ])
 
-    def test_create(self, client):
+    def test_create(self, client) -> None:
         resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
         resourcegroup.client = client
         resourcegroup.path = 'BASE'
@@ -104,16 +107,19 @@ class TestImagesAzureComputedisk:
             size=10,
         )
 
-        assert r.properties == {
-            'diskState': 'ReadyToUpload',
-            'provisioningState': 'Succeeded',
+        assert r.data() == {
+            'location': 'location',
+            'properties': {
+                'diskState': 'ReadyToUpload',
+                'provisioningState': 'Succeeded',
+            },
         }
 
         client.assert_has_calls([
             unittest.mock.call.request(url=r.url(), method='PUT', json=unittest.mock.ANY, params={'api-version': r.api_version}),
         ])
 
-    def test_upload(self, client):
+    def test_upload(self, client) -> None:
         resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
         resourcegroup.client = client
         resourcegroup.path = 'BASE'

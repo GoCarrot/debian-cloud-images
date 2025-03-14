@@ -47,7 +47,7 @@ class TestImagesAzureComputegallery:
         )
 
         assert r.path == 'BASE/providers/Microsoft.Compute/galleries/gallery'
-        assert r.data == {
+        assert r.data() == {
             'location': 'location',
             'properties': {
                 'provisioningState': 'Succeeded',

@@ -145,7 +145,7 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
     def upload(self, f: IO[bytes]) -> None:
         chunked = ChunkedFile(f, 4 * 1024 * 1024)
 
-        if cast(str, self.properties['diskState']).lower() not in ('readytoupload', 'activeupload'):
+        if cast(str, self.properties()['diskState']).lower() not in ('readytoupload', 'activeupload'):
             raise RuntimeError('Image already uploaded')
 
         url = self._upload_access_begin()
