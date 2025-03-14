@@ -26,6 +26,7 @@ class OciBundle:
     cmd: str
     bindmounts: list[tuple[Path, Path, bool]]
     env: dict[str, str]
+    terminal: bool
 
     uid: int = field(default_factory=os.getuid)
     gid: int = field(default_factory=os.getgid)
@@ -67,7 +68,7 @@ class OciBundle:
                 ],
                 'cwd': '/',
                 'env': [f'{i}={j}' for i, j in self.env.items()],
-                'terminal': True,
+                'terminal': self.terminal,
                 'user': {
                     'uid': 0,
                     'gid': 0,
@@ -222,14 +223,24 @@ def run_shell(
     *,
     bindmounts: list[tuple[Path, Path, bool]] = [],
     stdin: IO[Any] | int | None = None,
+    stdout: IO[Any] | int | None = None,
     env: dict[str, str] = {},
 ) -> CompletedProcess:
+    stderr: IO[Any] | int | None = None
+    terminal = True
+
+    if stdout is not None:
+        stderr = subprocess.STDOUT
+        terminal = False
+
     with TemporaryDirectory(prefix='debian-cloud-images-sandbox') as d:
         p = Path(d)
-        OciBundle(cmd, bindmounts, env).create(p)
+        OciBundle(cmd, bindmounts, env, terminal).create(p)
 
         return subprocess.run(
             ['crun', 'run', f'--bundle={p}', p.name],
             stdin=stdin,
+            stdout=stdout,
+            stderr=stderr,
             check=True,
         )
