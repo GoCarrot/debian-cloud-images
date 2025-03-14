@@ -74,7 +74,7 @@ class TestImagesAzureComputegalleryImageVersion:
         computegallery_image.path = 'BASE'
 
         computedisk = unittest.mock.NonCallableMock(spec=ImagesAzureComputedisk)
-        computedisk.location = 'location'
+        computedisk.location = unittest.mock.Mock(return_value='location')
         computedisk.path = 'DISK'
 
         r = ImagesAzureComputegalleryImageVersion.create(

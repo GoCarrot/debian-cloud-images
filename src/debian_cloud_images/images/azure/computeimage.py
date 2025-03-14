@@ -38,7 +38,7 @@ class ImagesAzureComputeimage(ImagesAzureBase[ImagesAzureResourcegroup]):
         disk: ImagesAzureComputedisk,
     ) -> Self:
         data: JSONObject = {
-            'location': disk.location,
+            'location': disk.location(),
             'properties': {
                 'hyperVGeneration': disk.properties()['hyperVGeneration'],
                 'storageProfile': {
@@ -52,9 +52,12 @@ class ImagesAzureComputeimage(ImagesAzureBase[ImagesAzureResourcegroup]):
                 },
             },
         }
-        return cls(
+        ret = cls(
             parent=resourcegroup,
             name=name,
-            _create_data=data,
-            _create_wait=wait,
         )
+        ret._do_put(
+            data=data,
+            wait=wait,
+        )
+        return ret

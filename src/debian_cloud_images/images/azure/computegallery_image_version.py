@@ -39,7 +39,7 @@ class ImagesAzureComputegalleryImageVersion(ImagesAzureBase[ImagesAzureComputega
         disk: ImagesAzureComputedisk,
     ) -> Self:
         data: JSONObject = {
-            'location': disk.location,
+            'location': disk.location(),
             'properties': {
                 'publishingProfile': {
                 },
@@ -52,9 +52,12 @@ class ImagesAzureComputegalleryImageVersion(ImagesAzureBase[ImagesAzureComputega
                 },
             },
         }
-        return cls(
+        ret = cls(
             parent=computegallery_image,
             name=name,
-            _create_data=data,
-            _create_wait=wait,
         )
+        ret._do_put(
+            data=data,
+            wait=wait,
+        )
+        return ret

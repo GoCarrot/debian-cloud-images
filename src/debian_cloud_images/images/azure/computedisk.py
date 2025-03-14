@@ -58,7 +58,7 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
         size: int,
     ) -> Self:
         data: JSONObject = {
-            'location': location or resourcegroup.location,
+            'location': location or resourcegroup.location(),
             'properties': {
                 'creationData': {
                     'createOption': 'Upload',
@@ -76,12 +76,15 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
                 'name': 'StandardSSD_LRS',
             },
         }
-        return cls(
+        ret = cls(
             parent=resourcegroup,
             name=name,
-            _create_data=data,
-            _create_wait=wait,
         )
+        ret._do_put(
+            data=data,
+            wait=wait,
+        )
+        return ret
 
     def _upload_access_begin(self) -> str:
         data: JSONObject = {

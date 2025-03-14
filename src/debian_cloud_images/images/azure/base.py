@@ -10,7 +10,6 @@ import urllib.parse
 from dataclasses import (
     dataclass,
     field,
-    InitVar,
 )
 from typing import (
     cast,
@@ -34,27 +33,15 @@ class ImagesAzureBase(Generic[Parent]):
 
     parent: Parent
     name: str
-    _data: JSONObject = field(init=False, compare=False)
-    _create_data: InitVar[JSONObject | None] = field(default=None, kw_only=True)
-    _create_wait: InitVar[bool] = field(default=False, kw_only=True)
-
-    def __post_init__(
-        self,
-        create_data: JSONObject | None,
-        create_wait: bool,
-    ) -> None:
-        if create_data is not None:
-            self._do_put(create_data)
-            if create_wait:
-                self._wait_state()
-        else:
-            self._do_get()
+    _data: JSONObject | None = field(default=None, init=False, compare=False)
 
     @property
     def client(self) -> httpx.Client:
         return self.parent.client
 
     def data(self) -> JSONObject:
+        if self._data is None:
+            return self._do_get()
         return self._data
 
     def location(self) -> str:
@@ -104,8 +91,11 @@ class ImagesAzureBase(Generic[Parent]):
     def _do_get(self) -> JSONObject:
         return self._request_data(method='GET')
 
-    def _do_put(self, data: JSONObject) -> JSONObject:
-        return self._request_data(method='PUT', data=data)
+    def _do_put(self, data: JSONObject, wait: bool = False) -> JSONObject:
+        ret = self._request_data(method='PUT', data=data)
+        if wait:
+            self._wait_state()
+        return ret
 
     def delete(self) -> None:
         self._do_delete()
