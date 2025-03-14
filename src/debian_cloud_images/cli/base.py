@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-import logging
+import logging.config
 import os
 
 from .registry import CliRegistry
@@ -58,10 +58,36 @@ class BaseCommand(CliCommand):
     def __init__(self, *, config={}, config_files=[], config_section=None, debug=False, **kw):
         super().__init__(**kw)
 
-        logging.basicConfig(
-            level=debug and logging.DEBUG or logging.INFO,
-            format='%(asctime)s %(levelname)s %(message)s',
-        )
+        logging.config.dictConfig({
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'default': {
+                    'format': '%(asctime)s %(levelname)s %(message)s',
+                },
+            },
+            'handlers': {
+                'default': {
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'default',
+                    'stream': 'ext://sys.stderr',
+                },
+            },
+            'loggers': {
+                'httpx': {
+                    'handlers': ['default'],
+                    'level': debug and logging.DEBUG or logging.WARNING,
+                },
+                'httpcore': {
+                    'handlers': ['default'],
+                    'level': debug and logging.INFO or logging.WARNING,
+                },
+            },
+            'root': {
+                'handlers': ['default'],
+                'level': debug and logging.DEBUG or logging.INFO,
+            },
+        })
 
         config_overrides = [config]
         config_overrides.insert(0, self.config_env())
