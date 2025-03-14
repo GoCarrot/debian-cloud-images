@@ -36,7 +36,7 @@ class TestImagesAzureResourcegroup:
 
         return ret
 
-    def test_get(self, client):
+    def test_get(self, client) -> None:
         subscription = unittest.mock.NonCallableMock(spec=ImagesAzureSubscription)
         subscription.client = client
         subscription.path = 'BASE'
@@ -47,7 +47,7 @@ class TestImagesAzureResourcegroup:
         )
 
         assert r.path == 'BASE/resourceGroups/resource_group'
-        assert r.data == {
+        assert r.data() == {
             'location': 'location',
             'properties': {
                 'provisioningState': 'Succeeded',

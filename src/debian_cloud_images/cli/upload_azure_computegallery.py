@@ -168,8 +168,8 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
                     self._computegallery,
                 )
 
-                computegallery_image_arch = ImagesAzureComputediskArch(computegallery_image.properties['architecture'])
-                computegallery_image_generation = ImagesAzureComputediskGeneration(computegallery_image.properties['hyperVGeneration'])
+                computegallery_image_arch = ImagesAzureComputediskArch(computegallery_image.properties()['architecture'])
+                computegallery_image_generation = ImagesAzureComputediskGeneration(computegallery_image.properties()['hyperVGeneration'])
 
                 if computegallery_image_arch != image_arch:
                     raise RuntimeError('Image architecture does not match gallery image architecture')

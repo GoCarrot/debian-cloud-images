@@ -57,7 +57,7 @@ class TestImagesAzureComputegalleryImageVersion:
         )
 
         assert r.path == 'BASE/versions/version'
-        assert r.data == {
+        assert r.data() == {
             'location': 'location',
             'properties': {
                 'provisioningState': 'Succeeded',
@@ -74,7 +74,7 @@ class TestImagesAzureComputegalleryImageVersion:
         computegallery_image.path = 'BASE'
 
         computedisk = unittest.mock.NonCallableMock(spec=ImagesAzureComputedisk)
-        computedisk.location = 'location'
+        computedisk.location = unittest.mock.Mock(return_value='location')
         computedisk.path = 'DISK'
 
         r = ImagesAzureComputegalleryImageVersion.create(
@@ -83,7 +83,7 @@ class TestImagesAzureComputegalleryImageVersion:
             disk=computedisk,
         )
 
-        assert r.data == {
+        assert r.data() == {
             'location': 'location',
             'properties': {
                 'provisioningState': 'Succeeded',

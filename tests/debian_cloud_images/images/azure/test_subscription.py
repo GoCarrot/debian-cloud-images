@@ -28,14 +28,14 @@ class TestImagesAzureSubscription:
 
         return ret
 
-    def test_get(self, client):
+    def test_get(self, client) -> None:
         r = ImagesAzureSubscription(
             'subscription',
             client,
         )
 
         assert r.path == '/subscriptions/subscription'
-        assert r.data == {}
+        assert r.data() == {}
 
         client.assert_has_calls([
             unittest.mock.call.request(url=r.url(), method='GET', json=None, params={'api-version': r.api_version}),

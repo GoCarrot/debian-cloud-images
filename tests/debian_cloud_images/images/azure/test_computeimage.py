@@ -36,7 +36,7 @@ class TestImagesAzureComputeimage:
 
         return ret
 
-    def test_get(self, client):
+    def test_get(self, client) -> None:
         resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
         resourcegroup.client = client
         resourcegroup.path = 'BASE'
@@ -47,7 +47,7 @@ class TestImagesAzureComputeimage:
         )
 
         assert r.path == 'BASE/providers/Microsoft.Compute/images/image'
-        assert r.data == {
+        assert r.data() == {
             'location': 'location',
             'properties': {
                 'provisioningState': 'Succeeded',
