@@ -30,10 +30,11 @@ def test_run_shell():
 @skip_no_crun
 def test_run_shell_fail():
     try:
-        with pytest.raises(subprocess.CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError) as excinfo:
             run_shell(
                 'exit 1',
                 stdout=subprocess.PIPE,
             )
+        assert excinfo.value.returncode == 1
     except SandboxIdmapError:
         pytest.skip('No suitable uid/gid mapping')
