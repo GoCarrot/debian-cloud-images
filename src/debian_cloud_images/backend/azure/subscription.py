@@ -14,14 +14,14 @@ from typing import (
     Self,
 )
 
-from .base import ImagesAzureBase
+from .base import AzureBase
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureSubscription(ImagesAzureBase):
+class AzureSubscription(AzureBase):
     api_version: ClassVar[str] = '2024-11-01'
 
     parent: Self = field(init=False, repr=False)

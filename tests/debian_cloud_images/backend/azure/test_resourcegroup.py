@@ -3,11 +3,11 @@
 import pytest
 import unittest.mock
 
-from debian_cloud_images.images.azure.computegallery import ImagesAzureComputegallery
-from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
+from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
+from debian_cloud_images.backend.azure.subscription import AzureSubscription
 
 
-class TestImagesAzureComputegallery:
+class TestAzureResourcegroup:
     @pytest.fixture
     def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
@@ -37,16 +37,16 @@ class TestImagesAzureComputegallery:
         return ret
 
     def test_get(self, client) -> None:
-        resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
-        resourcegroup.client = client
-        resourcegroup.path = 'BASE'
+        subscription = unittest.mock.NonCallableMock(spec=AzureSubscription)
+        subscription.client = client
+        subscription.path = 'BASE'
 
-        r = ImagesAzureComputegallery(
-            resourcegroup,
-            'gallery',
+        r = AzureResourcegroup(
+            subscription,
+            'resource_group',
         )
 
-        assert r.path == 'BASE/providers/Microsoft.Compute/galleries/gallery'
+        assert r.path == 'BASE/resourceGroups/resource_group'
         assert r.data() == {
             'location': 'location',
             'properties': {
@@ -56,4 +56,19 @@ class TestImagesAzureComputegallery:
 
         client.assert_has_calls([
             unittest.mock.call.request(url=r.url(), method='GET', json=None, params={'api-version': r.api_version}),
+        ])
+
+    def test_delete(self, client):
+        subscription = unittest.mock.NonCallableMock(spec=AzureSubscription)
+        subscription.client = client
+        subscription.path = 'BASE'
+
+        r = AzureResourcegroup(
+            subscription,
+            'resource_group',
+        )
+        r.delete()
+
+        client.assert_has_calls([
+            unittest.mock.call.request(url=r.url(), method='DELETE', json=None, params={'api-version': r.api_version}),
         ])

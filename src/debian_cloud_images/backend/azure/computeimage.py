@@ -12,48 +12,48 @@ from typing import (
 
 from debian_cloud_images.utils.typing import JSONObject
 
-from .base import ImagesAzureBase
-from .computedisk import ImagesAzureComputedisk
-from .computegallery_image import ImagesAzureComputegalleryImage
+from .base import AzureBase
+from .computedisk import AzureComputedisk
+from .resourcegroup import AzureResourcegroup
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureComputegalleryImageVersion(ImagesAzureBase[ImagesAzureComputegalleryImage]):
-    api_version: ClassVar[str] = '2024-03-03'
+class AzureComputeimage(AzureBase[AzureResourcegroup]):
+    api_version: ClassVar[str] = '2021-11-01'
 
     @property
     def path(self) -> str:
-        return f'{self.parent.path}/versions/{self.name}'
+        return f'{self.parent.path}/providers/Microsoft.Compute/images/{self.name}'
 
     @classmethod
     def create(
         cls,
-        computegallery_image: ImagesAzureComputegalleryImage,
-        # TODO: take as object
+        resourcegroup: AzureResourcegroup,
         name: str,
         *,
         wait: bool = True,
-        disk: ImagesAzureComputedisk,
+        disk: AzureComputedisk,
     ) -> Self:
         data: JSONObject = {
             'location': disk.location(),
             'properties': {
-                'publishingProfile': {
-                },
+                'hyperVGeneration': disk.properties()['hyperVGeneration'],
                 'storageProfile': {
-                    'osDiskImage': {
-                        'source': {
+                    'osDisk': {
+                        'osType': 'Linux',
+                        'managedDisk': {
                             'id': disk.path,
                         },
+                        'osState': 'Generalized',
                     },
                 },
             },
         }
         ret = cls(
-            parent=computegallery_image,
+            parent=resourcegroup,
             name=name,
         )
         ret._do_put(

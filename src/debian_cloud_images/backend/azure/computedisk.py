@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import enum
 import httpx
 import logging
 import time
@@ -18,28 +17,22 @@ from typing import (
 from debian_cloud_images.utils.files import ChunkedFile
 from debian_cloud_images.utils.typing import JSONObject
 
-from .base import ImagesAzureBase
-from .resourcegroup import ImagesAzureResourcegroup
+from . import (
+    AzureVmArch,
+    AzureVmGeneration,
+)
+from .base import AzureBase
+from .resourcegroup import AzureResourcegroup
 
 
 logger = logging.getLogger(__name__)
 
 
-class ImagesAzureComputediskArch(enum.Enum):
-    amd64 = 'x64'
-    arm64 = 'arm64'
-
-
-class ImagesAzureComputediskGeneration(enum.Enum):
-    v1 = 'V1'
-    v2 = 'V2'
-
-
 @dataclass
-class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
+class AzureComputedisk(AzureBase[AzureResourcegroup]):
     api_version: ClassVar[str] = '2024-03-02'
 
-    parent: ImagesAzureResourcegroup
+    parent: AzureResourcegroup
 
     @property
     def path(self) -> str:
@@ -48,12 +41,12 @@ class ImagesAzureComputedisk(ImagesAzureBase[ImagesAzureResourcegroup]):
     @classmethod
     def create(
         cls,
-        resourcegroup: ImagesAzureResourcegroup,
+        resourcegroup: AzureResourcegroup,
         name: str,
         *,
         wait: bool = True,
-        arch: ImagesAzureComputediskArch,
-        generation: ImagesAzureComputediskGeneration,
+        arch: AzureVmArch,
+        generation: AzureVmGeneration,
         location: str | None = None,
         size: int,
     ) -> Self:

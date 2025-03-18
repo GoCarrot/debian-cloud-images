@@ -3,10 +3,11 @@
 import pytest
 import unittest.mock
 
-from debian_cloud_images.images.azure.subscription import ImagesAzureSubscription
+from debian_cloud_images.backend.azure.computegallery import AzureComputegallery
+from debian_cloud_images.backend.azure.computegallery_image import AzureComputegalleryImage
 
 
-class TestImagesAzureSubscription:
+class TestAzureComputegalleryImage:
     @pytest.fixture
     def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
@@ -22,20 +23,36 @@ class TestImagesAzureSubscription:
         if method == 'GET':
             ret.json = unittest.mock.Mock(return_value={
                 'id': None,
+                'name': None,
+                'location': 'location',
+                'properties': {
+                    'provisioningState': 'Succeeded',
+                },
             })
+        elif method == 'DELETE':
+            pass
         else:
             raise RuntimeError(url, method, kw)
 
         return ret
 
     def test_get(self, client) -> None:
-        r = ImagesAzureSubscription(
-            'subscription',
-            client,
+        computegallery = unittest.mock.NonCallableMock(spec=AzureComputegallery)
+        computegallery.client = client
+        computegallery.path = 'BASE'
+
+        r = AzureComputegalleryImage(
+            computegallery,
+            'image',
         )
 
-        assert r.path == '/subscriptions/subscription'
-        assert r.data() == {}
+        assert r.path == 'BASE/images/image'
+        assert r.data() == {
+            'location': 'location',
+            'properties': {
+                'provisioningState': 'Succeeded',
+            },
+        }
 
         client.assert_has_calls([
             unittest.mock.call.request(url=r.url(), method='GET', json=None, params={'api-version': r.api_version}),

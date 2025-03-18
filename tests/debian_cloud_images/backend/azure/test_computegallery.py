@@ -3,11 +3,11 @@
 import pytest
 import unittest.mock
 
-from debian_cloud_images.images.azure.computegallery import ImagesAzureComputegallery
-from debian_cloud_images.images.azure.computegallery_image import ImagesAzureComputegalleryImage
+from debian_cloud_images.backend.azure.computegallery import AzureComputegallery
+from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
 
 
-class TestImagesAzureComputegalleryImage:
+class TestAzureComputegallery:
     @pytest.fixture
     def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
@@ -37,16 +37,16 @@ class TestImagesAzureComputegalleryImage:
         return ret
 
     def test_get(self, client) -> None:
-        computegallery = unittest.mock.NonCallableMock(spec=ImagesAzureComputegallery)
-        computegallery.client = client
-        computegallery.path = 'BASE'
+        resourcegroup = unittest.mock.NonCallableMock(spec=AzureResourcegroup)
+        resourcegroup.client = client
+        resourcegroup.path = 'BASE'
 
-        r = ImagesAzureComputegalleryImage(
-            computegallery,
-            'image',
+        r = AzureComputegallery(
+            resourcegroup,
+            'gallery',
         )
 
-        assert r.path == 'BASE/images/image'
+        assert r.path == 'BASE/providers/Microsoft.Compute/galleries/gallery'
         assert r.data() == {
             'location': 'location',
             'properties': {

@@ -21,14 +21,14 @@ from typing import (
 from debian_cloud_images.utils.typing import JSONObject
 
 
-Parent = TypeVar('Parent', bound='ImagesAzureBase')
+Parent = TypeVar('Parent', bound='AzureBase')
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureBase(Generic[Parent]):
+class AzureBase(Generic[Parent]):
     api_version: ClassVar[str]
 
     parent: Parent

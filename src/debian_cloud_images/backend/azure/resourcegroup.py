@@ -7,15 +7,15 @@ import logging
 from dataclasses import dataclass
 from typing import ClassVar
 
-from .base import ImagesAzureBase
-from .subscription import ImagesAzureSubscription
+from .base import AzureBase
+from .subscription import AzureSubscription
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureResourcegroup(ImagesAzureBase[ImagesAzureSubscription]):
+class AzureResourcegroup(AzureBase[AzureSubscription]):
     api_version: ClassVar[str] = '2021-04-01'
 
     @property
