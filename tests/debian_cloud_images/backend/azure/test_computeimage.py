@@ -3,11 +3,11 @@
 import pytest
 import unittest.mock
 
-from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
-from debian_cloud_images.images.azure.subscription import ImagesAzureSubscription
+from debian_cloud_images.backend.azure.computeimage import AzureComputeimage
+from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
 
 
-class TestImagesAzureResourcegroup:
+class TestAzureComputeimage:
     @pytest.fixture
     def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
@@ -37,16 +37,16 @@ class TestImagesAzureResourcegroup:
         return ret
 
     def test_get(self, client) -> None:
-        subscription = unittest.mock.NonCallableMock(spec=ImagesAzureSubscription)
-        subscription.client = client
-        subscription.path = 'BASE'
+        resourcegroup = unittest.mock.NonCallableMock(spec=AzureResourcegroup)
+        resourcegroup.client = client
+        resourcegroup.path = 'BASE'
 
-        r = ImagesAzureResourcegroup(
-            subscription,
-            'resource_group',
+        r = AzureComputeimage(
+            resourcegroup,
+            'image',
         )
 
-        assert r.path == 'BASE/resourceGroups/resource_group'
+        assert r.path == 'BASE/providers/Microsoft.Compute/images/image'
         assert r.data() == {
             'location': 'location',
             'properties': {
@@ -56,19 +56,4 @@ class TestImagesAzureResourcegroup:
 
         client.assert_has_calls([
             unittest.mock.call.request(url=r.url(), method='GET', json=None, params={'api-version': r.api_version}),
-        ])
-
-    def test_delete(self, client):
-        subscription = unittest.mock.NonCallableMock(spec=ImagesAzureSubscription)
-        subscription.client = client
-        subscription.path = 'BASE'
-
-        r = ImagesAzureResourcegroup(
-            subscription,
-            'resource_group',
-        )
-        r.delete()
-
-        client.assert_has_calls([
-            unittest.mock.call.request(url=r.url(), method='DELETE', json=None, params={'api-version': r.api_version}),
         ])

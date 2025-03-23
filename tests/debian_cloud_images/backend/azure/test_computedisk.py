@@ -4,15 +4,15 @@ import httpx
 import pytest
 import unittest.mock
 
-from debian_cloud_images.images.azure.computedisk import (
-    ImagesAzureComputedisk,
-    ImagesAzureComputediskArch,
-    ImagesAzureComputediskGeneration,
+from debian_cloud_images.backend.azure import (
+    AzureVmArch,
+    AzureVmGeneration,
 )
-from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
+from debian_cloud_images.backend.azure.computedisk import AzureComputedisk
+from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
 
 
-class TestImagesAzureComputedisk:
+class TestAzureComputedisk:
     @pytest.fixture
     def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
@@ -71,11 +71,11 @@ class TestImagesAzureComputedisk:
         return ret
 
     def test_get(self, client) -> None:
-        resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
+        resourcegroup = unittest.mock.NonCallableMock(spec=AzureResourcegroup)
         resourcegroup.client = client
         resourcegroup.path = 'BASE'
 
-        r = ImagesAzureComputedisk(
+        r = AzureComputedisk(
             resourcegroup,
             'disk',
         )
@@ -94,15 +94,15 @@ class TestImagesAzureComputedisk:
         ])
 
     def test_create(self, client) -> None:
-        resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
+        resourcegroup = unittest.mock.NonCallableMock(spec=AzureResourcegroup)
         resourcegroup.client = client
         resourcegroup.path = 'BASE'
 
-        r = ImagesAzureComputedisk.create(
+        r = AzureComputedisk.create(
             resourcegroup,
             'disk',
-            arch=ImagesAzureComputediskArch.amd64,
-            generation=ImagesAzureComputediskGeneration.v2,
+            arch=AzureVmArch.amd64,
+            generation=AzureVmGeneration.v2,
             location='location',
             size=10,
         )
@@ -120,11 +120,11 @@ class TestImagesAzureComputedisk:
         ])
 
     def test_upload(self, client) -> None:
-        resourcegroup = unittest.mock.NonCallableMock(spec=ImagesAzureResourcegroup)
+        resourcegroup = unittest.mock.NonCallableMock(spec=AzureResourcegroup)
         resourcegroup.client = client
         resourcegroup.path = 'BASE'
 
-        r = ImagesAzureComputedisk(
+        r = AzureComputedisk(
             resourcegroup,
             'disk',
         )

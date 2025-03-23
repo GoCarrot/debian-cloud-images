@@ -1,25 +1,24 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
-import httpx
 import logging
 import pathlib
 import secrets
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
-from debian_cloud_images.images.azure.subscription import ImagesAzureSubscription
-from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
-from debian_cloud_images.images.azure.computedisk import (
-    ImagesAzureComputedisk,
-    ImagesAzureComputediskArch,
-    ImagesAzureComputediskGeneration,
+from debian_cloud_images.backend.azure import (
+    AzureVmArch,
+    AzureVmGeneration,
 )
-from debian_cloud_images.images.azure.computegallery import ImagesAzureComputegallery
-from debian_cloud_images.images.azure.computegallery_image import ImagesAzureComputegalleryImage
-from debian_cloud_images.images.azure.computegallery_image_version import ImagesAzureComputegalleryImageVersion
+from debian_cloud_images.backend.azure.client import AzureClient
+from debian_cloud_images.backend.azure.subscription import AzureSubscription
+from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
+from debian_cloud_images.backend.azure.computedisk import AzureComputedisk
+from debian_cloud_images.backend.azure.computegallery import AzureComputegallery
+from debian_cloud_images.backend.azure.computegallery_image import AzureComputegalleryImage
+from debian_cloud_images.backend.azure.computegallery_image_version import AzureComputegalleryImageVersion
 from debian_cloud_images.utils.azure.image_version import AzureImageVersion
-from debian_cloud_images.utils.httpx.azure import AzureAuth, AzureAuthServiceAccount
 
 from .base import cli
 from .upload_base import UploadBaseCommand
@@ -123,31 +122,31 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
             raise RuntimeError('Can only handle one image at a time')
 
     def __call__(self) -> None:
-        auth: AzureAuth
+        client: AzureClient
         if self._client_id and self._client_secret:
-            auth = AzureAuthServiceAccount(self._tenant, self._client_id, self._client_secret)
+            client = AzureClient.auth_service_account(self._tenant, self._client_id, self._client_secret)
         else:
-            auth = AzureAuth()
+            client = AzureClient()
 
-        with auth.get_client() as client:
+        with client as client:
             self._run(client)
 
-    def _run(self, client: httpx.Client) -> None:
-        computedisk: ImagesAzureComputedisk | None = None
-        computegallery_version: ImagesAzureComputegalleryImageVersion | None = None
+    def _run(self, client: AzureClient) -> None:
+        computedisk: AzureComputedisk | None = None
+        computegallery_version: AzureComputegalleryImageVersion | None = None
 
-        subscription = ImagesAzureSubscription(
-            self._subscription,
+        subscription = AzureSubscription(
             client,
+            self._subscription,
         )
-        group = ImagesAzureResourcegroup(
+        group = AzureResourcegroup(
             subscription,
             self._group,
         )
 
         for image in self.images.values():
             try:
-                image_arch = ImagesAzureComputediskArch[image.build_info['arch']]
+                image_arch = AzureVmArch[image.build_info['arch']]
 
                 disk_name = f'{self._computegallery}-upload-{secrets.token_urlsafe(4)}'
 
@@ -158,18 +157,18 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
                 else:
                     raise RuntimeError('No Azure version, use --computegallery-version-override')
 
-                computegallery = ImagesAzureComputegallery(
+                computegallery = AzureComputegallery(
                     group,
                     self._computegallery,
                 )
 
-                computegallery_image = ImagesAzureComputegalleryImage(
+                computegallery_image = AzureComputegalleryImage(
                     computegallery,
                     self._computegallery,
                 )
 
-                computegallery_image_arch = ImagesAzureComputediskArch(computegallery_image.properties()['architecture'])
-                computegallery_image_generation = ImagesAzureComputediskGeneration(computegallery_image.properties()['hyperVGeneration'])
+                computegallery_image_arch = AzureVmArch(computegallery_image.properties()['architecture'])
+                computegallery_image_generation = AzureVmGeneration(computegallery_image.properties()['hyperVGeneration'])
 
                 if computegallery_image_arch != image_arch:
                     raise RuntimeError('Image architecture does not match gallery image architecture')
@@ -179,7 +178,7 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
                     size = f.tell()
                     f.seek(0, 0)
 
-                    computedisk = ImagesAzureComputedisk.create(
+                    computedisk = AzureComputedisk.create(
                         group,
                         disk_name,
                         arch=computegallery_image_arch,
@@ -193,7 +192,7 @@ class UploadAzureComputegalleryCommand(UploadBaseCommand):
 
                 logger.info(f'Creating image version: {image_version}')
 
-                computegallery_version = ImagesAzureComputegalleryImageVersion.create(
+                computegallery_version = AzureComputegalleryImageVersion.create(
                     computegallery_image,
                     str(image_version),
                     disk=computedisk,

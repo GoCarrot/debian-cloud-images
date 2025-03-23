@@ -3,12 +3,12 @@
 import pytest
 import unittest.mock
 
-from debian_cloud_images.images.azure.computedisk import ImagesAzureComputedisk
-from debian_cloud_images.images.azure.computegallery_image import ImagesAzureComputegalleryImage
-from debian_cloud_images.images.azure.computegallery_image_version import ImagesAzureComputegalleryImageVersion
+from debian_cloud_images.backend.azure.computedisk import AzureComputedisk
+from debian_cloud_images.backend.azure.computegallery_image import AzureComputegalleryImage
+from debian_cloud_images.backend.azure.computegallery_image_version import AzureComputegalleryImageVersion
 
 
-class TestImagesAzureComputegalleryImageVersion:
+class TestAzureComputegalleryImageVersion:
     @pytest.fixture
     def client(self) -> unittest.mock.Mock:
         ret = unittest.mock.NonCallableMock()
@@ -47,11 +47,11 @@ class TestImagesAzureComputegalleryImageVersion:
         return ret
 
     def test_get(self, client) -> None:
-        computegallery_image = unittest.mock.NonCallableMock(spec=ImagesAzureComputegalleryImage)
+        computegallery_image = unittest.mock.NonCallableMock(spec=AzureComputegalleryImage)
         computegallery_image.client = client
         computegallery_image.path = 'BASE'
 
-        r = ImagesAzureComputegalleryImageVersion(
+        r = AzureComputegalleryImageVersion(
             computegallery_image,
             'version',
         )
@@ -69,15 +69,15 @@ class TestImagesAzureComputegalleryImageVersion:
         ])
 
     def test_create(self, client) -> None:
-        computegallery_image = unittest.mock.NonCallableMock(spec=ImagesAzureComputegalleryImage)
+        computegallery_image = unittest.mock.NonCallableMock(spec=AzureComputegalleryImage)
         computegallery_image.client = client
         computegallery_image.path = 'BASE'
 
-        computedisk = unittest.mock.NonCallableMock(spec=ImagesAzureComputedisk)
+        computedisk = unittest.mock.NonCallableMock(spec=AzureComputedisk)
         computedisk.location = unittest.mock.Mock(return_value='location')
         computedisk.path = 'DISK'
 
-        r = ImagesAzureComputegalleryImageVersion.create(
+        r = AzureComputegalleryImageVersion.create(
             computegallery_image,
             'version',
             disk=computedisk,

@@ -5,31 +5,23 @@ from __future__ import annotations
 import httpx
 import logging
 
-from dataclasses import (
-    dataclass,
-    field,
-)
-from typing import (
-    ClassVar,
-    Self,
-)
+from dataclasses import dataclass
+from typing import ClassVar
 
-from .base import ImagesAzureBase
+from .base import AzureBase
+from .client import AzureClient
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ImagesAzureSubscription(ImagesAzureBase):
+class AzureSubscription(AzureBase[AzureClient]):
     api_version: ClassVar[str] = '2024-11-01'
-
-    parent: Self = field(init=False, repr=False)
-    _client: httpx.Client
 
     @property
     def client(self) -> httpx.Client:
-        return self._client
+        return self.parent
 
     @property
     def path(self) -> str:

@@ -1,21 +1,20 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
-import httpx
 import logging
 import pathlib
 
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
-from debian_cloud_images.images.azure.subscription import ImagesAzureSubscription
-from debian_cloud_images.images.azure.resourcegroup import ImagesAzureResourcegroup
-from debian_cloud_images.images.azure.computedisk import (
-    ImagesAzureComputedisk,
-    ImagesAzureComputediskArch,
-    ImagesAzureComputediskGeneration,
+from debian_cloud_images.backend.azure import (
+    AzureVmArch,
+    AzureVmGeneration,
 )
-from debian_cloud_images.images.azure.computeimage import ImagesAzureComputeimage
-from debian_cloud_images.utils.httpx.azure import AzureAuth, AzureAuthServiceAccount
+from debian_cloud_images.backend.azure.client import AzureClient
+from debian_cloud_images.backend.azure.subscription import AzureSubscription
+from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
+from debian_cloud_images.backend.azure.computedisk import AzureComputedisk
+from debian_cloud_images.backend.azure.computeimage import AzureComputeimage
 
 from .base import cli
 from .upload_base import UploadBaseCommand
@@ -84,7 +83,7 @@ config options:
 )
 class UploadAzureCommand(UploadBaseCommand):
     location: str | None
-    generation: ImagesAzureComputediskGeneration
+    generation: AzureVmGeneration
     wait: bool
 
     def __init__(
@@ -98,7 +97,7 @@ class UploadAzureCommand(UploadBaseCommand):
         super().__init__(**kw)
 
         self.location = location
-        self.generation = ImagesAzureComputediskGeneration[f'v{generation}']
+        self.generation = AzureVmGeneration[f'v{generation}']
         self.wait = wait
 
         self._client_id = str(self.config_get('azure.auth.client', default=None))
@@ -112,36 +111,36 @@ class UploadAzureCommand(UploadBaseCommand):
             raise RuntimeError('Can only handle one image at a time')
 
     def __call__(self) -> None:
-        auth: AzureAuth
+        client: AzureClient
         if self._client_id and self._client_secret:
-            auth = AzureAuthServiceAccount(self._tenant, self._client_id, self._client_secret)
+            client = AzureClient.auth_service_account(self._tenant, self._client_id, self._client_secret)
         else:
-            auth = AzureAuth()
+            client = AzureClient()
 
-        with auth.get_client() as client:
+        with client as client:
             self._run(client)
 
-    def _run(self, client: httpx.Client) -> None:
-        computedisk: ImagesAzureComputedisk | None = None
-        computeimage: ImagesAzureComputeimage | None = None
+    def _run(self, client: AzureClient) -> None:
+        computedisk: AzureComputedisk | None = None
+        computeimage: AzureComputeimage | None = None
 
-        subscription = ImagesAzureSubscription(
+        subscription = AzureSubscription(
+            client,
             self._subscription,
-            client
         )
 
-        group = ImagesAzureResourcegroup(
+        group = AzureResourcegroup(
             subscription,
             self._group,
         )
 
         for image in self.images.values():
             try:
-                image_arch = ImagesAzureComputediskArch[image.build_info['arch']]
+                image_arch = AzureVmArch[image.build_info['arch']]
                 image_public_info = self.image_public_info.apply(image.build_info)
                 image_name = image_public_info.vendor_name_extra(self.generation.name)
 
-                if image_arch is not ImagesAzureComputediskArch.amd64:
+                if image_arch is not AzureVmArch.amd64:
                     raise RuntimeError('Image architecture must be amd64')
 
                 with image.open_image('vhd') as f:
@@ -149,7 +148,7 @@ class UploadAzureCommand(UploadBaseCommand):
                     size = f.tell()
                     f.seek(0, 0)
 
-                    computedisk = ImagesAzureComputedisk.create(
+                    computedisk = AzureComputedisk.create(
                         group,
                         image_name,
                         arch=image_arch,
@@ -163,7 +162,7 @@ class UploadAzureCommand(UploadBaseCommand):
 
                     logger.info(f'Creating Azure image: {image_name}')
 
-                    computeimage = ImagesAzureComputeimage.create(
+                    computeimage = AzureComputeimage.create(
                         group,
                         image_name,
                         disk=computedisk,
