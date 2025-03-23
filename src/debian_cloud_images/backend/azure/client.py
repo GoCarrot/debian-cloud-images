@@ -12,7 +12,10 @@ from dataclasses import (
     dataclass,
     field,
 )
-from typing import Generator
+from typing import (
+    Generator,
+    Self,
+)
 
 from .base import AzureBaseClient
 
@@ -31,9 +34,6 @@ class AzureAuthScope:
 @dataclass
 class AzureAuth(httpx.Auth):
     scopes: dict[tuple[str, ...], AzureAuthScope] = field(init=False, default_factory=dict)
-
-    def get_client(self) -> AzureClient:
-        return AzureClient(auth=self)
 
     def _get(self, request: httpx.Request) -> AzureAuthScope | None:
         host = request.url.host
@@ -93,6 +93,14 @@ class AzureAuthServiceAccount(AzureAuth):
 
 
 class AzureClient(httpx.Client, AzureBaseClient):
+    def __init__(self, auth: AzureAuth = AzureAuth()) -> None:
+        super().__init__(auth=auth)
+
+    @classmethod
+    def auth_service_account(cls, tenant: str, client_id: str, client_secret: str) -> Self:
+        auth = AzureAuthServiceAccount(tenant=tenant, client_id=client_id, client_secret=client_secret)
+        return cls(auth=auth)
+
     @property
     def client(self) -> httpx.Client:
         return self

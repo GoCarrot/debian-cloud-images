@@ -10,11 +10,7 @@ from debian_cloud_images.backend.azure import (
     AzureVmArch,
     AzureVmGeneration,
 )
-from debian_cloud_images.backend.azure.client import (
-    AzureAuth,
-    AzureAuthServiceAccount,
-    AzureClient,
-)
+from debian_cloud_images.backend.azure.client import AzureClient
 from debian_cloud_images.backend.azure.subscription import AzureSubscription
 from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
 from debian_cloud_images.backend.azure.computedisk import AzureComputedisk
@@ -115,13 +111,13 @@ class UploadAzureCommand(UploadBaseCommand):
             raise RuntimeError('Can only handle one image at a time')
 
     def __call__(self) -> None:
-        auth: AzureAuth
+        client: AzureClient
         if self._client_id and self._client_secret:
-            auth = AzureAuthServiceAccount(self._tenant, self._client_id, self._client_secret)
+            client = AzureClient.auth_service_account(self._tenant, self._client_id, self._client_secret)
         else:
-            auth = AzureAuth()
+            client = AzureClient()
 
-        with auth.get_client() as client:
+        with client as client:
             self._run(client)
 
     def _run(self, client: AzureClient) -> None:
