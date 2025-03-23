@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import argparse
-import httpx
 import logging
 import pathlib
 
@@ -11,7 +10,11 @@ from debian_cloud_images.backend.azure import (
     AzureVmArch,
     AzureVmGeneration,
 )
-from debian_cloud_images.backend.azure.client import AzureAuth, AzureAuthServiceAccount
+from debian_cloud_images.backend.azure.client import (
+    AzureAuth,
+    AzureAuthServiceAccount,
+    AzureClient,
+)
 from debian_cloud_images.backend.azure.subscription import AzureSubscription
 from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
 from debian_cloud_images.backend.azure.computedisk import AzureComputedisk
@@ -121,13 +124,13 @@ class UploadAzureCommand(UploadBaseCommand):
         with auth.get_client() as client:
             self._run(client)
 
-    def _run(self, client: httpx.Client) -> None:
+    def _run(self, client: AzureClient) -> None:
         computedisk: AzureComputedisk | None = None
         computeimage: AzureComputeimage | None = None
 
         subscription = AzureSubscription(
+            client,
             self._subscription,
-            client
         )
 
         group = AzureResourcegroup(

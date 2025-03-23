@@ -21,23 +21,27 @@ from typing import (
 from debian_cloud_images.utils.typing import JSONObject
 
 
-Parent = TypeVar('Parent', bound='AzureBase')
+Parent = TypeVar('Parent', bound='AzureBaseClient')
 
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class AzureBase(Generic[Parent]):
-    api_version: ClassVar[str]
-
+class AzureBaseClient(Generic[Parent]):
     parent: Parent
-    name: str
-    _data: JSONObject | None = field(default=None, init=False, compare=False)
 
     @property
     def client(self) -> httpx.Client:
         return self.parent.client
+
+
+@dataclass
+class AzureBase(AzureBaseClient[Parent]):
+    api_version: ClassVar[str]
+
+    name: str
+    _data: JSONObject | None = field(default=None, init=False, compare=False)
 
     def data(self) -> JSONObject:
         if self._data is None:

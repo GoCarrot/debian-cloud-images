@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+from __future__ import annotations
+
 import httpx
 import json
 import logging
@@ -11,6 +13,8 @@ from dataclasses import (
     field,
 )
 from typing import Generator
+
+from .base import AzureBaseClient
 
 
 logger = logging.getLogger(__name__)
@@ -28,8 +32,8 @@ class AzureAuthScope:
 class AzureAuth(httpx.Auth):
     scopes: dict[tuple[str, ...], AzureAuthScope] = field(init=False, default_factory=dict)
 
-    def get_client(self) -> httpx.Client:
-        return httpx.Client(auth=self)
+    def get_client(self) -> AzureClient:
+        return AzureClient(auth=self)
 
     def _get(self, request: httpx.Request) -> AzureAuthScope | None:
         host = request.url.host
@@ -86,3 +90,9 @@ class AzureAuthServiceAccount(AzureAuth):
         data = response.json()
         scope.access_token = data['access_token']
         scope.expires_on = int(data['expires_on'])
+
+
+class AzureClient(httpx.Client, AzureBaseClient):
+    @property
+    def client(self) -> httpx.Client:
+        return self

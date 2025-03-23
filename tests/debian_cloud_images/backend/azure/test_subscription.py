@@ -30,8 +30,8 @@ class TestAzureSubscription:
 
     def test_get(self, client) -> None:
         r = AzureSubscription(
-            'subscription',
             client,
+            'subscription',
         )
 
         assert r.path == '/subscriptions/subscription'
