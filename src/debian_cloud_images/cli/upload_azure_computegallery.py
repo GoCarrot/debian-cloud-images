@@ -12,6 +12,7 @@ from debian_cloud_images.backend.azure import (
     AzureVmArch,
     AzureVmGeneration,
 )
+from debian_cloud_images.backend.azure.client import AzureAuth, AzureAuthServiceAccount
 from debian_cloud_images.backend.azure.subscription import AzureSubscription
 from debian_cloud_images.backend.azure.resourcegroup import AzureResourcegroup
 from debian_cloud_images.backend.azure.computedisk import AzureComputedisk
@@ -19,7 +20,6 @@ from debian_cloud_images.backend.azure.computegallery import AzureComputegallery
 from debian_cloud_images.backend.azure.computegallery_image import AzureComputegalleryImage
 from debian_cloud_images.backend.azure.computegallery_image_version import AzureComputegalleryImageVersion
 from debian_cloud_images.utils.azure.image_version import AzureImageVersion
-from debian_cloud_images.utils.httpx.azure import AzureAuth, AzureAuthServiceAccount
 
 from .base import cli
 from .upload_base import UploadBaseCommand
