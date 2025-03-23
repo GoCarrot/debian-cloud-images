@@ -4,6 +4,8 @@ import argparse
 import logging
 import pathlib
 
+from contextlib import ExitStack
+
 from debian_cloud_images.api.cdo.upload import Upload
 from debian_cloud_images.api.wellknown import label_ucdo_type
 from debian_cloud_images.backend.azure import (
@@ -121,9 +123,6 @@ class UploadAzureCommand(UploadBaseCommand):
             self._run(client)
 
     def _run(self, client: AzureClient) -> None:
-        computedisk: AzureComputedisk | None = None
-        computeimage: AzureComputeimage | None = None
-
         subscription = AzureSubscription(
             client,
             self._subscription,
@@ -135,7 +134,7 @@ class UploadAzureCommand(UploadBaseCommand):
         )
 
         for image in self.images.values():
-            try:
+            with ExitStack() as cleanup, ExitStack() as cleanup_fail:
                 image_arch = AzureVmArch[image.build_info['arch']]
                 image_public_info = self.image_public_info.apply(image.build_info)
                 image_name = image_public_info.vendor_name_extra(self.generation.name)
@@ -156,6 +155,13 @@ class UploadAzureCommand(UploadBaseCommand):
                         size=size,
                     )
 
+                    @cleanup.callback
+                    def cleanup_computedisk(*exc_details) -> None:
+                        try:
+                            computedisk.delete()
+                        except BaseException:
+                            logger.exception('Failed to cleanup Azure disk')
+
                     logger.info(f'Uploading Azure disk: {image_name}')
 
                     computedisk.upload(f)
@@ -168,6 +174,13 @@ class UploadAzureCommand(UploadBaseCommand):
                         disk=computedisk,
                         wait=self.wait,
                     )
+
+                    @cleanup_fail.callback
+                    def cleanup_computeimage(*exc_details) -> None:
+                        try:
+                            computeimage.delete()
+                        except BaseException:
+                            logger.exception('Failed to cleanup Azure image')
 
                 metadata = image.build.metadata.copy()
                 metadata.labels[label_ucdo_type] = image_public_info.public_type.name
@@ -184,20 +197,7 @@ class UploadAzureCommand(UploadBaseCommand):
                 logger.info(f'Created image successfully: {computeimage.path}')
 
                 # We are succesful, don't need to clean it up
-                computeimage = None
-
-            finally:
-                if computeimage:
-                    try:
-                        computeimage.delete()
-                    except BaseException:
-                        logger.exception('Failed to cleanup Azure image')
-
-                if computedisk:
-                    try:
-                        computedisk.delete()
-                    except BaseException:
-                        logger.exception('Failed to cleanup Azure disk')
+                cleanup_fail.pop_all()
 
 
 if __name__ == '__main__':
