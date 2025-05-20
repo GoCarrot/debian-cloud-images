@@ -132,8 +132,6 @@ publicTypes:
   matches:
   - matchReleases: [sid]
     op: Disable
-  - matchReleases: [trixie]
-    op: Disable
   - matchVendors: [azure]
     matchReleases: [bullseye, bullseye-backports]
     uploadGroup: debian-11
@@ -141,6 +139,10 @@ publicTypes:
   - matchVendors: [azure]
     matchReleases: [bookworm, bookworm-backports]
     uploadGroup: debian-12
+    op: EnableUpload
+  - matchVendors: [azure]
+    matchReleases: [trixie, trixie-backports]
+    uploadGroup: debian-13
     op: EnableUpload
   - matchVendors: [ec2]
     op: EnableUpload
