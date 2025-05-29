@@ -1,0 +1,3 @@
+# Set NVME timeouts per Microsoft recommendations.
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1105826
+GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} nvme_core.io_timeout=240 nvme_core.admin_timeout=240"
