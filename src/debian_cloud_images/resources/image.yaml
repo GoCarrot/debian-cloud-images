@@ -74,7 +74,7 @@ vendors:
   - matchArches: [arm64]
 - name: ec2
   faiClasses: [SYSTEM_BOOT, CLOUD, EC2, LINUX_VARIANT_CLOUD, TIME_SYSTEMD, IPV6_DHCP]
-  size: 8
+  size: 2
   matches:
   - matchArches: [amd64, arm64]
 - name: gce
