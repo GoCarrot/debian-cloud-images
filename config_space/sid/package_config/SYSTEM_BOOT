@@ -1,3 +1,5 @@
+# Modified by Teak.io, Inc. on 2025-07-23
+
 PACKAGES install-norec
 sudo
 
@@ -12,23 +14,17 @@ netplan.io
 # needed for systemd-networkd to set hostnames
 polkitd
 
-unattended-upgrades
-
 # Recommends of linux-image-*
 apparmor
 zstd
 
 # Packages from important
-apt-utils
 init
-iptables
 iputils-ping
 linux-sysctl-defaults
 less
-nano
 netbase
-vim-tiny
-whiptail
+nftables
 
 PACKAGES install-norec TIME_CHRONY
 chrony
