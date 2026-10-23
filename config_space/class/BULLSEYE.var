@@ -1,3 +1,6 @@
 release=bullseye
 FAI_DEBOOTSTRAP="$release $apt_cdn/debian/"
 CLASS_BUILD="BULLSEYE_BUILD"
+# bullseye-security moved to archive.debian.org after Debian 11 LTS ended;
+# security.debian.org 404s on its pool. Class order: BULLSEYE overrides DEBIAN.
+security_cdn=http://archive.debian.org
